@@ -1,0 +1,68 @@
+﻿
+
+<!--Classical menu-->
+<div class="page-header page-header-inverse">
+    <div class="navbar navbar-inverse navbar-transparent">
+        <div class="navbar-header">
+
+            <ul class="nav navbar-nav pull-right visible-xs-block" >
+                <li ng-app="myApp" ng-controller="MyOffCanvasCtrl as ctrl"><a ng-click="ctrl.toggle()"><i class="icon-paragraph-justify3"></i></a></li>
+            </ul>
+        </div>
+        <div class="navbar-collapse collapse">
+            <div class="navbar-right">
+                <ul class="nav navbar-nav">
+                    <!--<li ng-show="showPageFor('NotConnectedUser')" ng-class="CurrentPage=='home' ? 'active' : ''"><a data-toggle="collapse" data-target="#navbar-mobile" ui-sref="home()"><i class="fa fa-home" aria-hidden="true"></i></a></li>-->
+                    <li ng-show="showPageFor('NotConnectedUser')" ng-class="CurrentPage=='inscription' ? 'active' : ''"><a data-toggle="collapse" data-target="#navbar-mobile" ui-sref="inscription()">S'inscrire</a></li>
+                    <li ng-show="showPageFor('NotConnectedUser')" ng-class="CurrentPage=='inscriptioncoach' ? 'active' : ''"><a data-toggle="collapse" data-target="#navbar-mobile" ui-sref="inscriptioncoach()">S'inscrire (coach)</a></li>
+                    <li ng-show="showPageFor('User, Coach')" ng-class="CurrentPage=='dashboard' ? 'active' : ''"><a data-toggle="collapse" data-target="#navbar-mobile" ui-sref="dashboard()">
+                        <i class="fa fa-home"></i>
+                    </a></li>
+                    <li ng-show="showPageFor('User, Coach')" ng-class="CurrentPage=='coachs' ? 'active' : ''"><a data-toggle="collapse" data-target="#navbar-mobile" ui-sref="coachs()">Coachs</a></li>
+                    <li ng-show="showPageFor('User, Coach')" ng-class="CurrentPage=='programs' ? 'active' : ''"><a data-toggle="collapse" data-target="#navbar-mobile" ui-sref="programs()">Programs</a></li>
+                    <li class="dropdown" ng-show="(ConnectedUserId != null && ConnectedUserId != 'null') || ConnectedUserNotifications.length > 0">
+                        <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            <i class="icon-bell2"></i>
+                            <span class="visible-xs-inline-block position-right">Activity</span>
+                            <span class="status-mark border-pink-300"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-content">
+                            <div class="dropdown-content-heading">
+                                Notifications
+                                <ul class="icons-list">
+                                    <li><a href="#"><i class="icon-menu7"></i></a></li>
+                                </ul>
+                            </div>
+                            <ul class="media-list dropdown-content-body width-350" ng-repeat="notification in ConnectedUserNotifications">
+                                <li class="media">
+                                    <div class="media-left"><a href="#" class="btn bg-success-400 btn-rounded btn-icon btn-xs"><i class="icon-mention"></i></a></div>
+                                    <div class="media-body">{{notification.msg}}</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="dropdown dropdown-user" ng-show="ConnectedUserId != null  && ConnectedUserId != 'null'">
+                        <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            <img ng-src="{{avatarUri}}" alt="">
+                            <span>{{customer.prettyName}}</span>
+                            <i class="caret"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right" style="z-index: 1050 !important;">
+                            <li><a ui-sref="profile({id:null})"><i class="icon-cog5"></i> My profile</a></li>
+                            <li><a ui-sref="profileedit()"><i class="icon-cog5"></i>Edit profile</a></li>
+                            <li><a ng-click="logout()"><i class="icon-switch2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                    <li ng-show="showPageFor('NotConnectedUser')" ng-class="CurrentPage=='signin' ? 'active' : ''">
+                        <a ui-sref="signin2()" ng-show="ConnectedUserId == null || ConnectedUserId == 'null'">Identification</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="page-header-content">
+        <div class="page-title">
+            <h4>{{PageHeaderTitle}}<small ng-show="PageHeaderSubTitle != null && PageHeaderSubTitle != ''">{{PageHeaderSubTitle}}</small></h4>
+        </div>
+    </div>
+</div>

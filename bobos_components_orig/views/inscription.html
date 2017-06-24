@@ -1,0 +1,129 @@
+﻿<div class="alert alert-danger" role="alert" ng-if="ErrorMsg != null">
+    {{ErrorMsg}}
+</div>
+<form action="index/html" name="registrationForm" class="registration-form" novalidate>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="text-center">
+                        <div class="icon-object border-success text-success">
+                            <i class="icon-plus3"></i>
+                        </div>
+                        <h5 class="content-group-lg">Inscrivez-vous </h5>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <div class="form-group has-feedback">
+                                <input type="text" name="lastName" class="form-control" placeholder="Nom" ng-model="Entity.lastName" required>
+                                <div class="form-control-feedback">
+                                    <i class="icon-user-check text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div ng-messages="registrationForm.lastName.$error" ng-messages-include="messages.html"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <div class="form-group has-feedback">
+                                <input type="text" name="firstName" class="form-control" placeholder="Prenom" ng-model="Entity.firstName" required>
+                                <div class="form-control-feedback">
+                                    <i class="icon-user-check text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div ng-messages="registrationForm.firstName.$error" ng-messages-include="messages.html"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <div class="form-group has-feedback">
+                                <input type="password" name="passwordForTyping" class="form-control" placeholder="Mot de passe" ng-model="Entity.passwordForTyping" required>
+                                <div class="form-control-feedback">
+                                    <i class="icon-user-lock text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div ng-messages="registrationForm.passwordForTyping.$error" ng-messages-include="messages.html"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <div class="form-group has-feedback">
+                                <input type="password" name="RawPasswordConfirm" class="form-control" placeholder="Confirmation mot de passe" ng-model="Entity.RawPasswordConfirm" required compare-to="Entity.passwordForTyping">
+                                <div class="form-control-feedback">
+                                    <i class="icon-user-lock text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div ng-messages="registrationForm.RawPasswordConfirm.$error" ng-messages-include="messages.html"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <div class="form-group has-feedback">
+                                <input type="email" name="email" class="form-control" placeholder="Email" required ng-model="Entity.email">
+                                <div class="form-control-feedback">
+                                    <i class="icon-mention text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div ng-messages="registrationForm.email.$error" ng-messages-include="messages.html"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <div class="form-group has-feedback">
+                                <input type="email" name="EmailConfirm" class="form-control" placeholder="Confirmation email" required ng-model="Entity.EmailConfirm" compare-to="Entity.email">
+                                <div class="form-control-feedback">
+                                    <i class="icon-mention text-muted"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div ng-messages="registrationForm.EmailConfirm.$error" ng-messages-include="messages.html"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3">
+                            <div class="form-group">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" ng-model="Entity.BoolAccepteConditionsGenerales" />
+                                        J'accepte les conditions générales d'utilisation
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="messages" ng-if="Entity.BoolAccepteConditionsGenerales != true">
+                                Requis
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" ng-if="!registrationForm.$valid">
+                        <div class="col-md-8 col-md-offset-2">
+                            <p class="text-center">
+                                <small><i>Merci de compléter le formulaire et d'accepter les conditions générales <br />afin de procéder à la création de votre compte</i></small>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <p class="text-center" style="margin-top: 25px;">
+                            <button type="button" class="btn bg-pink-400 btn-labeled btn-labeled-right " ng-click="save()" ng-disabled="!(registrationForm.$valid && Entity.BoolAccepteConditionsGenerales==true)">
+                                <b><i class="icon-plus3"></i></b> Créer mon compte
+                            </button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
