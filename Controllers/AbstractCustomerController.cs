@@ -228,7 +228,7 @@ namespace YsrisCoreLibrary.Controllers
 
             if (smallUri == null)
             {
-                var path = Path.Combine(_env.WebRootPath, "bobos_components\\assets\\images\\profile-placeholder.png");
+                var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
                 return File(System.IO.File.ReadAllBytes(path), "image/png");
             }
 
