@@ -10,18 +10,27 @@ using YsrisCoreLibrary.Helpers;
 
 namespace YsrisCoreLibrary.Dal
 {
+    /// <summary>
+    /// Default data access layer abstraction :
+    /// - SQL mapping with local entities
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class AbstractDal<T> where T : class
     {
-        public AbstractDal()
-        {
-            _tableName = typeof(T).Name;
-            ConnectionString = ConfigurationHelper.ConnectionString;
-        }
-
+        /// <summary>
+        /// From T, we get the name of the SQL table (table name == entity name)
+        /// </summary>
         protected virtual string _tableName { get; }
+
+        /// <summary>
+        /// The connection string used in this context
+        /// </summary>
         protected virtual string ConnectionString { get; }
 
-        Func<object, string> formatter = a =>
+        /// <summary>
+        /// Formatter to adapt a property name to the correct "SQL typing"
+        /// </summary>
+        private Func<object, string> formatter = a =>
             a == null ? "null"
             : a is string ? $"'{a.ToString()}'"
             : (a is DateTime || a is DateTime?) ? $"'{((DateTime)a).ToString("yyyy-MM-dd HH:mm:ss")}'"
@@ -29,11 +38,29 @@ namespace YsrisCoreLibrary.Dal
             : a.GetType().GetTypeInfo().BaseType == typeof(Enum) ? $"'{a.ToString()}'"
             : a.ToString();
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public AbstractDal()
+        {
+            _tableName = typeof(T).Name;
+            ConnectionString = ConfigurationHelper.ConnectionString;
+        }
+
+        #region Querying
+
         public IEnumerable<T> QuerySql(string sqlStatement, int userId, string connectionString = null) => QuerySql<T>(sqlStatement, userId, connectionString);
-        //public IEnumerable<T> QuerySql(string sqlStatement, params object[] args) => QuerySql(string.Format(sqlStatement, args));
+
+        /// <summary>
+        /// Execute an SQL query and gives the result back
+        /// </summary>
+        /// <typeparam name="Y">Type of the entity that should be retrieved (automatic casting)</typeparam>
+        /// <param name="sql">Select SQL Query</param>
+        /// <param name="userId">current connected user id</param>
+        /// <param name="connectionString">connection string that should be used instead of the default context connection string</param>
+        /// <returns></returns>
         public IEnumerable<Y> QuerySql<Y>(string sql, int userId, string connectionString = null) where Y : class
         {
-
             try
             {
                 using (SqlConnection conn = new SqlConnection(connectionString ?? ConnectionString))
@@ -67,6 +94,52 @@ namespace YsrisCoreLibrary.Dal
                 throw new Exception(sqlTxt);
             }
         }
+
+        #endregion
+
+        #region ListOrSafeListOrGet
+
+        /// <summary>
+        /// List ALL the T's (including the flagged as removed)
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<T> List(int userId, string connectionString = null) => QuerySql($"SELECT * FROM {_tableName};", userId, connectionString);
+
+        /// <summary>
+        /// List the T's that were not flagged as removed
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<T> SafeList(int userId) => QuerySql($"SELECT * FROM [{typeof(T).Name}] WHERE DeletionDate IS NULL;", userId);
+
+        /// <summary>
+        /// Get a T object
+        /// </summary>
+        /// <param name="id">object id</param>
+        /// <param name="userId"></param>
+        /// <returns>T instance</returns>
+        public virtual T Get(string id, int userId)
+        {
+            var sql = $@"SELECT * FROM {_tableName} WHERE {ReflectionHelper.GetKeyPropertiesValues(typeof(T)).Single()} = '{id}' AND DeletionDate IS NULL";
+            var item = QuerySql(sql, userId).SingleOrDefault();
+            return item;
+        }
+
+        /// <summary>
+        /// Get a T object
+        /// </summary>
+        /// <param name="id">object id</param>
+        /// <param name="userId"></param>
+        /// <returns>T instance</returns>
+        public virtual T Get(int id, int userId)
+        {
+            var sql = $@"SELECT * FROM {_tableName} WHERE {ReflectionHelper.GetKeyPropertiesValues(typeof(T)).Single()} = {id} AND DeletionDate IS NULL";
+            var item = QuerySql(sql, userId).SingleOrDefault();
+            return item;
+        }
+
+        #endregion
+
+        #region AddingUpdatingDeleting
 
         /// <summary>
         /// Add or update an entity
@@ -114,6 +187,7 @@ namespace YsrisCoreLibrary.Dal
                 return 0;
             }
         }
+
         //public virtual void AddOrUpdate(IEnumerable<T> entities, int userId)
         //{
         //    if (!entities.Any())
@@ -137,30 +211,9 @@ namespace YsrisCoreLibrary.Dal
         //    }
         //}
 
-        /// <summary>
-        /// List the T's that were not flagged as removed
-        /// </summary>
-        /// <returns></returns>
-        public virtual IEnumerable<T> SafeList(int userId) => QuerySql($"SELECT * FROM [{typeof(T).Name}] WHERE DeletionDate IS NULL;", userId);
-        /// <summary>
-        /// List ALL the T's (including the flagged as removed)
-        /// </summary>
-        /// <returns></returns>
-        public virtual IEnumerable<T> List(int userId, string connectionString=null) => QuerySql($"SELECT * FROM {_tableName};", userId, connectionString);
 
-        public virtual T Get(string id, int userId)
-        {
-            var sql = $@"SELECT * FROM {_tableName} WHERE {ReflectionHelper.GetKeyPropertiesValues(typeof(T)).Single()} = '{id}' AND DeletionDate IS NULL";
-            var item = QuerySql(sql, userId).SingleOrDefault();
-            return item;
-        }
 
-        public virtual T Get(int id, int userId)
-        {
-            var sql = $@"SELECT * FROM {_tableName} WHERE {ReflectionHelper.GetKeyPropertiesValues(typeof(T)).Single()} = {id} AND DeletionDate IS NULL";
-            var item = QuerySql(sql, userId).SingleOrDefault();
-            return item;
-        }
+
 
         public virtual void SafeRemove(T entity, int userId)
         {
@@ -237,8 +290,6 @@ namespace YsrisCoreLibrary.Dal
         //    QuerySql(sql);
         //}
 
-
-
-
+        #endregion
     }
 }
