@@ -26,15 +26,12 @@ namespace YsrisCoreLibrary.Models
 
         public Customer(dynamic values)
         {
-            SetFromValues(values);
+            SetFromValues(values);           
         }
 
         public void SetFromValues(dynamic values)
         {
-            //if (values.id != null) id = values.id;
             if (values.picture != null) picture = values.picture;
-            
-
             if (values.firstName != null) firstName = values.firstName;
             if (values.lastName != null) lastName = values.lastName;
             if (values.deletionDate != null) deletionDate = values.deletionDate;

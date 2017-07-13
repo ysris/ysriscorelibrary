@@ -5,15 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="bobos_components_orig\views\templates\master-footer.html">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="bobos_components_orig\views\templates\master-header.html">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="bobos_components_orig\views\templates\my-off-canvas.html">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
+    <Compile Remove="bobos_components_orig\**" />
+    <EmbeddedResource Remove="bobos_components_orig\**" />
+    <None Remove="bobos_components_orig\**" />
   </ItemGroup>
 
 
@@ -28,6 +22,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
+    <PackageReference Include="OAuth.DotNetCore" Version="1.0.4" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="1.0.1" />
     <PackageReference Include="SimpleCrypto.NetCore" Version="1.0.0" />
     <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />

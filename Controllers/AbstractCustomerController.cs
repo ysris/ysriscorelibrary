@@ -203,7 +203,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns>Customer</returns>
         [HttpGet("{id}")]
         [Authorize]
-        public virtual Customer Get(int id)
+        public virtual object Get(int id)
         {
             var entity = _dal.Get(id, _sessionHelperInstance.User.id);
             if (entity != null)

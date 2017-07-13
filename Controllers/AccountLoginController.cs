@@ -16,6 +16,7 @@ using YsrisCoreLibrary.Enums;
 using YsrisCoreLibrary.Helpers;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Services;
+using System.Linq;
 
 namespace YsrisCoreLibrary.Controllers
 {
@@ -58,7 +59,7 @@ namespace YsrisCoreLibrary.Controllers
 
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, entity.Item2) };
             if (!string.IsNullOrEmpty(fullEntity.rolesString))
-                foreach (var cur in fullEntity.rolesString.Split(','))
+                foreach (var cur in fullEntity.rolesString.Split(',').Select(a => a.Trim()))
                     claims.Add(new Claim(ClaimTypes.Role, cur));
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
 
