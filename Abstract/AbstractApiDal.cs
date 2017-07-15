@@ -13,7 +13,7 @@ namespace YsrisCoreLibrary.Abstract
     ////TODO : Move into proper class file in core
     public abstract class AbstractApiDal
     {
-        public T GetJsonWithOAuth1<T>(string uri, string publicKey, string secretKey, Dictionary<string, string> additionalHeaders) where T : class
+        public T GetJsonWithOAuth1<T>(string uri, string publicKey, string secretKey, Dictionary<string, string> additionalHeaders=null) where T : class
         {
             var client = OAuthRequest.ForRequestToken(publicKey, secretKey);
             client.RequestUrl = uri;

@@ -103,7 +103,15 @@ namespace YsrisCoreLibrary.Dal
         /// List ALL the T's (including the flagged as removed)
         /// </summary>
         /// <returns></returns>
+        public virtual IEnumerable<T> List(int userId, string tableName, string connectionString = null) => QuerySql($"SELECT * FROM {tableName};", userId, connectionString);
         public virtual IEnumerable<T> List(int userId, string connectionString = null) => QuerySql($"SELECT * FROM {_tableName};", userId, connectionString);
+
+        /// <summary>
+        /// List ALL the Y's (including the flagged as removed)
+        /// Used to allow user to ask for a given type of data from a dal that manage another type of data
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<Y> List<Y>(int userId, string connectionString = null) where Y : class => QuerySql<Y>($"SELECT * FROM {_tableName};", userId, connectionString);
 
         /// <summary>
         /// List the T's that were not flagged as removed

@@ -31,28 +31,16 @@ namespace YsrisCoreLibrary.Models
 
         public void SetFromValues(dynamic values)
         {
-            if (values.picture != null) picture = values.picture;
-            if (values.firstName != null) firstName = values.firstName;
-            if (values.lastName != null) lastName = values.lastName;
-            if (values.deletionDate != null) deletionDate = values.deletionDate;
-            //if (values.rolesString != null) rolesString = values.rolesString;
-            if (values.email != null) email = values.email;
-            //if (values.companyId != null) companyId = values.companyId;
-            if (values.password != null) password = values.password;
-            if (values.activationCode != null) activationCode = values.activationCode;
-            //if (values.customerType != null) customerType = Enum.Parse(typeof(Role), values.customerType.ToString());
+            if (IsPropertyExist(values, "id") && values.id != null) id = values.id;
+            if (IsPropertyExist(values, "picture") && values.picture != null) picture = values.picture;
+            if (IsPropertyExist(values, "firstName") && values.firstName != null) firstName = values.firstName;
+            if (IsPropertyExist(values, "lastName") && values.lastName != null) lastName = values.lastName;
+            if (IsPropertyExist(values, "deletionDate") && values.deletionDate != null) deletionDate = values.deletionDate;
+            if (IsPropertyExist(values, "email") && values.email != null) email = values.email;
+            if (IsPropertyExist(values, "password") && values.password != null) password = values.password;
+            if (IsPropertyExist(values, "activationCode") && values.activationCode != null) activationCode = values.activationCode;
 
-            //if (values.checkBoxListSelectedValues is JArray)
-            //{
-            //    checkBoxListSelectedValues = ((JArray)values.checkBoxListSelectedValues).Select(a => ((string)a).ToString()).Where(a => !string.IsNullOrEmpty(a)).ToList();
-            //}
-            //else if (values is IEnumerable<CustomerHasModule>)
-            //{
-            //    checkBoxListSelectedValues = values.checkBoxListSelectedValues;
-            //}
-
-            //if (values.customerMainAdressId != null) customerMainAdressId = values.customerMainAdressId;
-            if (values.customerMainAdress != null)
+            if (IsPropertyExist(values, "customerMainAdress") && values.customerMainAdress != null)
             {
                 customerMainAdress = new PostalAddress(values.customerMainAdress);
             }
@@ -173,7 +161,7 @@ namespace YsrisCoreLibrary.Models
         public List<CustomerHasModule> userRights { get; set; }
 
         [DataMember]
-        public string prettyName => !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName)) ? $"{lastName} {firstName}" : email;
+        public virtual string prettyName => !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName)) ? $"{lastName} {firstName}" : email;
 
         [DataMember]
         public List<Role> roles => !string.IsNullOrEmpty(rolesString) ? rolesString.Split(',').Select(b => (Role)Enum.Parse(typeof(Role), b)).ToList() : null;
