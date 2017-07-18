@@ -31,7 +31,7 @@ namespace YsrisCoreLibrary.Dal
             var sql = $"SELECT * FROM Customer WHERE email = '{username}' AND DeletionDate IS NULL";
             var item = QuerySql(sql, userId).Single();
             return item;
-        }
+        }        
 
         public Tuple<int, string> Get(string userName, string passsword)
         {
