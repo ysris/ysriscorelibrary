@@ -111,7 +111,7 @@ namespace YsrisCoreLibrary.Dal
         /// Used to allow user to ask for a given type of data from a dal that manage another type of data
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<Y> List<Y>(int userId, string connectionString = null) where Y : class => QuerySql<Y>($"SELECT * FROM {_tableName};", userId, connectionString);
+        public virtual IEnumerable<Y> List<Y>(int userId, string tableName=null, string connectionString = null) where Y : class => QuerySql<Y>($"SELECT * FROM {tableName ?? _tableName};", userId, connectionString);
 
         /// <summary>
         /// List the T's that were not flagged as removed
@@ -125,9 +125,9 @@ namespace YsrisCoreLibrary.Dal
         /// <param name="id">object id</param>
         /// <param name="userId"></param>
         /// <returns>T instance</returns>
-        public virtual T Get(string id, int userId)
-        {
-            var sql = $@"SELECT * FROM {_tableName} WHERE {ReflectionHelper.GetKeyPropertiesValues(typeof(T)).Single()} = '{id}' AND DeletionDate IS NULL";
+        public virtual T Get(string id, int userId, string tableName=null)
+        {            
+            var sql = $@"SELECT * FROM {tableName ?? _tableName} WHERE {ReflectionHelper.GetKeyPropertiesValues(typeof(T)).Single()} = '{id}' AND DeletionDate IS NULL";
             var item = QuerySql(sql, userId).SingleOrDefault();
             return item;
         }
@@ -138,9 +138,9 @@ namespace YsrisCoreLibrary.Dal
         /// <param name="id">object id</param>
         /// <param name="userId"></param>
         /// <returns>T instance</returns>
-        public virtual T Get(int id, int userId)
+        public virtual T Get(int id, int userId, string tableName = null)
         {
-            var sql = $@"SELECT * FROM {_tableName} WHERE {ReflectionHelper.GetKeyPropertiesValues(typeof(T)).Single()} = {id} AND DeletionDate IS NULL";
+            var sql = $@"SELECT * FROM {tableName ?? _tableName} WHERE {ReflectionHelper.GetKeyPropertiesValues(typeof(T)).Single()} = {id} AND DeletionDate IS NULL";
             var item = QuerySql(sql, userId).SingleOrDefault();
             return item;
         }

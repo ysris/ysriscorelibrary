@@ -20,14 +20,14 @@ namespace YsrisCoreLibrary.Controllers
     /// <summary>
     /// Default customer management
     /// </summary>
-    public class AbstractCustomerController : Controller
+    public abstract class AbstractCustomerController : Controller
     {
         protected readonly MailHelperService _mailHelperService;
         protected readonly IHostingEnvironment _env;
         protected readonly ILogger<AbstractCustomerController> _myLogger;
         protected readonly SessionHelperService _sessionHelperInstance;
 
-        protected readonly CustomerDal _dal = new CustomerDal();
+        protected AbstractCustomerDal _dal;
 
         /// <summary>
         /// Default constructor
@@ -42,7 +42,7 @@ namespace YsrisCoreLibrary.Controllers
             _sessionHelperInstance = sessionHelper;
             _myLogger = logger;
             _env = env;
-            _mailHelperService = mailHelperService;
+            _mailHelperService = mailHelperService;            
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace YsrisCoreLibrary.Controllers
                     entity.password = new EncryptionHelper().GetHash(values.passwordForTyping.ToString());
                 }
 
-            entity.id = (int)new CustomerDal().AddOrUpdate(entity, _sessionHelperInstance.User.id);
+            entity.id = (int)_dal.AddOrUpdate(entity, _sessionHelperInstance.User.id);
             _sessionHelperInstance.HttpContext.Session.SetString("UserEntity",
                 (string)JsonConvert.SerializeObject(entity));
 

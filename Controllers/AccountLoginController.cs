@@ -20,19 +20,17 @@ using System.Linq;
 
 namespace YsrisCoreLibrary.Controllers
 {
-    [Produces("application/json")]
-    [Consumes("application/json", "application/json-patch+json", "multipart/form-data")]
-    [Route("api/AccountLogin")]
-    public class AccountLoginController : Controller
+
+    public abstract class AbstractAccountLoginController : Controller
     {
 
-        private CustomerDal dal = new CustomerDal();
+        protected AbstractCustomerDal dal; //TODO = new CustomerDal();
         private SessionHelperService SessionHelperInstance;
-        private ILogger<AccountLoginController> MyLogger;
+        private ILogger<AbstractAccountLoginController> MyLogger;
         private IHostingEnvironment Env;
         private readonly MailHelperService mailHelperService;
 
-        public AccountLoginController(SessionHelperService sessionHelper, ILogger<AccountLoginController> logger, IHostingEnvironment env, MailHelperService _mailHelperService)
+        public AbstractAccountLoginController(SessionHelperService sessionHelper, ILogger<AbstractAccountLoginController> logger, IHostingEnvironment env, MailHelperService _mailHelperService)
         {
             SessionHelperInstance = sessionHelper;
             MyLogger = logger;
@@ -49,12 +47,12 @@ namespace YsrisCoreLibrary.Controllers
         [HttpPost("Login")]
         public async Task<Customer> Login([FromBody] dynamic values)
         {
-            var entity = new CustomerDal().Get((string)values.username.ToString(), (string)values.password.ToString());
+            var entity = dal.Get((string)values.username.ToString(), (string)values.password.ToString());
 
             if (entity == null)
                 throw new Exception("UnknownUser");
 
-            var fullEntity = new CustomerDal().Get((int)entity.Item1, (int)entity.Item1);
+            var fullEntity = dal.Get((int)entity.Item1, (int)entity.Item1);
             //fullEntity.MenuItems = new CustomerModuleDal().ListModules(fullEntity, entity.Item1 ).Select(a => new MenuItem { }).ToList();
 
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, entity.Item2) };
