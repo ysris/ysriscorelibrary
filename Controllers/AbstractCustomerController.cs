@@ -14,13 +14,14 @@ using YsrisCoreLibrary.Helpers;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Services;
 using YsrisSaas2.Models;
+using YsrisCoreLibrary.Abstract;
 
 namespace YsrisCoreLibrary.Controllers
 {
     /// <summary>
     /// Default customer management
     /// </summary>
-    public abstract class AbstractCustomerController : Controller
+    public abstract class AbstractCustomerController : AbstractController
     {
         protected readonly MailHelperService _mailHelperService;
         protected readonly IHostingEnvironment _env;
