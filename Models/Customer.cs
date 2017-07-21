@@ -26,24 +26,20 @@ namespace YsrisCoreLibrary.Models
 
         public Customer(dynamic values)
         {
-            SetFromValues(values);           
+            SetFromValues(values);
         }
 
         public void SetFromValues(dynamic values)
         {
-            if (IsPropertyExist(values, "id") && values.id != null) id = values.id;
-            if (IsPropertyExist(values, "picture") && values.picture != null) picture = values.picture;
-            if (IsPropertyExist(values, "firstName") && values.firstName != null) firstName = values.firstName;
-            if (IsPropertyExist(values, "lastName") && values.lastName != null) lastName = values.lastName;
-            if (IsPropertyExist(values, "deletionDate") && values.deletionDate != null) deletionDate = values.deletionDate;
-            if (IsPropertyExist(values, "email") && values.email != null) email = values.email;
-            if (IsPropertyExist(values, "password") && values.password != null) password = values.password;
-            if (IsPropertyExist(values, "activationCode") && values.activationCode != null) activationCode = values.activationCode;
-
-            if (IsPropertyExist(values, "customerMainAdress") && values.customerMainAdress != null)
-            {
-                customerMainAdress = new PostalAddress(values.customerMainAdress);
-            }
+            if (values.id != null) id = values.id;
+            if (values.picture != null) picture = values.picture;
+            if (values.firstName != null) firstName = values.firstName;
+            if (values.lastName != null) lastName = values.lastName;
+            if (values.deletionDate != null) deletionDate = values.deletionDate;
+            if (values.email != null) email = values.email;
+            if (values.password != null) password = values.password;
+            if (values.activationCode != null) activationCode = values.activationCode;
+            if (values.customerMainAdress != null) customerMainAdress = new PostalAddress(values.customerMainAdress);
         }
 
         /// <summary>

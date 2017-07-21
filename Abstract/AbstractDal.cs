@@ -111,13 +111,13 @@ namespace YsrisCoreLibrary.Dal
         /// Used to allow user to ask for a given type of data from a dal that manage another type of data
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<Y> List<Y>(int userId, string tableName=null, string connectionString = null) where Y : class => QuerySql<Y>($"SELECT * FROM {tableName ?? _tableName};", userId, connectionString);
+        public virtual IEnumerable<Y> List<Y>(int userId, string tableName = null, string connectionString = null) where Y : class => QuerySql<Y>($"SELECT * FROM {tableName ?? _tableName};", userId, connectionString);
 
         /// <summary>
         /// List the T's that were not flagged as removed
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<T> SafeList(int userId) => QuerySql($"SELECT * FROM [{typeof(T).Name}] WHERE DeletionDate IS NULL;", userId);
+        public virtual IEnumerable<T> SafeList(int userId, string tableName = null) => QuerySql($"SELECT * FROM [{tableName ?? typeof(T).Name}] WHERE DeletionDate IS NULL;", userId);
 
         /// <summary>
         /// Get a T object
@@ -125,8 +125,8 @@ namespace YsrisCoreLibrary.Dal
         /// <param name="id">object id</param>
         /// <param name="userId"></param>
         /// <returns>T instance</returns>
-        public virtual T Get(string id, int userId, string tableName=null)
-        {            
+        public virtual T Get(string id, int userId, string tableName = null)
+        {
             var sql = $@"SELECT * FROM {tableName ?? _tableName} WHERE {ReflectionHelper.GetKeyPropertiesValues(typeof(T)).Single()} = '{id}' AND DeletionDate IS NULL";
             var item = QuerySql(sql, userId).SingleOrDefault();
             return item;
@@ -153,7 +153,7 @@ namespace YsrisCoreLibrary.Dal
         /// Add or update an entity
         /// </summary>
         /// <param name="entity">entity to upsert</param>
-        public virtual object AddOrUpdate(T entity, int userId)
+        public virtual object AddOrUpdate(T entity, int userId, string __tableName = null)
         {
             var all = ReflectionHelper.GetPersistancePropertiesValues(entity);
             //var key = all.Where(a => a.Key.ToLower() == "Id".ToLower());
@@ -162,8 +162,8 @@ namespace YsrisCoreLibrary.Dal
             var tableName = !string.IsNullOrEmpty(_tableName) ? _tableName : entity.GetType().Name;
 
             var sql =
-                $@"MERGE INTO [{tableName}]
-                   USING (SELECT {string.Join(", ", all.Select(a => $"{formatter(a.Value)} AS [{a.Key}]"))}) AS SRC ON {string.Join(" AND ", key.Select(a => $"[{tableName}].[{a.Key}] LIKE SRC.[{a.Key}]"))}
+                $@"MERGE INTO [{__tableName ?? tableName}]
+                   USING (SELECT {string.Join(", ", all.Select(a => $"{formatter(a.Value)} AS [{a.Key}]"))}) AS SRC ON {string.Join(" AND ", key.Select(a => $"[{__tableName ?? tableName}].[{a.Key}] LIKE SRC.[{a.Key}]"))}
                    WHEN MATCHED THEN UPDATE SET {string.Join(" , ", values.Select(a => $"[{a.Key}] = {formatter(a.Value)}"))}
                    WHEN NOT MATCHED THEN INSERT({string.Join(",", values.Select(a => $"[{a.Key}]"))}) VALUES({string.Join(",", values.Select(a => $"@{a.Key}"))});
                    SELECT CAST(SCOPE_IDENTITY() as int); "; //Scope identity returns the index only in the case of an insert

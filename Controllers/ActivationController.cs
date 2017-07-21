@@ -10,7 +10,7 @@ namespace YsrisCoreLibrary.Controllers
 {
     public class ActivationController : AbstractController
     {
-        private readonly AbstractCustomerDal dal;
+        public static AbstractCustomerDal dal;
         private IHostingEnvironment Env;
         private readonly ILogger<ActivationController> MyLogger;
 
