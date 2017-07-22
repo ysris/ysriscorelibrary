@@ -186,6 +186,8 @@ namespace YsrisCoreLibrary.Controllers
         //[ServiceFilter(typeof(CustomAuthorize))]
         public virtual Customer GetMe()
         {
+            if (_sessionHelperInstance.User == null)
+                return null;
             var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
             if (entity != null)
             {

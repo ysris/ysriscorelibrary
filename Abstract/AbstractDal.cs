@@ -158,6 +158,8 @@ namespace YsrisCoreLibrary.Dal
             var all = ReflectionHelper.GetPersistancePropertiesValues(entity);
             //var key = all.Where(a => a.Key.ToLower() == "Id".ToLower());
             var key = ReflectionHelper.GetKeyPropertiesValues(entity);
+            if (!key.Any())
+                throw new Exception("No PK defined");
             var values = all.Where(a => a.Key.ToLower() != "Id".ToLower());
             var tableName = !string.IsNullOrEmpty(_tableName) ? _tableName : entity.GetType().Name;
 

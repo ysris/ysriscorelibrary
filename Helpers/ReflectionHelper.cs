@@ -30,6 +30,7 @@ namespace YsrisCoreLibrary.Helpers
             var qry =
                 from x in GetPropertiesOfEntityType(entity.GetType())
                 where !x.GetCustomAttributes().Select(a => a.GetType()).Contains(typeof(NotMappedAttribute))
+                where !x.GetCustomAttributes().Select(a => a.GetType()).Contains(typeof(NotOrmMappedAttribute))
                 where
                     x.CanWrite
                 //only with setter
