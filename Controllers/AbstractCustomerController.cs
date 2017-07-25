@@ -224,6 +224,8 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize]
         public virtual IActionResult GetAvatar()
         {
+            if (_sessionHelperInstance.User == null)
+                return null;
             int id = _sessionHelperInstance.User.id;
 
             var smallUri = _dal.Get((int)id, _sessionHelperInstance.User.id).picture;
