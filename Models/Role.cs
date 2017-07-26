@@ -13,6 +13,7 @@ namespace YsrisSaas2.Models
         User = 3,
         Proprietaire,
         Coach,
-        Locataire
+        Locataire,
+        Business
     }
 }
