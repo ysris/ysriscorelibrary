@@ -1,7 +1,9 @@
 ﻿using Dapper;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +28,11 @@ namespace YsrisCoreLibrary.Dal
         /// The connection string used in this context
         /// </summary>
         protected virtual string ConnectionString { get; }
+
+        public IDbConnection _getConnection(string connString) =>
+            ConfigurationHelper.ConnectionType == "MySql"
+            ? (IDbConnection)new MySqlConnection(connString)
+            : (IDbConnection)new SqlConnection(connString);
 
         /// <summary>
         /// Formatter to adapt a property name to the correct "SQL typing"
@@ -63,7 +70,7 @@ namespace YsrisCoreLibrary.Dal
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString ?? ConnectionString))
+                using (var conn = _getConnection(connectionString ?? ConnectionString))
                 {
                     conn.Open();
                     return conn.Query<Y>(sql, null);
@@ -80,7 +87,7 @@ namespace YsrisCoreLibrary.Dal
         {
             try
             {
-                using (SqlConnection conn = new SqlConnection(connectionString ?? ConnectionString))
+                using (var conn = _getConnection(connectionString ?? ConnectionString))
                 {
                     conn.Open();
                     conn.Execute(sql);
@@ -117,7 +124,7 @@ namespace YsrisCoreLibrary.Dal
         /// List the T's that were not flagged as removed
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<T> SafeList(int userId, string tableName = null) => QuerySql($"SELECT * FROM [{tableName ?? typeof(T).Name}] WHERE DeletionDate IS NULL;", userId);
+        public virtual IEnumerable<T> SafeList(int userId, string tableName = null) => QuerySql($"SELECT * FROM {tableName ?? typeof(T).Name} WHERE DeletionDate IS NULL;", userId);
 
         /// <summary>
         /// Get a T object
@@ -163,11 +170,22 @@ namespace YsrisCoreLibrary.Dal
             var values = all.Where(a => a.Key.ToLower() != "Id".ToLower());
             var tableName = !string.IsNullOrEmpty(_tableName) ? _tableName : entity.GetType().Name;
 
-            var sql =
-                $@"MERGE INTO [{__tableName ?? tableName}]
-                   USING (SELECT {string.Join(", ", all.Select(a => $"{formatter(a.Value)} AS [{a.Key}]"))}) AS SRC ON {string.Join(" AND ", key.Select(a => $"[{__tableName ?? tableName}].[{a.Key}] LIKE SRC.[{a.Key}]"))}
-                   WHEN MATCHED THEN UPDATE SET {string.Join(" , ", values.Select(a => $"[{a.Key}] = {formatter(a.Value)}"))}
-                   WHEN NOT MATCHED THEN INSERT({string.Join(",", values.Select(a => $"[{a.Key}]"))}) VALUES({string.Join(",", values.Select(a => $"@{a.Key}"))});
+            string sql = null;
+
+
+            if (ConfigurationHelper.ConnectionType == "MySql")
+            {
+                sql = $@"INSERT INTO `{__tableName ?? tableName}` ( {string.Join(" , ", all.Select(a => $"`{a.Key}`"))} ) 
+                    VALUES ( {string.Join(" , ", all.Select(a => $"{formatter(a.Value)}"))} )
+                    ON DUPLICATE KEY UPDATE {string.Join(" , ", values.Select(a => $"{a.Key} = {formatter(a.Value)}"))};
+                    SELECT LAST_INSERT_ID() as id;";
+            }
+            else
+                sql =
+                    $@"MERGE INTO {__tableName ?? tableName}
+                   USING (SELECT {string.Join(", ", all.Select(a => $"{formatter(a.Value)} AS {a.Key}"))}) AS SRC ON {string.Join(" AND ", key.Select(a => $"{__tableName ?? tableName}.{a.Key} LIKE SRC.{a.Key}"))}
+                   WHEN MATCHED THEN UPDATE SET {string.Join(" , ", values.Select(a => $"{a.Key} = {formatter(a.Value)}"))}
+                   WHEN NOT MATCHED THEN INSERT({string.Join(",", values.Select(a => $"{a.Key}"))}) VALUES({string.Join(",", values.Select(a => $"@{a.Key}"))});
                    SELECT CAST(SCOPE_IDENTITY() as int); "; //Scope identity returns the index only in the case of an insert
 
 
@@ -179,13 +197,13 @@ namespace YsrisCoreLibrary.Dal
             //);
             //LogHelper.Debug<T>(string.Join(",", all.Select(a => a.Key + ":" + a.Value)));
 
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            using (var conn = _getConnection(ConnectionString))
             {
                 conn.Open();
-                var exec = conn.Query<int?>(sql, values).Single();
+                var exec = conn.Query(sql, values);
 
                 if (exec != null)
-                    return (int)exec;
+                    return (int)exec.Single().id;
 
                 if (key.Count() == 1)
                 {
@@ -206,7 +224,7 @@ namespace YsrisCoreLibrary.Dal
         //    var partititioned = entities.Partitionate<T>(partitionSize: 500);
 
 
-        //    using (SqlConnection conn = new SqlConnection(ConnectionString))
+        //    using (_getConnection(ConnectionString))
         //    {
         //        conn.Open();
         //        foreach (var curSet in partititioned)
@@ -237,7 +255,7 @@ namespace YsrisCoreLibrary.Dal
 
             try
             {
-                using (SqlConnection conn = new SqlConnection(ConnectionString))
+                using (var conn = _getConnection(ConnectionString))
                 {
                     conn.Open();
                     sql = $"SELECT COUNT(*) FROM {tableName} WHERE " + string.Join(" AND ", keyAsDictionary.Select(a => a.Key + "='" + a.Value + "'"));
@@ -256,7 +274,7 @@ namespace YsrisCoreLibrary.Dal
             {
                 sql = $"UPDATE {tableName} SET DeletionDate=getdate() WHERE " + string.Join(" AND ", keyAsDictionary.Select(a => a.Key + "='" + a.Value + "'"));
                 //LogHelper.Info<T>(sql + $" userId:{userId}");
-                using (SqlConnection conn = new SqlConnection(ConnectionString))
+                using (var conn = _getConnection(ConnectionString))
                 {
                     conn.Open();
                     conn.Execute(sql);

@@ -13,7 +13,7 @@ namespace YsrisCoreLibrary.Dal
     {
         public override Tuple<int, string> Get(string userName, string passsword, string tableName = "Customer")
         {
-            using (SqlConnection conn = new SqlConnection(ConnectionString))
+            using (var conn = _getConnection(ConnectionString))
             {
                 conn.Open();
                 var sql = $"SELECT id, email FROM {tableName} WHERE email='{userName}' AND password='{new EncryptionHelper().GetHash(passsword)}' AND AccountStatus='Activated' AND DeletionDate IS NULL";

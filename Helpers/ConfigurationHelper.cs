@@ -9,6 +9,7 @@ namespace YsrisCoreLibrary.Helpers
     public static class ConfigurationHelper
     {
         public static string ConnectionString { get; set; }
+        public static string ConnectionType { get; set; }
         public static string EncryptionSalt { get; set; }
         public static string SmtpServer { get; set; }
         public static string SmtpPort { get; set; }
