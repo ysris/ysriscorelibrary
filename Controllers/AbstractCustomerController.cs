@@ -83,6 +83,10 @@ namespace YsrisCoreLibrary.Controllers
                     rolesList.Add(Role.Locataire);
                     customerType = Role.Locataire;
                     break;
+                case "Business":
+                    rolesList.Add(Role.Business);
+                    customerType = Role.Business;
+                    break;                    
             }
 
             var entity = new Customer(values)
@@ -103,7 +107,7 @@ namespace YsrisCoreLibrary.Controllers
             _mailHelperService.SendMail(
                 entity.email,
                 subject: "Confirm account creation",
-                templateUri: _env.ContentRootPath + "\\Views\\Emails\\SignUpConfirmation.cshtml",
+                templateUri: _env.ContentRootPath + "/Views/Emails/SignUpConfirmation.cshtml",
                 mailViewBag:
                 new Dictionary<string, string>
                 {
