@@ -200,7 +200,6 @@ namespace YsrisCoreLibrary.Dal
             using (var conn = _getConnection(ConnectionString))
             {
                 conn.Open();
-                var exec = conn.Query(sql, values);
 
 
                 if (ConfigurationHelper.ConnectionType == "MySql")
