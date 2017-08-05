@@ -43,7 +43,8 @@ namespace YsrisCoreLibrary.Controllers
             _sessionHelperInstance = sessionHelper;
             _myLogger = logger;
             _env = env;
-            _mailHelperService = mailHelperService;            
+            _mailHelperService = mailHelperService;   
+            _dal = new CustomerDal();         
         }
 
         /// <summary>
@@ -100,6 +101,7 @@ namespace YsrisCoreLibrary.Controllers
             };
             entity.password = new EncryptionHelper().GetHash(values.passwordForTyping.ToString()); //keep here for avoiding the model binding
             entity.customerMainAdressId = (int)new PostalAddressDal().AddOrUpdate(entity.customerMainAdress ?? new PostalAddress(), 0);
+            entity.companyId = 0;
             entity.id = (int)_dal.AddOrUpdate(entity, 0);
 
             // 4. User notification

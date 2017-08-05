@@ -18,6 +18,7 @@ namespace YsrisCoreLibrary.Controllers
         {
             MyLogger = logger;
             Env = env;
+            dal = new CustomerDal();
         }
 
         

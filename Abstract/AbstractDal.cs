@@ -202,8 +202,18 @@ namespace YsrisCoreLibrary.Dal
                 conn.Open();
                 var exec = conn.Query(sql, values);
 
-                if (exec != null)
-                    return (int)exec.Single().id;
+
+                if (ConfigurationHelper.ConnectionType == "MySql")
+                {
+                    var exec = conn.Query(sql, values).SingleOrDefault();
+                    return (int)exec.id;
+                }
+                else
+                {
+                    var exec2 = conn.Query<int?>(sql, values).Single();
+                    return (int)exec2;
+                }
+
 
                 if (key.Count() == 1)
                 {
