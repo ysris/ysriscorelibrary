@@ -1,23 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading.Tasks;
-using MailKit.Net.Smtp;
-using MailKit.Security;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
-using MimeKit;
 using YsrisCoreLibrary.Extensions;
 using YsrisCoreLibrary.Helpers;
-using System.Reflection.Metadata.Ecma335;
 using ImageSharp;
-using ImageSharp.Formats;
-using ImageSharp.Processing;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -60,11 +48,11 @@ namespace YsrisCoreLibrary.Services
 
         public void SaveFileTo(MemoryStream postedFile2, string fullPath)
         {
-            fullPath =                
+            fullPath =
                     Env.ContentRootPath
                     + ConfigurationHelper.StorageContainerName
-			        + "/"
-                    + fullPath;
+                    + "/"
+                    + fullPath.TrimStart('/');
 
             MyLogger.LogInformation($"fullPath=" + fullPath);
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
@@ -82,24 +70,21 @@ namespace YsrisCoreLibrary.Services
             if (fullPath == null)
                 return null;
 
-            fullPath = fullPath.TrimStart('/');
+            fullPath =
+                    Env.ContentRootPath
+                    + ConfigurationHelper.StorageContainerName
+                    + "/"
+                    + fullPath.TrimStart('/');
 
-            try
-            {
-                var storageAccount = CloudStorageAccount.Parse(ConfigurationHelper.BlobStorageConnectionString);
-                var blobClient = storageAccount.CreateCloudBlobClient();
-                var container = blobClient.GetContainerReference("inoutdata");
-                var blockBlob = container.GetBlockBlobReference(fullPath);
 
-                var fileStream = new MemoryStream();
-                await blockBlob.DownloadToStreamAsync(fileStream);
+			using (MemoryStream ms = new MemoryStream())
+			using (FileStream file = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
+			{
 
-                return fileStream;
+                file.CopyTo(ms);
+                return ms;
             }
-            catch (StorageException)
-            {
-                return null;
-            }
+
         }
 
         public IEnumerable<IListBlobItem> ListBlobs(CloudBlobDirectory container)

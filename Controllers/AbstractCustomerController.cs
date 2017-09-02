@@ -231,19 +231,7 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize]
         public virtual IActionResult GetAvatar()
         {
-            if (_sessionHelperInstance.User == null)
-                return null;
-            int id = _sessionHelperInstance.User.id;
-
-            var smallUri = _dal.Get((int)id, _sessionHelperInstance.User.id).picture;
-
-
-            if (smallUri == null)
-            {
-                var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
-                return File(System.IO.File.ReadAllBytes(path), "image/png");
-            }
-
+            var smallUri = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id).picture;
             return File(_storageService.GetFileContent(smallUri).Result.ToArray(), "image/jpeg");
         }
 
