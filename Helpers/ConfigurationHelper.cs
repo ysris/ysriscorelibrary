@@ -18,5 +18,7 @@ namespace YsrisCoreLibrary.Helpers
         public static string SmtpPassword { get; set; }
         public static string BlobStorageConnectionString { get; set; }
         public static string AppName { get; set; }
+        public static string StorageType { get; set; }
+        public static string StorageContainerName { get; set; }
     }
 }

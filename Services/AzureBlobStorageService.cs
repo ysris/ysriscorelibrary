@@ -2,9 +2,18 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
+using MimeKit;
+using YsrisCoreLibrary.Extensions;
+using YsrisCoreLibrary.Helpers;
+using System.Reflection.Metadata.Ecma335;
 using ImageSharp;
 using ImageSharp.Formats;
 using ImageSharp.Processing;
@@ -12,12 +21,24 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using ysriscorelibrary.Interfaces;
 
-namespace YsrisCoreLibrary.Helpers
+namespace YsrisCoreLibrary.Services
 {
-    public class FileSystemHelper
+    public class AzureBlobStorageService : IStorageService
     {
-        public static void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null, int? height = null)
+        private SessionHelperService SessionHelperInstance;
+        private ILogger<MailHelperService> MyLogger;
+        private IHostingEnvironment Env;
+
+        public AzureBlobStorageService(SessionHelperService sessionHelper, ILogger<MailHelperService> logger, IHostingEnvironment env)
+        {
+            SessionHelperInstance = sessionHelper;
+            MyLogger = logger;
+            Env = env;
+        }
+
+        public void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null, int? height = null)
         {
             // Get the stream
 
@@ -34,15 +55,15 @@ namespace YsrisCoreLibrary.Helpers
             SaveFileTo(postedFile2, fullPath);
         }
 
-        public static void SaveFileTo(IFormFile postedFile, string fullPath)
+        public void SaveFileTo(IFormFile postedFile, string fullPath)
         {
             var postedFile2 = new MemoryStream();
             postedFile.CopyTo(postedFile2);
 
-            SaveFileTo(postedFile2, fullPath);         
+            SaveFileTo(postedFile2, fullPath);
         }
 
-        public static async void SaveFileTo(MemoryStream postedFile2, string fullPath)
+        public async void SaveFileTo(MemoryStream postedFile2, string fullPath)
         {
             fullPath = fullPath.TrimStart('/');
 
@@ -50,12 +71,12 @@ namespace YsrisCoreLibrary.Helpers
             var storageAccount = CloudStorageAccount.Parse(ConfigurationHelper.BlobStorageConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
 
-            var container = blobClient.GetContainerReference("inoutdata");
+            var container = blobClient.GetContainerReference("ConfigurationHelper.StorageContainerName");
             var x = container.CreateIfNotExistsAsync().Result;
 
             //  ref to the file
             var blockBlob = container.GetBlockBlobReference(fullPath);
-            
+
 
             postedFile2.Position = 0;
             using (postedFile2)
@@ -64,7 +85,7 @@ namespace YsrisCoreLibrary.Helpers
             }
         }
 
-        public static async Task<MemoryStream> GetFileContent(string fullPath)
+        public async Task<MemoryStream> GetFileContent(string fullPath)
         {
             if (fullPath == null)
                 return null;
@@ -89,7 +110,7 @@ namespace YsrisCoreLibrary.Helpers
             }
         }
 
-        public static IEnumerable<IListBlobItem> ListBlobs(CloudBlobDirectory container)
+        public IEnumerable<IListBlobItem> ListBlobs(CloudBlobDirectory container)
         {
             BlobContinuationToken continuationToken = null;
             List<IListBlobItem> results = new List<IListBlobItem>();

@@ -15,6 +15,7 @@ using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Services;
 using YsrisSaas2.Models;
 using YsrisCoreLibrary.Abstract;
+using ysriscorelibrary.Interfaces;
 
 namespace YsrisCoreLibrary.Controllers
 {
@@ -27,6 +28,7 @@ namespace YsrisCoreLibrary.Controllers
         protected readonly IHostingEnvironment _env;
         protected readonly ILogger<AbstractCustomerController> _myLogger;
         protected readonly SessionHelperService _sessionHelperInstance;
+        public readonly IStorageService _storageService;
 
         protected AbstractCustomerDal _dal;
 
@@ -38,13 +40,15 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="env"></param>
         /// <param name="mailHelperService"></param>
         public AbstractCustomerController(SessionHelperService sessionHelper,
-            ILogger<AbstractCustomerController> logger, IHostingEnvironment env, MailHelperService mailHelperService)
+            ILogger<AbstractCustomerController> logger, IHostingEnvironment env,
+            MailHelperService mailHelperService, IStorageService storageService)
         {
             _sessionHelperInstance = sessionHelper;
             _myLogger = logger;
             _env = env;
-            _mailHelperService = mailHelperService;   
-            _dal = new CustomerDal();         
+            _mailHelperService = mailHelperService;
+            _storageService = storageService;
+            _dal = new CustomerDal();
         }
 
         /// <summary>
@@ -87,7 +91,7 @@ namespace YsrisCoreLibrary.Controllers
                 case "Business":
                     rolesList.Add(Role.Business);
                     customerType = Role.Business;
-                    break;                    
+                    break;
             }
 
             var entity = new Customer(values)
@@ -116,7 +120,7 @@ namespace YsrisCoreLibrary.Controllers
                     {"FirstName", entity.firstName},
                     {
                         "ActivationUrl",
-                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/activation/Activate?username={entity.email}&activationCode={entity.activationCode}"
+                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/customer/activate?username={entity.email}&activationCode={entity.activationCode}"
                     }
                 }
             );
@@ -132,13 +136,10 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize]
         public virtual object UploadAvatar(IFormFile file)
         {
-            if (!HttpContext.Request.Form.Files.Any())
-                return null;
+            _myLogger.LogInformation($"+ UploadAvatar file={file}");
 
-            //var fullPath = FileSystemHelper.SaveTo(buffer, $"/uploads/avatars/full");
-            //var smallPath = FileSystemHelper.SaveTo(buffer, $"/uploads/avatars/small", 150, 150);
-            var largePath = $"/uploads/avatars/large/{_sessionHelperInstance.User.id}.jpg";
-            FileSystemHelper.SavePictureTo(file, largePath, 1000, 800);
+            var largePath = $"/avatars/large/{_sessionHelperInstance.User.id}.jpg";
+            _storageService.SavePictureTo(file, largePath, 1000, 800);
 
             var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
             entity.picture = largePath;
@@ -243,7 +244,7 @@ namespace YsrisCoreLibrary.Controllers
                 return File(System.IO.File.ReadAllBytes(path), "image/png");
             }
 
-            return File(FileSystemHelper.GetFileContent(smallUri).Result.ToArray(), "image/jpeg");
+            return File(_storageService.GetFileContent(smallUri).Result.ToArray(), "image/jpeg");
         }
 
         /// <summary>
@@ -261,7 +262,7 @@ namespace YsrisCoreLibrary.Controllers
                 var path = Path.Combine(_env.WebRootPath, "bobos_components\\assets\\images\\profile-placeholder.png");
                 return File(System.IO.File.ReadAllBytes(path), "image/png");
             }
-            return File(FileSystemHelper.GetFileContent(smallUri).Result.ToArray(), "image/jpeg");
+            return File(_storageService.GetFileContent(smallUri).Result.ToArray(), "image/jpeg");
 
         }
 
@@ -277,10 +278,30 @@ namespace YsrisCoreLibrary.Controllers
             _dal.SafeRemove(entity, _sessionHelperInstance.User.id);
         }
 
-        [HttpGet("hello")]
-        public string HelloWorld()
+        /// Now, ovverride of activate method is mandatory to simplify modification
+        public virtual IActionResult Activate(CustomerStatus sucessActivationStatus = CustomerStatus.Activated)
         {
-            return $"HelloWorld {_sessionHelperInstance.ConnectedClientProjectCode}";
+            var activatioNCode = Request.Query["activationCode"];
+            var username = Request.Query["username"];
+
+            var entity = _dal.Get(username, 0);
+
+            switch (entity.accountStatus)
+            {
+                case CustomerStatus.PendingActivationWithoutPasswordChange:
+                    if (entity.activationCode == activatioNCode)
+                    {
+                        entity.activationCode = null;
+                        entity.accountStatus = sucessActivationStatus;
+                        _dal.AddOrUpdate(entity, 0);
+                        _myLogger.LogDebug(
+                            $"++ Updatied entity AccountStatus from {CustomerStatus.PendingActivationWithoutPasswordChange} to {entity.accountStatus}");
+                        return Redirect("/#!/signin/activationsucceeded");
+                    }
+                    return Content("Activation error");
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

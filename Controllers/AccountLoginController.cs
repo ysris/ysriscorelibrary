@@ -17,6 +17,7 @@ using YsrisCoreLibrary.Helpers;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Services;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication;
 
 namespace YsrisCoreLibrary.Controllers
 {
@@ -61,7 +62,10 @@ namespace YsrisCoreLibrary.Controllers
                     claims.Add(new Claim(ClaimTypes.Role, cur));
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
 
-            await HttpContext.Authentication.SignInAsync("MyCookieMiddlewareInstance", principal);
+            // await HttpContext.Authentication.SignInAsync("MyCookieMiddlewareInstance", principal);
+            await HttpContext.SignInAsync("MyCookieAuthenticationScheme", principal);
+
+
 
 
             SessionHelperInstance.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(fullEntity));
@@ -73,7 +77,7 @@ namespace YsrisCoreLibrary.Controllers
         [HttpPost("Logout")]
         public async void Logout()
         {
-            await HttpContext.Authentication.SignOutAsync("MyCookieMiddlewareInstance");
+            await HttpContext.SignOutAsync("MyCookieAuthenticationScheme");
         }
 
         [HttpPost("recover")]
