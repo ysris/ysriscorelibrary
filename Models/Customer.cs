@@ -142,24 +142,29 @@ namespace YsrisCoreLibrary.Models
         /// </summary>
         [DataMember]
         [CheckBoxList]
+        [NotMapped]
         public List<CustomerHasModule> menuItemsFullList { get; set; }
 
         /// <summary>
         /// User for listbox callback
         /// </summary>
         [DataMember]
+        [NotMapped]
         public List<string> checkBoxListSelectedValues { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         [DataMember]
+        [NotMapped]
         public List<CustomerHasModule> userRights { get; set; }
 
         [DataMember]
+        [NotMapped]
         public virtual string prettyName => !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName)) ? $"{lastName} {firstName}" : email;
 
         [DataMember]
+        [NotMapped]
         public List<Role> roles => !string.IsNullOrEmpty(rolesString) ? rolesString.Split(',').Select(b => (Role)Enum.Parse(typeof(Role), b)).ToList() : null;
 
 
@@ -168,6 +173,7 @@ namespace YsrisCoreLibrary.Models
 
 
         [DataMember]
+        [NotMapped]
         public bool isCustomerProfileComplete =>
             firstName != null
             && lastName != null

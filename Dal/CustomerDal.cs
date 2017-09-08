@@ -11,9 +11,11 @@ namespace YsrisCoreLibrary.Dal
 {
     public class CustomerDal : AbstractCustomerDal
     {
+        
+
         public override Tuple<int, string> Get(string userName, string passsword, string tableName = "Customer")
         {
-            using (var conn = _getConnection(ConnectionString))
+            using (var conn = _getConnection(ConfigurationHelper.ConnectionString))
             {
                 conn.Open();
                 var sql = $"SELECT id, email FROM {tableName} WHERE email='{userName}' AND password='{new EncryptionHelper().GetHash(passsword)}' AND AccountStatus='Activated' AND DeletionDate IS NULL";

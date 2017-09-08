@@ -27,7 +27,7 @@ namespace YsrisCoreLibrary.Dal
         /// <summary>
         /// The connection string used in this context
         /// </summary>
-        protected virtual string ConnectionString { get; }
+        public virtual string ConnectionString { get; }
 
         public IDbConnection _getConnection(string connString) =>
             ConfigurationHelper.ConnectionType == "MySql"
@@ -225,11 +225,16 @@ namespace YsrisCoreLibrary.Dal
             }
         }
 
-        //public virtual void AddOrUpdate(IEnumerable<T> entities, int userId)
-        //{
-        //    if (!entities.Any())
-        //        return;
+        public virtual void AddOrUpdate(IEnumerable<T> entities, int userId)
+        {
+            if (!entities.Any())
+                return;
 
+            foreach (var cur in entities)
+            {
+                AddOrUpdate(cur, userId);
+            }
+        }
         //    var partititioned = entities.Partitionate<T>(partitionSize: 500);
 
 
