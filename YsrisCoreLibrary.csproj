@@ -16,6 +16,7 @@
     <PackageReference Include="ImageSharp" Version="1.0.0-alpha6-00066" />
     <PackageReference Include="MailKit" Version="1.16.1" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="2.0.2" />
     <PackageReference Include="MySqlConnector" Version="0.24.0" />
     <PackageReference Include="OAuth.DotNetCore" Version="1.0.4" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="1.0.1" />

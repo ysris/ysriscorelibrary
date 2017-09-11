@@ -13,7 +13,6 @@ using YsrisCoreLibrary.Attributes;
 using YsrisCoreLibrary.Enums;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Models.Abstract;
-using YsrisSaas2.Models;
 
 namespace YsrisCoreLibrary.Models
 {
@@ -105,9 +104,6 @@ namespace YsrisCoreLibrary.Models
         [JsonIgnore]
         public string password { get; set; }
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
         //[DataMember]
         //[NotMapped]
         //public string passwordForTyping { get; set; }
@@ -122,10 +118,10 @@ namespace YsrisCoreLibrary.Models
         public string activationCode { get; set; }
 
         [DataMember]
-        public Role customerType { get; set; }
+        public string customerType { get; set; }
 
         [DataMember]
-        public CustomerStatus accountStatus { get; set; }
+        public string accountStatus { get; set; }
 
         [DataMember]
         public DateTime? recoverAskDate { get; set; }
@@ -137,52 +133,17 @@ namespace YsrisCoreLibrary.Models
         public PostalAddress customerMainAdress { get; set; }
 
 
-        /// <summary>
-        /// Contains the full list of controller/actions assignable to the user
-        /// </summary>
-        [DataMember]
-        [CheckBoxList]
-        [NotMapped]
-        public List<CustomerHasModule> menuItemsFullList { get; set; }
-
-        /// <summary>
-        /// User for listbox callback
-        /// </summary>
-        [DataMember]
-        [NotMapped]
-        public List<string> checkBoxListSelectedValues { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [DataMember]
-        [NotMapped]
-        public List<CustomerHasModule> userRights { get; set; }
-
         [DataMember]
         [NotMapped]
         public virtual string prettyName => !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName)) ? $"{lastName} {firstName}" : email;
 
         [DataMember]
         [NotMapped]
-        public List<Role> roles => !string.IsNullOrEmpty(rolesString) ? rolesString.Split(',').Select(b => (Role)Enum.Parse(typeof(Role), b)).ToList() : null;
+        public List<string> roles => !string.IsNullOrEmpty(rolesString) ? rolesString.Split(',').ToList() : null;
 
 
 
         public override string ToString() => string.Join(", ", this.GetType().GetProperties().Select(a => string.Concat(a.Name, '=', this.GetType().GetProperty(a.Name).GetValue(this))));
-
-
-        [DataMember]
-        [NotMapped]
-        public bool isCustomerProfileComplete =>
-            firstName != null
-            && lastName != null
-            && customerMainAdress?.adrCity != null
-            && customerMainAdress?.adrPostalCode != null
-            && customerMainAdress?.adrLine1 != null
-            && customerMainAdress?.adrCountry != null;
-
-
 
     }
 }

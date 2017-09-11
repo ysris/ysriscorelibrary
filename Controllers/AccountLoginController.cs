@@ -38,13 +38,7 @@ namespace YsrisCoreLibrary.Controllers
             Env = env;
             mailHelperService = _mailHelperService;
         }
-
-        [HttpGet("Login")]
-        public string Login()
-        {
-            return "FUU";
-        }
-
+        
         [HttpPost("Login")]
         public async Task<Customer> Login([FromBody] dynamic values)
         {

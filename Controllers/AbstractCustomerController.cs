@@ -13,9 +13,12 @@ using YsrisCoreLibrary.Enums;
 using YsrisCoreLibrary.Helpers;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Services;
-using YsrisSaas2.Models;
 using YsrisCoreLibrary.Abstract;
 using ysriscorelibrary.Interfaces;
+using YsrisSaas2.Enums;
+using System.Threading.Tasks;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
 
 namespace YsrisCoreLibrary.Controllers
 {
@@ -51,6 +54,112 @@ namespace YsrisCoreLibrary.Controllers
             _dal = new CustomerDal();
         }
 
+        [HttpPost("Login")]
+        public async Task<Customer> Login([FromBody] dynamic values)
+        {
+            var entity = _dal.Get((string)values.username.ToString(), (string)values.password.ToString());
+
+            if (entity == null)
+                throw new Exception("UnknownUser");
+
+            var fullEntity = _dal.Get((int)entity.Item1, (int)entity.Item1);
+            //fullEntity.MenuItems = new CustomerModuleDal().ListModules(fullEntity, entity.Item1 ).Select(a => new MenuItem { }).ToList();
+
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, entity.Item2) };
+            if (!string.IsNullOrEmpty(fullEntity.rolesString))
+                foreach (var cur in fullEntity.rolesString.Split(',').Select(a => a.Trim()))
+                    claims.Add(new Claim(ClaimTypes.Role, cur));
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
+
+            // await HttpContext.Authentication.SignInAsync("MyCookieMiddlewareInstance", principal);
+            await HttpContext.SignInAsync("MyCookieAuthenticationScheme", principal);
+
+
+
+
+            _sessionHelperInstance.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(fullEntity));
+
+
+            return fullEntity;
+        }
+
+        [HttpPost("Logout")]
+        public async void Logout()
+        {
+            await HttpContext.SignOutAsync("MyCookieAuthenticationScheme");
+        }
+
+        [HttpPost("recover")]
+        [AllowAnonymous]
+        public void Recover([FromBody]dynamic obj)
+        {
+            string email = obj?.email;
+            if (email == null)
+                throw new Exception("incorrect parameters specified");
+
+            var entity = _dal.Get(email, 0);
+            entity.activationCode = Guid.NewGuid().ToString();
+            entity.recoverAskDate = DateTime.Now;
+            entity.accountStatus = CustomerStatus.PendingActivationWithPasswordChange;
+
+            _dal.AddOrUpdate(entity, 0);
+
+            _mailHelperService.SendMail(
+                entity.email,
+                subject: "Password recover",
+                templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordReset.cshtml",
+                mailViewBag:
+                new Dictionary<string, string>
+                {
+                    {"UserFirstName", entity.firstName},
+                    {
+                        "RecoverUrl",
+                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/passwordrecover2/{entity.email}/{entity.activationCode}"
+                    }
+                }
+            );
+        }
+
+        [HttpPost]
+        [Route("recover2")]
+        [AllowAnonymous]
+        public void Recover2([FromBody]dynamic obj)
+        {
+            string
+                email = obj.email,
+                activationCode = obj.activationCode,
+                password = obj.password;
+
+            var entity = _dal.Get(email, 0);
+            if (entity == null || entity.activationCode == null || entity.recoverAskDate == null)
+                throw new Exception("BadRequest");
+
+            if (activationCode == entity.activationCode && (DateTime.Now - (DateTime)entity.recoverAskDate).Minutes <= 10)
+            {
+                entity.activationCode = null;
+                entity.recoverAskDate = null;
+                entity.password = new EncryptionHelper().GetHash(password);
+                entity.accountStatus = CustomerStatus.Activated;
+                _dal.AddOrUpdate(entity, 0);
+
+                _mailHelperService.SendMail(
+                    entity.email,
+                    subject: "Password recover",
+                    templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordResetConfirmation.cshtml",
+                    mailViewBag:
+                    new Dictionary<string, string>
+                    {
+                        {"UserFirstName", entity.firstName},
+                        //{
+                        //    "RecoverUrl",
+                        //    $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/signin"
+                        //}
+                    }
+                );
+            }
+        }
+
+
         /// <summary>
         /// account creation action
         /// </summary>
@@ -68,8 +177,8 @@ namespace YsrisCoreLibrary.Controllers
             if (test.Any())
                 throw new Exception("Already assigned email");
 
-            var rolesList = new List<Role>();
-            Role customerType = Role.User;
+            var rolesList = new List<string>();
+            string customerType = Role.User;
             switch ((string)values.UserType.ToString())
             {
                 case "Coach":
@@ -267,7 +376,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         /// Now, ovverride of activate method is mandatory to simplify modification
-        public virtual IActionResult Activate(CustomerStatus sucessActivationStatus = CustomerStatus.Activated)
+        public virtual IActionResult Activate(string sucessActivationStatus = CustomerStatus.Activated)
         {
             var activatioNCode = Request.Query["activationCode"];
             var username = Request.Query["username"];

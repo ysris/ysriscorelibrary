@@ -8,7 +8,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using YsrisCoreLibrary.Models;
-using YsrisSaas2.Models;
 
 namespace YsrisCoreLibrary.Abstract
 {

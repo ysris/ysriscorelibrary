@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YsrisCoreLibrary.Models;
-using YsrisSaas2.Models;
 
 namespace YsrisCoreLibrary.Services
 {

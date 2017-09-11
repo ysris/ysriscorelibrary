@@ -26,7 +26,7 @@ namespace YsrisCoreLibrary.Dal
 
         public abstract Tuple<int, string> Get(string userName, string passsword, string tableName = "Customer");
 
-        public Customer UpdateStatus(int customerId, CustomerStatus status, int connectedUserId)
+        public Customer UpdateStatus(int customerId, string status, int connectedUserId)
         {
             var entity = Get(customerId, connectedUserId);
             entity.accountStatus = status;
