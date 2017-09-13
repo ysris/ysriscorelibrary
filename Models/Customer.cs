@@ -13,11 +13,12 @@ using YsrisCoreLibrary.Attributes;
 using YsrisCoreLibrary.Enums;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Models.Abstract;
+using ysriscorelibrary.Interfaces;
 
 namespace YsrisCoreLibrary.Models
 {
     [DataContract]
-    public class Customer : AbstractEntity
+    public class Customer : AbstractEntity, IAbstractEntity
     {
         public Customer()
         {
@@ -135,7 +136,8 @@ namespace YsrisCoreLibrary.Models
 
         [DataMember]
         [NotMapped]
-        public virtual string prettyName => !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName)) ? $"{lastName} {firstName}" : email;
+        public virtual string prettyName => !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName)) ? $"{firstName} {lastName}" : email;
+        
 
         [DataMember]
         [NotMapped]
@@ -143,7 +145,15 @@ namespace YsrisCoreLibrary.Models
 
 
 
-        public override string ToString() => string.Join(", ", this.GetType().GetProperties().Select(a => string.Concat(a.Name, '=', this.GetType().GetProperty(a.Name).GetValue(this))));
+        //public override string ToString() => string.Join(", ", this.GetType().GetProperties().Select(a => string.Concat(a.Name, '=', this.GetType().GetProperty(a.Name).GetValue(this))));
 
+
+        [DataMember]
+        [NotMapped]
+        public List<object> entityModel { get; set; } =
+            new List<object>
+            {
+                // new { name = "clientId",type="select"},
+            };
     }
 }

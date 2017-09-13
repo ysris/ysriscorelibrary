@@ -8,42 +8,123 @@ using System;
 using System.Linq;
 using System.Reflection;
 using YsrisCoreLibrary.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using ysriscorelibrary.Interfaces;
 
 namespace YsrisCoreLibrary.Abstract
 {
-    public class AbstractController : Controller
+    public class AbstractController<T> : Controller where T : class, IAbstractEntity, new()
     {
-        //public override void OnActionExecuting(ActionExecutingContext context)
-        //{
-        //    //Manage user access here
+        protected readonly DbContext _context;
 
-        //    var area = context.Controller.GetType().GetTypeInfo().GetCustomAttributes(typeof(AreaAttribute)).Select(b => ((AreaAttribute)b).RouteValue).SingleOrDefault() ?? "";
-        //    var controller = context.Controller.GetType().Name.ToString();
-        //    var action = ((dynamic)context.ActionDescriptor).ActionName;
-        //    var httpMethod = "Http" + context.HttpContext.Request.Method.ToString();            
+        public AbstractController(DbContext context)
+        {
+            _context = context;
+        }
 
-        //    var actionDecorators = ((ControllerActionDescriptor)context.ActionDescriptor).MethodInfo.GetCustomAttribute(typeof(AuthorizeAttribute));
+        [HttpGet]
+        public virtual IEnumerable<T> Get()
+        {
+            return _context.Set<T>();
+        }
 
-        //    if (actionDecorators != null)
-        //    {
-        //        var userEntity = JsonConvert.DeserializeObject<Customer>(context.HttpContext.Session.GetString("UserEntity"));
+        [HttpGet("empty")]
+        public virtual T GetEmpty()
+        {
+            return new T();
+        }
 
-        //        var correspondingSet =
-        //            from x in userEntity.userRights
-        //            where x.areaName == area
-        //            where x.controllerName == controller
-        //            where x.actionName == action
-        //            where x.httpMethod.ToLower() == httpMethod.ToLower()
-        //            select x;
+        [HttpGet("{id}")]
+        public virtual async Task<IActionResult> GetClient([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-        //        //TODO : Review
-        //        if (correspondingSet.Count() != 1 && !userEntity.roles.Contains(Role.Administrator))
-        //        {
-        //            throw new Exception("User doesn't have the access  right to this resource");
-        //        }
-        //    }
+            var client = await _context.Set<T>().FindAsync(id);
 
-        //    base.OnActionExecuting(context);
-        //}
+            if (client == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(client);
+        }
+
+        [HttpPut("{id}")]
+        public virtual async Task<IActionResult> PutClient([FromRoute] int id, [FromBody] T client)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // if (id != client.id)
+            // {
+            //     return BadRequest();
+            // }
+
+            _context.Entry(client).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ClientExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> PostClient([FromBody] T client)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _context.Set<T>().Add(client);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetClient", new { id = client.id }, client);
+        }
+
+        [HttpDelete("{id}")]
+        public virtual async Task<IActionResult> DeleteClient([FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var client = await _context.Set<T>().FindAsync(id);
+            if (client == null)
+            {
+                return NotFound();
+            }
+
+            _context.Set<T>().Remove(client);
+            await _context.SaveChangesAsync();
+
+            return Ok(client);
+        }
+
+        protected virtual bool ClientExists(int id)
+        {
+            return _context.Set<T>().Find(id) != null;
+        }
     }
 }

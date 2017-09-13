@@ -25,7 +25,7 @@ namespace YsrisCoreLibrary.Controllers
     /// <summary>
     /// Default customer management
     /// </summary>
-    public abstract class AbstractCustomerController : AbstractController
+    public abstract class AbstractCustomerController : Controller
     {
         protected readonly MailHelperService _mailHelperService;
         protected readonly IHostingEnvironment _env;
@@ -340,8 +340,12 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize]
         public virtual IActionResult GetAvatar()
         {
-            var smallUri = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id).picture;
-            return File(_storageService.GetFileContent(smallUri).Result.ToArray(), "image/jpeg");
+            if (_sessionHelperInstance.User != null)
+            {
+                var smallUri = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id).picture;
+                return File(_storageService.GetFileContent(smallUri).Result.ToArray(), "image/jpeg");
+            }
+            return null;
         }
 
         /// <summary>

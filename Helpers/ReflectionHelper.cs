@@ -70,9 +70,9 @@ namespace YsrisCoreLibrary.Helpers
                 from x in oneTypeOfThessembly.GetTypeInfo().Assembly.GetTypes()
                 where (
                 x.GetTypeInfo().BaseType.Equals(typeof(Controller))
-                || x.GetTypeInfo().BaseType.Equals(typeof(AbstractController))
+                || x.GetTypeInfo().BaseType.Equals(typeof(Controller))
                 )
-                where !x.Equals(typeof(AbstractController))
+                where !x.Equals(typeof(Controller))
                 select x;
 
             var qry =

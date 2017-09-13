@@ -3,7 +3,7 @@ using YsrisCoreLibrary.Abstract;
 
 namespace YsrisCoreLibrary.Controllers
 {
-    public class HomeController : AbstractController
+    public class HomeController : Controller
     {
         [HttpGet]
         //[Authorize]
