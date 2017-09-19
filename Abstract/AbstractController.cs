@@ -18,6 +18,8 @@ namespace YsrisCoreLibrary.Abstract
     public class AbstractController<T> : Controller where T : class, IAbstractEntity, new()
     {
         protected readonly DbContext _context;
+        
+        protected List<object> _entityModel;
 
         public AbstractController(DbContext context)
         {
@@ -33,11 +35,12 @@ namespace YsrisCoreLibrary.Abstract
         [HttpGet("empty")]
         public virtual T GetEmpty()
         {
-            return new T();
+            var entity = new T { entityModel = _entityModel };
+            return entity;
         }
 
         [HttpGet("{id}")]
-        public virtual async Task<IActionResult> GetClient([FromRoute] int id)
+        public virtual async Task<IActionResult> Get([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
@@ -45,6 +48,7 @@ namespace YsrisCoreLibrary.Abstract
             }
 
             var client = await _context.Set<T>().FindAsync(id);
+            client.entityModel = _entityModel;
 
             if (client == null)
             {
@@ -55,7 +59,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpPut("{id}")]
-        public virtual async Task<IActionResult> PutClient([FromRoute] int id, [FromBody] T client)
+        public virtual async Task<IActionResult> Put([FromRoute] int id, [FromBody] T client)
         {
             if (!ModelState.IsValid)
             {
@@ -89,7 +93,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> PostClient([FromBody] T client)
+        public virtual async Task<IActionResult> Post([FromBody] T client)
         {
             if (!ModelState.IsValid)
             {
@@ -99,11 +103,11 @@ namespace YsrisCoreLibrary.Abstract
             _context.Set<T>().Add(client);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetClient", new { id = client.id }, client);
+            return CreatedAtAction("Get", new { id = client.id }, client);
         }
 
         [HttpDelete("{id}")]
-        public virtual async Task<IActionResult> DeleteClient([FromRoute] int id)
+        public virtual async Task<IActionResult> Delete([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {

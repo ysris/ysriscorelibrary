@@ -150,7 +150,7 @@ namespace YsrisCoreLibrary.Models
 
         [DataMember]
         [NotMapped]
-        public List<object> entityModel { get; set; } =
+        public virtual List<object> entityModel { get; set; } =
             new List<object>
             {
                 // new { name = "clientId",type="select"},
