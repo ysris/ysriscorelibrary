@@ -7,9 +7,6 @@ namespace YsrisCoreLibrary.Controllers
     {
         [HttpGet]
         //[Authorize]
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
     }
 }

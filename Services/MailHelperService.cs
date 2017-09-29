@@ -13,20 +13,21 @@ using Microsoft.Extensions.Logging;
 using MimeKit;
 using YsrisCoreLibrary.Extensions;
 using YsrisCoreLibrary.Helpers;
+using Microsoft.Extensions.Configuration;
 
 namespace YsrisCoreLibrary.Services
 {
     public class MailHelperService
     {
-        private SessionHelperService SessionHelperInstance;
         private ILogger<MailHelperService> MyLogger;
         private IHostingEnvironment Env;
+        private readonly IConfiguration _conf;
 
-        public MailHelperService(SessionHelperService sessionHelper, ILogger<MailHelperService> logger, IHostingEnvironment env)
+        public MailHelperService(ILogger<MailHelperService> logger, IHostingEnvironment env, IConfiguration conf)
         {
-            SessionHelperInstance = sessionHelper;
             MyLogger = logger;
             Env = env;
+            _conf = conf;
         }
 
         bool CustomCertificateValidationCallback(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
@@ -44,14 +45,13 @@ namespace YsrisCoreLibrary.Services
         public void SendMail(string from, string to, string subject, string htmlMsg)
         {
             MyLogger.LogInformation($"+MailHelper:SendMail(from:'{from}', to:'{to}', subject:'{subject}', htmlMsg:'{htmlMsg.Replace(Environment.NewLine, string.Empty)}')");
-
-            var smtpServerDns = ConfigurationHelper.SmtpServer;
+            var smtpServerDns = _conf.GetValue<string>("Data:SmtpServer");
             var SmtpServer = new SmtpClient();
             SmtpServer.ServerCertificateValidationCallback = CustomCertificateValidationCallback;
-            SmtpServer.Connect(smtpServerDns, Convert.ToInt32(ConfigurationHelper.SmtpPort), Convert.ToBoolean(ConfigurationHelper.SmtpEnableSsl) ? SecureSocketOptions.Auto : SecureSocketOptions.None);
-            if (!string.IsNullOrEmpty(ConfigurationHelper.SmtpLogin))
+            SmtpServer.Connect(smtpServerDns, Convert.ToInt32(_conf.GetValue<string>("Data:SmtpPort")), Convert.ToBoolean(_conf.GetValue<string>("Data:SmtpEnableSsl")) ? SecureSocketOptions.Auto : SecureSocketOptions.None);
+            if (!string.IsNullOrEmpty(_conf.GetValue<string>("Data:SmtpLogin")))
             {
-                SmtpServer.Authenticate(ConfigurationHelper.SmtpLogin, ConfigurationHelper.SmtpPassword);
+                SmtpServer.Authenticate(_conf.GetValue<string>("Data:SmtpLogin"), _conf.GetValue<string>("Data:SmtpPassword"));
             }
 
             //EnableSsl = true;
@@ -70,7 +70,7 @@ namespace YsrisCoreLibrary.Services
 
         public void SendMail(string to, string templateUri, string subject, Dictionary<string, string> mailViewBag)
         {
-            string from = ConfigurationHelper.SmtpLogin;
+            string from = _conf.GetValue<string>("Data:SmtpLogin");
             var htmlContent = File.ReadAllText(templateUri);
             mailViewBag.ForEach(a => htmlContent = htmlContent.Replace($"**{a.Key}**", a.Value));
             SendMail(from, to, subject, htmlContent);
