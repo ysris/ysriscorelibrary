@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.WindowsAzure.Storage.Blob;
+using System;
 
 namespace ysriscorelibrary.Interfaces
 {
@@ -12,7 +13,7 @@ namespace ysriscorelibrary.Interfaces
         void SaveFileTo(IFormFile postedFile, string fullPath);
         void SaveFileTo(MemoryStream postedFile2, string fullPath);
         Task<MemoryStream> GetFileContent(string fullPath);
-        IEnumerable<IListBlobItem> ListBlobs(CloudBlobDirectory container);
+        IEnumerable<Uri> ListFiles(string baseDirectory);
 
     }
 }

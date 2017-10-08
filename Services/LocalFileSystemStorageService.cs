@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using ysriscorelibrary.Interfaces;
+using System;
+using System.Linq;
 
 namespace YsrisCoreLibrary.Services
 {
@@ -24,35 +26,39 @@ namespace YsrisCoreLibrary.Services
             Env = env;
         }
 
-        public void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null, int? height = null)
+        public void SavePictureTo(IFormFile postedFile, string fullPath, int? width, int? height)
         {
-            var postedFile2 = new MemoryStream();
-            postedFile.CopyTo(postedFile2);
+            var fileInfo = Env.WebRootFileProvider.GetFileInfo(new Uri(Env.ContentRootPath + "/uploads/" + fullPath.TrimStart('/')).LocalPath);
 
-            var img = Image.Load(postedFile2.ToArray());
-            if (width != null && height != null)
-                img.Resize((int)width, (int)height);
+            var outputStream = new MemoryStream();
+            var inputstream = new MemoryStream();
+            postedFile.CopyToAsync(inputstream);
+            inputstream.Seek(0, SeekOrigin.Begin);
 
-            img.SaveAsJpeg(postedFile2);
+            //using (var inputStream = fileInfo.CreateReadStream())
+            using (var image = Image.Load(inputstream))
+            {
+                image
+                    .Crop((int)width, (int)height)
+                    .SaveAsJpeg(outputStream);
+            }
+            outputStream.Seek(0, SeekOrigin.Begin);
 
-            // Upload the picture to blob
-            SaveFileTo(postedFile2, fullPath);
+
+            SaveFileTo(outputStream, fullPath.TrimStart('/'));
+
         }
         public void SaveFileTo(IFormFile postedFile, string fullPath)
         {
             var postedFile2 = new MemoryStream();
             postedFile.CopyTo(postedFile2);
 
-            SaveFileTo(postedFile2, fullPath);
+            SaveFileTo(postedFile2, fullPath.TrimStart('/'));
         }
 
         public void SaveFileTo(MemoryStream postedFile2, string fullPath)
         {
-            fullPath =
-                    Env.ContentRootPath
-                    + ConfigurationHelper.StorageContainerName
-                    + "/"
-                    + fullPath.TrimStart('/');
+            fullPath = Env.ContentRootPath + "/uploads/" + fullPath.TrimStart('/');
 
             MyLogger.LogInformation($"fullPath=" + fullPath);
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
@@ -70,12 +76,8 @@ namespace YsrisCoreLibrary.Services
             if (fullPath == null)
                 return null;
 
-            fullPath =
-                    Env.ContentRootPath
-                    + ConfigurationHelper.StorageContainerName
-                    + "/"
-                    + fullPath.TrimStart('/');
-
+            
+            fullPath = Env.ContentRootPath + "/uploads/" + fullPath.TrimStart('/');
 
 			using (MemoryStream ms = new MemoryStream())
 			using (FileStream file = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
@@ -87,18 +89,10 @@ namespace YsrisCoreLibrary.Services
 
         }
 
-        public IEnumerable<IListBlobItem> ListBlobs(CloudBlobDirectory container)
+        public IEnumerable<Uri> ListFiles(string directory)
         {
-            BlobContinuationToken continuationToken = null;
-            List<IListBlobItem> results = new List<IListBlobItem>();
-            do
-            {
-                var response = container.ListBlobsSegmentedAsync(continuationToken).Result;
-                continuationToken = response.ContinuationToken;
-                results.AddRange(response.Results);
-            }
-            while (continuationToken != null);
-            return results;
+            directory = "/uploads/" + directory.TrimStart('/');
+            return Directory.GetFiles(directory).Select(a => new Uri(a));
         }
     }
 }

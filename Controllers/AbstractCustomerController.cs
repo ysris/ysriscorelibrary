@@ -244,10 +244,13 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize]
         public virtual object UploadAvatar(IFormFile file)
         {
+            var x = _sessionHelperInstance.User.id;
+
+
             _myLogger.LogInformation($"+ UploadAvatar file={file}");
 
             var largePath = $"/avatars/large/{_sessionHelperInstance.User.id}.jpg";
-            _storageService.SavePictureTo(file, largePath, 1000, 800);
+            _storageService.SavePictureTo(file, largePath, 300, 300);
 
             var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
             entity.picture = largePath;
@@ -284,9 +287,8 @@ namespace YsrisCoreLibrary.Controllers
                     entity.password = new EncryptionHelper().GetHash(values.passwordForTyping.ToString());
                 }
 
-            entity.id = (int)_dal.AddOrUpdate(entity, _sessionHelperInstance.User.id);
-            _sessionHelperInstance.HttpContext.Session.SetString("UserEntity",
-                (string)JsonConvert.SerializeObject(entity));
+            _dal.AddOrUpdate(entity, _sessionHelperInstance.User.id);
+            _sessionHelperInstance.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
 
             return entity;
         }
@@ -341,7 +343,10 @@ namespace YsrisCoreLibrary.Controllers
             if (_sessionHelperInstance.User != null)
             {
                 var smallUri = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id).picture;
-                return File(_storageService.GetFileContent(smallUri).Result.ToArray(), "image/jpeg");
+                var result = _storageService.GetFileContent(smallUri)?.Result?.ToArray();
+                if (result == null)
+                    return null;
+                return File(result, "image/jpeg");
             }
             return null;
         }

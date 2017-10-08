@@ -110,18 +110,22 @@ namespace YsrisCoreLibrary.Services
             }
         }
 
-        public IEnumerable<IListBlobItem> ListBlobs(CloudBlobDirectory container)
+        public IEnumerable<Uri> ListFiles(string directory)
         {
+            var storageAccount = CloudStorageAccount.Parse(ConfigurationHelper.BlobStorageConnectionString);
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var blockBlob = blobClient.GetContainerReference("inoutdata").GetDirectoryReference(directory);
             BlobContinuationToken continuationToken = null;
             List<IListBlobItem> results = new List<IListBlobItem>();
             do
             {
-                var response = container.ListBlobsSegmentedAsync(continuationToken).Result;
+                var response = blockBlob.ListBlobsSegmentedAsync(continuationToken).Result;
                 continuationToken = response.ContinuationToken;
                 results.AddRange(response.Results);
             }
             while (continuationToken != null);
-            return results;
+            return results.Select(a => a.Uri);
         }
+
     }
 }
