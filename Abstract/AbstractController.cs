@@ -35,7 +35,9 @@ namespace YsrisCoreLibrary.Abstract
         [HttpGet("empty")]
         public virtual T GetEmpty()
         {
-            var entity = new T { entityModel = _entityModel };
+            var entity = new T { };
+            if (_entityModel != null)
+                entity.entityModel = _entityModel;
             return entity;
         }
 
@@ -43,19 +45,16 @@ namespace YsrisCoreLibrary.Abstract
         public virtual async Task<IActionResult> Get([FromRoute] int id)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            var client = await _context.Set<T>().FindAsync(id);
-            client.entityModel = _entityModel;
+            var entity = await _context.Set<T>().FindAsync(id);
+            if (_entityModel != null)
+                entity.entityModel = _entityModel;
 
-            if (client == null)
-            {
+            if (entity == null)
                 return NotFound();
-            }
 
-            return Ok(client);
+            return Ok(entity);
         }
 
         [HttpPut("{id}")]
@@ -79,46 +78,36 @@ namespace YsrisCoreLibrary.Abstract
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ClientExists(id))
-                {
+                if (!EntityExists(id))
                     return NotFound();
-                }
                 else
-                {
                     throw;
-                }
             }
 
             return NoContent();
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> Post([FromBody] T client)
+        public virtual async Task<IActionResult> Post([FromBody] T entity)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            _context.Set<T>().Add(client);
+            _context.Set<T>().Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("Get", new { id = client.id }, client);
+            return CreatedAtAction("Get", new { id = entity.id }, entity);
         }
 
         [HttpDelete("{id}")]
         public virtual async Task<IActionResult> Delete([FromRoute] int id)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var client = await _context.Set<T>().FindAsync(id);
             if (client == null)
-            {
                 return NotFound();
-            }
 
             _context.Set<T>().Remove(client);
             await _context.SaveChangesAsync();
@@ -126,7 +115,7 @@ namespace YsrisCoreLibrary.Abstract
             return Ok(client);
         }
 
-        protected virtual bool ClientExists(int id)
+        protected virtual bool EntityExists(int id)
         {
             return _context.Set<T>().Find(id) != null;
         }
