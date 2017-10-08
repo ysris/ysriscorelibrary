@@ -213,7 +213,6 @@ namespace YsrisCoreLibrary.Controllers
                 id = 0
             };
             entity.password = new EncryptionHelper().GetHash(values.passwordForTyping.ToString()); //keep here for avoiding the model binding
-            entity.customerMainAdressId = (int)new PostalAddressDal().AddOrUpdate(entity.customerMainAdress ?? new PostalAddress(), 0);
             entity.companyId = 0;
             entity.id = (int)_dal.AddOrUpdate(entity, 0);
 
@@ -275,7 +274,6 @@ namespace YsrisCoreLibrary.Controllers
                 throw new Exception("Unauthorized");
 
 
-            entity.customerMainAdressId = (int)new PostalAddressDal().AddOrUpdate(entity.customerMainAdress ?? new PostalAddress(), 0);
 
             if (values.rawPasswordConfirm != null && values.passwordForTyping != null)
                 if (!string.IsNullOrEmpty(values.rawPasswordConfirm.ToString()) &&

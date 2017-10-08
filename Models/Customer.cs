@@ -39,7 +39,11 @@ namespace YsrisCoreLibrary.Models
             if (values.email != null) email = values.email;
             if (values.password != null) password = values.password;
             if (values.activationCode != null) activationCode = values.activationCode;
-            if (values.customerMainAdress != null) customerMainAdress = new PostalAddress(values.customerMainAdress);
+            if (values.adrLine1 != null) adrLine1 = values.adrLine1;
+            if (values.adrLine2 != null) adrLine2 = values.adrLine2;
+            if (values.adrPostalCode != null) adrPostalCode = values.adrPostalCode;
+            if (values.adrCity != null) adrCity = values.adrCity;
+            if (values.adrCountry != null) adrCountry = values.adrCountry;
         }
 
         /// <summary>
@@ -105,10 +109,6 @@ namespace YsrisCoreLibrary.Models
         [JsonIgnore]
         public string password { get; set; }
 
-        //[DataMember]
-        //[NotMapped]
-        //public string passwordForTyping { get; set; }
-
         /// <summary>
         /// 
         /// </summary>
@@ -127,25 +127,17 @@ namespace YsrisCoreLibrary.Models
         [DataMember]
         public DateTime? recoverAskDate { get; set; }
 
-
-        [DataMember]
-        public int? customerMainAdressId { get; set; }
-        [DataMember]
-        public PostalAddress customerMainAdress { get; set; }
-
-
-        [DataMember]
-        [NotMapped]
-        public virtual string prettyName => !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName)) ? $"{firstName} {lastName}" : email;
         
-
         [DataMember]
-        [NotMapped]
-        public List<string> roles => !string.IsNullOrEmpty(rolesString) ? rolesString.Split(',').ToList() : null;
-
-
-
-        //public override string ToString() => string.Join(", ", this.GetType().GetProperties().Select(a => string.Concat(a.Name, '=', this.GetType().GetProperty(a.Name).GetValue(this))));
+        public string adrLine1 { get; set; }
+        [DataMember]
+        public string adrLine2 { get; set; }
+        [DataMember]
+        public string adrPostalCode { get; set; }
+        [DataMember]
+        public string adrCity { get; set; }
+        [DataMember]
+        public string adrCountry { get; set; }
 
 
         [DataMember]
@@ -155,5 +147,13 @@ namespace YsrisCoreLibrary.Models
             {
                 // new { name = "clientId",type="select"},
             };
+
+        [DataMember]
+        [NotMapped]
+        public virtual string prettyName => !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName)) ? $"{firstName} {lastName}" : email;
+
+        [DataMember]
+        [NotMapped]
+        public List<string> roles => !string.IsNullOrEmpty(rolesString) ? rolesString.Split(',').ToList() : null;
     }
 }
