@@ -286,7 +286,7 @@ namespace YsrisCoreLibrary.Dal
             }
             try
             {
-                sql = $"UPDATE {tableName} SET DeletionDate=getdate() WHERE " + string.Join(" AND ", keyAsDictionary.Select(a => a.Key + "='" + a.Value + "'"));
+                sql = $"UPDATE {tableName} SET DeletionDate=now() WHERE " + string.Join(" AND ", keyAsDictionary.Select(a => a.Key + "='" + a.Value + "'"));
                 //LogHelper.Info<T>(sql + $" userId:{userId}");
                 using (var conn = _getConnection(ConnectionString))
                 {

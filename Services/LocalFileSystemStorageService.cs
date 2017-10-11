@@ -28,7 +28,6 @@ namespace YsrisCoreLibrary.Services
 
         public void SavePictureTo(IFormFile postedFile, string fullPath, int? width, int? height)
         {
-            var fileInfo = Env.WebRootFileProvider.GetFileInfo(new Uri(Env.ContentRootPath + "/uploads/" + fullPath.TrimStart('/')).LocalPath);
 
             var outputStream = new MemoryStream();
             var inputstream = new MemoryStream();
@@ -39,7 +38,7 @@ namespace YsrisCoreLibrary.Services
             using (var image = Image.Load(inputstream))
             {
                 image
-                    .Crop((int)width, (int)height)
+                    .Resize((int)width, (int)height)
                     .SaveAsJpeg(outputStream);
             }
             outputStream.Seek(0, SeekOrigin.Begin);
@@ -76,12 +75,12 @@ namespace YsrisCoreLibrary.Services
             if (fullPath == null)
                 return null;
 
-            
+
             fullPath = Env.ContentRootPath + "/uploads/" + fullPath.TrimStart('/');
 
-			using (MemoryStream ms = new MemoryStream())
-			using (FileStream file = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
-			{
+            using (MemoryStream ms = new MemoryStream())
+            using (FileStream file = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
+            {
 
                 file.CopyTo(ms);
                 return ms;
@@ -89,10 +88,17 @@ namespace YsrisCoreLibrary.Services
 
         }
 
-        public IEnumerable<Uri> ListFiles(string directory)
+        public IEnumerable<string> ListFiles(string directory)
         {
-            directory = "/uploads/" + directory.TrimStart('/');
-            return Directory.GetFiles(directory).Select(a => new Uri(a));
+            var basePath = Env.ContentRootPath + "/uploads/";
+            directory = basePath + directory.TrimStart('/');
+            var set =
+                Directory.Exists(directory)
+                    ? Directory
+                        .GetFiles(directory, "*.*", SearchOption.AllDirectories)
+                        .Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim())
+                    : null;
+            return set;
         }
     }
 }

@@ -13,7 +13,7 @@ namespace ysriscorelibrary.Interfaces
         void SaveFileTo(IFormFile postedFile, string fullPath);
         void SaveFileTo(MemoryStream postedFile2, string fullPath);
         Task<MemoryStream> GetFileContent(string fullPath);
-        IEnumerable<Uri> ListFiles(string baseDirectory);
+        IEnumerable<string> ListFiles(string baseDirectory);
 
     }
 }

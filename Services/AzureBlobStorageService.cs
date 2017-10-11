@@ -110,7 +110,7 @@ namespace YsrisCoreLibrary.Services
             }
         }
 
-        public IEnumerable<Uri> ListFiles(string directory)
+        public IEnumerable<string> ListFiles(string directory)
         {
             var storageAccount = CloudStorageAccount.Parse(ConfigurationHelper.BlobStorageConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
@@ -124,7 +124,7 @@ namespace YsrisCoreLibrary.Services
                 results.AddRange(response.Results);
             }
             while (continuationToken != null);
-            return results.Select(a => a.Uri);
+            return results.Select(a => a.Uri.AbsolutePath.ToString());
         }
 
     }
