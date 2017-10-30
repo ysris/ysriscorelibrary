@@ -126,6 +126,11 @@ namespace YsrisCoreLibrary.Services
             while (continuationToken != null);
             return results.Select(a => a.Uri.AbsolutePath.ToString());
         }
+        
+        public void MoveFile(string from, string to)
+        {
+          throw new NotImplementedException();
+        }
 
     }
 }

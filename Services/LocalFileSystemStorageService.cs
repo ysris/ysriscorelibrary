@@ -94,11 +94,16 @@ namespace YsrisCoreLibrary.Services
             directory = basePath + directory.TrimStart('/');
             var set =
                 Directory.Exists(directory)
-                    ? Directory
-                        .GetFiles(directory, "*.*", SearchOption.AllDirectories)
-                        .Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim())
-                    : null;
+                    ? Directory.GetFiles(directory, "*.*"/*, SearchOption.AllDirectories*/).Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim())
+                    .Concat(Directory.GetDirectories(directory, "*.*").Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim()))
+                    : new List<string>();
             return set;
+        }
+
+        public void MoveFile(string from, string to)
+        {
+            var basePath = Env.ContentRootPath + "/uploads/";
+            File.Move(basePath + from, basePath + to);
         }
     }
 }

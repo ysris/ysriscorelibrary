@@ -18,7 +18,7 @@ namespace YsrisCoreLibrary.Abstract
     public class AbstractController<T> : Controller where T : class, IAbstractEntity, new()
     {
         protected readonly DbContext _context;
-        
+
         protected List<object> _entityModel;
 
         public AbstractController(DbContext context)
@@ -27,12 +27,20 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpGet]
-        public virtual IEnumerable<T> Get()
+        [Authorize]
+        public virtual IQueryable<T> Get()
         {
-            return _context.Set<T>();
+            var set = _context.Set<T>();
+            if (set.Select(a => a.entityModel).Distinct().SingleOrDefault() == null)
+                foreach (var a in set)
+                {
+                    a.entityModel = _entityModel;
+                }
+            return set;
         }
 
         [HttpGet("empty")]
+        [Authorize]
         public virtual T GetEmpty()
         {
             var entity = new T { };
@@ -42,6 +50,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public virtual async Task<IActionResult> Get([FromRoute] int id)
         {
             if (!ModelState.IsValid)
@@ -58,6 +67,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public virtual async Task<IActionResult> Put([FromRoute] int id, [FromBody] T client)
         {
             if (!ModelState.IsValid)
@@ -88,6 +98,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpPost]
+        [Authorize]
         public virtual async Task<IActionResult> Post([FromBody] T entity)
         {
             if (!ModelState.IsValid)
@@ -100,6 +111,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public virtual async Task<IActionResult> Delete([FromRoute] int id)
         {
             if (!ModelState.IsValid)
