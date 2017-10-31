@@ -103,7 +103,10 @@ namespace YsrisCoreLibrary.Services
         public void MoveFile(string from, string to)
         {
             var basePath = Env.ContentRootPath + "/uploads/";
-            File.Move(basePath + from, basePath + to);
+            if (!Directory.Exists(basePath + Path.GetDirectoryName(to.TrimStart('/'))))
+                Directory.CreateDirectory(basePath + Path.GetDirectoryName(to.TrimStart('/')));
+            File.Copy(basePath + from, basePath + to.TrimStart('/'));
+            File.Delete(basePath + from);
         }
     }
 }
