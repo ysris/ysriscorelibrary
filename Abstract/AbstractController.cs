@@ -17,7 +17,7 @@ namespace YsrisCoreLibrary.Abstract
 {
     public class AbstractController<T> : Controller where T : class, IAbstractEntity, new()
     {
-        protected readonly DbContext _context;
+        protected DbContext _context;
 
         protected List<object> _entityModel;
 
