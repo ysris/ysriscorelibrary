@@ -32,7 +32,6 @@ namespace YsrisCoreLibrary.Controllers
         protected readonly ILogger<AbstractCustomerController> _myLogger;
         protected readonly SessionHelperService _sessionHelperInstance;
         public readonly IStorageService _storageService;
-
         protected AbstractCustomerDal _dal;
 
         /// <summary>
@@ -84,10 +83,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         [HttpPost("Logout")]
-        public async void Logout()
-        {
-            await HttpContext.SignOutAsync("MyCookieAuthenticationScheme");
-        }
+        public async void Logout() => await HttpContext.SignOutAsync("MyCookieAuthenticationScheme");
 
         [HttpPost("recover")]
         [AllowAnonymous]
@@ -159,7 +155,6 @@ namespace YsrisCoreLibrary.Controllers
             }
         }
 
-
         /// <summary>
         /// account creation action
         /// </summary>
@@ -179,28 +174,38 @@ namespace YsrisCoreLibrary.Controllers
 
             var rolesList = new List<string>();
             string customerType = Role.User;
-            switch ((string)values.UserType.ToString())
+
+
+            if (values.UserType != null)
             {
-                case "Coach":
-                    rolesList.Add(Role.Coach);
-                    customerType = Role.Coach;
-                    break;
-                case "User":
-                    rolesList.Add(Role.User);
-                    customerType = Role.User;
-                    break;
-                case "Proprietaire":
-                    rolesList.Add(Role.Proprietaire);
-                    customerType = Role.Proprietaire;
-                    break;
-                case "Locataire":
-                    rolesList.Add(Role.Locataire);
-                    customerType = Role.Locataire;
-                    break;
-                case "Business":
-                    rolesList.Add(Role.Business);
-                    customerType = Role.Business;
-                    break;
+                switch ((string)values.UserType.ToString())
+                {
+                    case "Coach":
+                        rolesList.Add(Role.Coach);
+                        customerType = Role.Coach;
+                        break;
+                    case "User":
+                        rolesList.Add(Role.User);
+                        customerType = Role.User;
+                        break;
+                    case "Proprietaire":
+                        rolesList.Add(Role.Proprietaire);
+                        customerType = Role.Proprietaire;
+                        break;
+                    case "Locataire":
+                        rolesList.Add(Role.Locataire);
+                        customerType = Role.Locataire;
+                        break;
+                    case "Business":
+                        rolesList.Add(Role.Business);
+                        customerType = Role.Business;
+                        break;
+                }
+            }
+            else
+            {
+                rolesList.Add(Role.User);
+                customerType = Role.User;
             }
 
             var entity = new Customer(values)
@@ -212,6 +217,8 @@ namespace YsrisCoreLibrary.Controllers
                 rolesString = string.Join(",", rolesList.Select(a => a.ToString())),
                 id = 0
             };
+            if (values.passwordForTyping == null)
+                throw new Exception("Password is null");
             entity.password = new EncryptionHelper().GetHash(values.passwordForTyping.ToString()); //keep here for avoiding the model binding
             entity.companyId = 0;
             entity.id = (int)_dal.AddOrUpdate(entity, 0);
@@ -407,5 +414,39 @@ namespace YsrisCoreLibrary.Controllers
                     throw new NotImplementedException();
             }
         }
+
+        [HttpGet("empty")]
+        [Authorize]
+        public virtual Customer GetEmpty()
+        {
+            var entity = new Customer
+            {
+                entityModel =
+                    new List<object> {
+                        new { name="firstName", type="string" },
+                        new { name="lastName", type="string" },
+                        new { name="email", type="string" },
+                        new { name="passwordForTyping", type="string" },
+                        new { name="adrLine1", type="string" },
+                        new { name="adrLine2", type="string" },
+                        new { name="adrPostalCode", type="string" },
+                        new { name="adrCity", type="string" },
+                        new { name="adrCountry", type="string" }
+                    }
+            };
+            return entity;
+        }
+
+        [HttpGet("forbidden")]
+        public IActionResult Forbidden() => Unauthorized();
+
+        [HttpPost("activateasadmin")]
+        [Authorize("Administrator")]
+        public Customer ActivateAsAdmin([FromBody] dynamic values) => _dal.UpdateStatus(new Customer(values).id, CustomerStatus.Activated, _sessionHelperInstance.User.id);
+
+        [HttpPost("disableasadmin")]
+        [Authorize("Administrator")]
+        public Customer DisableAsAdmin([FromBody] dynamic values) => _dal.UpdateStatus(new Customer(values).id, CustomerStatus.Disabled, _sessionHelperInstance.User.id);
+
     }
 }
