@@ -62,7 +62,6 @@ namespace YsrisCoreLibrary.Controllers
                 throw new Exception("UnknownUser");
 
             var fullEntity = _dal.Get((int)entity.Item1, (int)entity.Item1);
-            //fullEntity.MenuItems = new CustomerModuleDal().ListModules(fullEntity, entity.Item1 ).Select(a => new MenuItem { }).ToList();
 
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, entity.Item2) };
             if (!string.IsNullOrEmpty(fullEntity.rolesString))
