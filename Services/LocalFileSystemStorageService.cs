@@ -18,12 +18,14 @@ namespace YsrisCoreLibrary.Services
     public class LocalFileSystemStorageService : IStorageService
     {
         private ILogger<MailHelperService> MyLogger;
-        private IHostingEnvironment Env;
+        private IHostingEnvironment _env;
+
+        private string basePath => _env.ContentRootPath + "/uploads/";        
 
         public LocalFileSystemStorageService(SessionHelperService sessionHelper, ILogger<MailHelperService> logger, IHostingEnvironment env)
         {
             MyLogger = logger;
-            Env = env;
+            _env = env;
         }
 
         public void SavePictureTo(IFormFile postedFile, string fullPath, int? width, int? height)
@@ -57,7 +59,7 @@ namespace YsrisCoreLibrary.Services
 
         public void SaveFileTo(MemoryStream postedFile2, string fullPath)
         {
-            fullPath = Env.ContentRootPath + "/uploads/" + fullPath.TrimStart('/');
+            fullPath = basePath + fullPath.TrimStart('/');
 
             MyLogger.LogInformation($"fullPath=" + fullPath);
             Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
@@ -76,7 +78,7 @@ namespace YsrisCoreLibrary.Services
                 return null;
 
 
-            fullPath = Env.ContentRootPath + "/uploads/" + fullPath.TrimStart('/');
+            fullPath = basePath + fullPath.TrimStart('/');
 
             using (MemoryStream ms = new MemoryStream())
             using (FileStream file = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
@@ -90,7 +92,6 @@ namespace YsrisCoreLibrary.Services
 
         public IEnumerable<string> ListFiles(string directory)
         {
-            var basePath = Env.ContentRootPath + "/uploads/";
             directory = basePath + directory.TrimStart('/');
             var set =
                 Directory.Exists(directory)
@@ -102,11 +103,16 @@ namespace YsrisCoreLibrary.Services
 
         public void MoveFile(string from, string to)
         {
-            var basePath = Env.ContentRootPath + "/uploads/";
             if (!Directory.Exists(basePath + Path.GetDirectoryName(to.TrimStart('/'))))
                 Directory.CreateDirectory(basePath + Path.GetDirectoryName(to.TrimStart('/')));
             File.Copy(basePath + from, basePath + to.TrimStart('/'));
             File.Delete(basePath + from);
+        }
+
+        public string GetFullPath(string cur)
+        {
+            var filename = basePath + cur;
+            return filename;
         }
     }
 }

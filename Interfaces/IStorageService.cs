@@ -15,5 +15,6 @@ namespace ysriscorelibrary.Interfaces
         Task<MemoryStream> GetFileContent(string fullPath);
         IEnumerable<string> ListFiles(string baseDirectory);
         void MoveFile(string from, string to);
+        string GetFullPath(string cur);
     }
 }

@@ -132,5 +132,9 @@ namespace YsrisCoreLibrary.Services
           throw new NotImplementedException();
         }
 
+        public string GetFullPath(string cur)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
