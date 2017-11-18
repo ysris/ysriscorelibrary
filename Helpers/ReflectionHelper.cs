@@ -141,7 +141,6 @@ namespace YsrisCoreLibrary.Helpers
                 let LIsRequired = a.GetCustomAttributes().Select(b => b.GetType()).Contains(typeof(RequiredAttribute))
                 let LIsBrowsableFlase = a.GetCustomAttributes().Select(b => b.GetType()).Contains(typeof(BrowsableFalseAttribute))
 
-                let LIsCheckBoxList = a.GetCustomAttributes(typeof(CheckBoxListAttribute)).Any()
 
                 let LIsEnum = LProperty.GetTypeInfo().IsEnum
 
@@ -150,8 +149,6 @@ namespace YsrisCoreLibrary.Helpers
 
                 let Ltype = LIsKey
                             ? "Key"
-                            : LIsCheckBoxList
-                                ? "CheckBoxList"
                             : LProperty.Name.StartsWith("List")
                                 ? "List"
                                 : LIsEnum

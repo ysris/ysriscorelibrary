@@ -20,5 +20,6 @@ namespace YsrisCoreLibrary.Helpers
         public static string AppName { get; set; }
         public static string StorageType { get; set; }
         public static string StorageContainerName { get; set; }
+        public static List<string> IndexScripts { get; set; }
     }
 }
