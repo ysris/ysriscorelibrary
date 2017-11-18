@@ -31,7 +31,7 @@ namespace YsrisCoreLibrary.Abstract
         public virtual IQueryable<T> Get()
         {
             var set = _context.Set<T>();
-            if (set.Select(a => a.entityModel).Distinct().SingleOrDefault() == null)
+            if (set.Select(a => a.entityModel).Distinct().All(a => a == null))
                 foreach (var a in set)
                 {
                     a.entityModel = _entityModel;
