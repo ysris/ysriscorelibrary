@@ -157,6 +157,12 @@ angular.module("frontendAngularClientApp").controller("MasterController", functi
         $rootScope.PageHeaderSubTitle = subtitle;
     };
 
+    $rootScope.SetPageMocked = function(choice)
+    {        
+        $rootScope.IsMockedPage = choice;
+
+    };
+
 
     //
     // Custom
@@ -167,9 +173,9 @@ angular.module("frontendAngularClientApp").controller("MasterController", functi
         var modalInstance = $uibModal.open({
             component: 'inscriptionModalComponent',
             resolve: {
-              userType: function () {
-                return userType;
-              }
+                userType: function () {
+                    return userType;
+                }
             }
         });
         modalInstance.result.then(function (selectedItem) {
@@ -199,5 +205,5 @@ angular.module("frontendAngularClientApp").controller("MasterController", functi
 
 
 
-    
+
 });
