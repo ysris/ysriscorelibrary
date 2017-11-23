@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using TicTacTec.TA.Library;
 using YsrisCoreLibrary.Models;
+using YsrisCoreLibrary.Models.Financial;
 
 namespace ysriscorelibrary.Helpers
 {
 public static class TupleExtensions
 {	
 	public static IEnumerable<Tuple<DateTime, decimal>> Rebase100(this IEnumerable<TimeSerieItem> data)
-		=> Rebase100(data.Select(a => new Tuple<DateTime, decimal>(a.Date, (decimal)a.typicalPrice)));
+		=> Rebase100(data.Select(a => new Tuple<DateTime, decimal>(a.date, (decimal)a.close)));
 
 	public static IEnumerable<Tuple<DateTime, decimal>> Rebase100(this IEnumerable<Tick> data)
 		=> Rebase100(data.Select(a => new Tuple<DateTime, decimal>(a.DateTime, a.Close)));
@@ -46,7 +47,7 @@ public static class TupleExtensions
 	}
 
     public static IEnumerable<Tuple<DateTime, decimal>> GetSma(this IEnumerable<TimeSerieItem> data, int window)
-        => GetSma(data.Select(a => new Tuple<DateTime, decimal>(a.Date, (decimal)a.typicalPrice)), window);
+        => GetSma(data.Select(a => new Tuple<DateTime, decimal>(a.date, (decimal)a.close)), window);
         
 	public static IEnumerable<Tuple<DateTime, decimal>> GetSma(this IEnumerable<Tuple<DateTime, decimal>> data, int window)
 	{
@@ -73,7 +74,7 @@ public static class TupleExtensions
 
 
 	public static IEnumerable<MacdTick> GetMacd(this IEnumerable<TimeSerieItem> data, int fast = 12, int slow = 26, int signal = 9)
-		=> GetMacd(data.Select(a => new Tuple<DateTime, decimal>(a.Date, (decimal)a.typicalPrice)), fast, slow, signal);
+		=> GetMacd(data.Select(a => new Tuple<DateTime, decimal>(a.date, (decimal)a.close)), fast, slow, signal);
 
 	public static IEnumerable<MacdTick> GetMacd(this IEnumerable<Tick> data, int fast = 12, int slow = 26, int signal = 9)
 		=> GetMacd(data.Select(a => new Tuple<DateTime, decimal>(a.DateTime, a.Close)), fast, slow, signal);
@@ -123,7 +124,7 @@ public static class TupleExtensions
 	}
 
 	public static IEnumerable<Tuple<DateTime, decimal>> GetRsi(this IEnumerable<TimeSerieItem> data, int period = 14)
-		=> GetRsi(data.Select(a => new Tuple<DateTime, decimal>(a.Date, (decimal)a.typicalPrice)), period);
+		=> GetRsi(data.Select(a => new Tuple<DateTime, decimal>(a.date, (decimal)a.close)), period);
 
 	public static IEnumerable<Tuple<DateTime, decimal>> GetRsi(this IEnumerable<Tick> data, int period = 14)
 		=> GetRsi(data.Select(a => new Tuple<DateTime, decimal>(a.DateTime, a.Close)), period);

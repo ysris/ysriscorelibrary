@@ -51,8 +51,8 @@ namespace YsrisCoreLibrary.Models.Financial
             timeSerie == null ? null :
             new
             {
-                categoryData = timeSerie.Select(a => a.Date.ToString("yyyy/M/dd")),
-                values = timeSerie.Select(a => new object[] { a.Open, a.High, a.Low, a.Close })
+                categoryData = timeSerie.Select(a => a.date.ToString("yyyy/M/dd")),
+                values = timeSerie.Select(a => new object[] { a.open, a.close, a.high, a.low, })
             };
 
         [DataMember]

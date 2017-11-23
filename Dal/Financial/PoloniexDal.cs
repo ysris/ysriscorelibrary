@@ -21,28 +21,28 @@ namespace YsrisCoreLibrary.Dal.Financial
         private static BigInteger CurrentHttpPostNonce { get; set; }
         private static DateTime DateTimeUnixEpochStart => new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
-        public IEnumerable<PoloniexTimeSerieItem> getChartData(string ccyPair)
+        public IEnumerable<TimeSerieItem> getChartData(string ccyPair, int period = 86400)
         {
             try
             {
-                var raw = 
+                var raw =
                     callGet("returnChartData", new Dictionary<string, string> {
                         {"currencyPair",ccyPair}
                          ,{"start","0".ToString()}
                          ,{"end","9999999999".ToString()}
-                         ,{"period","86400".ToString()}
+                         ,{"period",period.ToString()}
                     });
                 var obj =
                     JsonConvert.DeserializeObject<IEnumerable<PoloniexTimeSerieItemRaw>>(raw)
                         ?? Enumerable.Empty<PoloniexTimeSerieItemRaw>();
 
-                var set = obj.Select(a => new PoloniexTimeSerieItem(a)).ToList();
+                var set = obj.Select(a => new TimeSerieItem(a) { Instrument = ccyPair, Market = "Poloniex", Period = period }).ToList();
 
                 return set;
             }
             catch (JsonSerializationException e)
             {
-                return Enumerable.Empty<PoloniexTimeSerieItem>();
+                return Enumerable.Empty<TimeSerieItem>();
             }
         }
 

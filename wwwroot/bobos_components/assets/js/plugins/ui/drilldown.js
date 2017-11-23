@@ -204,21 +204,21 @@
 					$($header).prepend('<ul></ul>');
 				}
 				if(getNewBreadcrumb == defaults.defaultText){
-					$('ul',$header).append('<li><a href="#" class="first"> '+defaults.resetText+'</a></li>');
+					$('ul',$header).append('<li><a  class="first"> '+defaults.resetText+'</a></li>');
 				} else {
-					$('ul',$header).append('<li><a href="#"> '+getNewBreadcrumb+'</a></li>');
+					$('ul',$header).append('<li><a > '+getNewBreadcrumb+'</a></li>');
 				}
 			}
 			if(defaults.linkType == 'backlink'){
 				if(!$('a',$header).length){
-					$($header).prepend('<a href="#" class="link-back"> '+getNewBreadcrumb+'</a>');
+					$($header).prepend('<a  class="link-back"> '+getNewBreadcrumb+'</a>');
 				} else {
 					$('.link-back',$header).html(getNewBreadcrumb);
 				}
 			}
 			if(defaults.linkType == 'link'){
 				if(!$('a',$header).length){
-					$($header).prepend('<ul><li><a href="#" class="first"> '+defaults.resetText+'</a></li></ul>');
+					$($header).prepend('<ul><li><a  class="first"> '+defaults.resetText+'</a></li></ul>');
 				}
 			}
 			// Update header text
