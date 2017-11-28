@@ -15,9 +15,11 @@ namespace YsrisCoreLibrary.Models.Financial
     /// </summary>    
     public class Instrument : AbstractEntity, IAbstractEntity
     {
+
         [Key]
         [DataMember]
         public int id { get; set; }
+
 
         [DataMember]
         public string name { get; set; }
@@ -57,7 +59,7 @@ namespace YsrisCoreLibrary.Models.Financial
 
         [DataMember]
         [NotMapped]
-        public object echartOptions { get; set; }
+        public object echartOptions { get; set; }        
 
         [DataMember]
         [NotMapped]

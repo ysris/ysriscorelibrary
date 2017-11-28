@@ -21,7 +21,7 @@ namespace YsrisCoreLibrary.Dal.Financial
         private static BigInteger CurrentHttpPostNonce { get; set; }
         private static DateTime DateTimeUnixEpochStart => new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
-        public IEnumerable<TimeSerieItem> getChartData(string ccyPair, int period = 86400)
+        public IEnumerable<TimeSerieItem> getChartData(string ccyPair, int period)
         {
             try
             {
