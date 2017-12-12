@@ -1,0 +1,52 @@
+﻿<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-flat">
+
+            <div class="post-padding">
+                <table class="table table-striped table-hover" st-pipe="refresh" st-table="entitylist">
+                    <thead>
+                        <tr>
+                            <!-- st-sort="curCol.name" -->
+                            <th ng-repeat="(curCol, value) in entitylist[0]">
+                                {{curCol}}
+                            </th>
+                        </tr>                    
+                    </thead>
+                    <tbody ng-show="!isLoading">
+                        <tr ng-repeat="cur in entitylist" ng-click="detail(cur.id)">
+                            <td ng-repeat="(curCol, value) in entitylist[0]">
+                                {{cur[curCol]}}
+                            </td>
+                            <!-- <td>
+                    <div class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                            <i class="icon-menu7"></i>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-right">
+                            <li>
+                                <a ng-click="detail(cur.id)">
+                                    <i class="fa fa-edit"></i>
+                                    Detail
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </td> -->
+                        </tr>
+                    </tbody>
+                    <tbody ng-show="isLoading">
+                        <tr>
+                            <td colspan="4" class="text-center">Loading ... </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>                            
+                            <td class="text-center" st-pagination="" st-items-by-page="50" colspan="50">aaa</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

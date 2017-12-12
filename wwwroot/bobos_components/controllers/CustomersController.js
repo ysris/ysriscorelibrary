@@ -2,6 +2,7 @@
     $scope.entitylist = null;
 
     var refresh = function () {
+        $rootScope.SetPageMocked(false);
         $rootScope.IsBusy = true;
         userService.List().then(function (resp) {
             $scope.entitylist = resp.data;
@@ -47,7 +48,7 @@
             // items: function () {return $scope.items;}
             // }
         });
-        modalInstance.result.then(function (selectedItem) {
+        modalInstance.result.then(function (selectedItem) {            
             refresh();
         }, function () {
             // alert(2);

@@ -1,0 +1,124 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" ng-click="$ctrl.cancel()">×</button>
+        <h5 class="modal-title">{{$ctrl.modalTitle}}</h5>
+    </div>
+
+    <div class="modal-body">
+        <form action="index/html" name="myForm" class="form-horizontal">
+            <fieldset class="content-group">
+                <!-- <legend class="text-bold">Basic inputs</legend> -->
+                <div class="form-group" ng-repeat="cur in $ctrl.entity.entityModel">
+                    <!-- <label class="control-label col-lg-2">{{cur.name}}</label>
+                    <div class="col-lg-10">
+                        <input type="text" class="form-control" ng-model="$ctrl.entity[cur.name]">
+                    </div> -->
+                    <div ng-switch="cur.type">
+                        <!-- <div ng-switch-when="Key">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{templateCur.name}}</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                {{entityCur[templateCur.name]}}
+                            </div>
+                        </div> -->
+                        <div ng-switch-when="string">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{cur.name}}</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <input type="text" class="form-control" required="required" placeholder="{{cur.name}}" ng-model="$ctrl.entity[cur.name]">
+                            </div>
+                        </div>
+                        <div ng-switch-when="select">
+                            
+                            
+                            
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{cur.name}}</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <!-- <input type="text" class="form-control" required="required" placeholder="{{cur.name}}" ng-model=""> -->
+                                <select ng-model="$ctrl.entity[cur.name]" class="form-control" ng-options="option.id as option.prettyName for option in cur.values"></select>
+                            </div>
+
+
+
+
+                        </div>
+                        <div ng-switch-when="textarea">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{cur.name}}</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <textarea class="form-control" required="required" placeholder="{{cur.name}}" ng-model="$ctrl.entity[cur.name]"></textarea>
+                            </div>
+                        </div>
+                        <div ng-switch-when="datetime">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{templateCur.name}}</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <input type="text" class="form-control" placeholder="{{templateCur.name}}" ng-model="entityCur[templateCur.name]">
+                            </div>
+                        </div>
+                        <!-- <div ng-switch-when="List">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{templateCur.name}}</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <table class="table table-condensed table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th ng-repeat="curHeader in entityCur.entityColumnsModel[templateCur.name].entityColumnsModel">{{curHeader.name}}</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="curRow in entityCur[templateCur.name]">
+                                            <td ng-repeat="curHeader in entityCur.entityColumnsModel[templateCur.name].entityColumnsModel">
+                                                {{curRow[curHeader.name]}}
+                                            </td>
+                                            <td>
+                                                <input type="button" value="Delete" ng-click="deleteEntity(curRow, entityCur[templateCur.name])" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th ng-repeat="curHeader in entityCur.entityColumnsModel[templateCur.name].entityColumnsModel">
+                                                <div ng-init="entityCur = Entity.newEntity; templateCur = curHeader;" ng-include src="'myPartial.html'"></div>
+                                            </th>
+                                            <td>
+                                                <input type="button" class="btn btn-default" value="Add" ng-click="addEntity(entityCur.newEntity, entityCur[templateCur.name])"
+                                                />
+                                            </td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div> -->
+                        <!-- <div ng-switch-when="CheckBoxList">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{templateCur.name}}</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <table>
+                                    <tr ng-repeat="cur2 in entityCur[templateCur.name]">
+                                        <td>
+                                            <label>
+                                                    <input type="checkbox" checklist-model="Entity['checkBoxListSelectedValues']" checklist-value="cur.encodedName"> {{cur2.prettyName}}
+                                                </label>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div> -->
+                        <!-- <div ng-switch-when="Enum">
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{templateCur.name}}</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <select ng-model="entityCur[templateCur.name]" ng-options="obj as obj for obj in templateCur.entityColumnsModel"></select>
+                            </div>
+                        </div> -->
+                        <div ng-switch-default>
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{cur.name}}</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <input type="text" class="form-control" required="required" placeholder="{{cur.name}}" ng-model="$ctrl.entity[cur.name]">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-link" ng-click="$ctrl.cancel()">Close</button>
+        <button type="button" class="btn btn-primary" ng-click="$ctrl.submit()">Save changes</button>
+    </div>
+</div>

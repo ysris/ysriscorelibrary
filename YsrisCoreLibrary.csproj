@@ -8,6 +8,22 @@
     <None Remove="bobos_components_orig\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="wwwroot\bobos_components\components\_Component.js.MODEL" />
+    <None Remove="wwwroot\bobos_components\controllers\_Controller.js.MODEL" />
+    <None Remove="wwwroot\bobos_components\services\_Service.js.MODEL" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wwwroot\bobos_components\components\_Component.js.MODEL">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot\bobos_components\controllers\_Controller.js.MODEL">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot\bobos_components\services\_Service.js.MODEL">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.2" />
     <PackageReference Include="ImageSharp" Version="1.0.0-alpha6-00066" />
     <PackageReference Include="MailKit" Version="1.16.1" />

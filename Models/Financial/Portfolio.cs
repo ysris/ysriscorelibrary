@@ -20,10 +20,6 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         public DateTime valuationDate { get; set; }
 
-        //Value from the portfolios valuation csv file
-        [DataMember]
-        public decimal? valuationAmount { get; set; }
-
         [DataMember]
         public string name { get; set; }
 

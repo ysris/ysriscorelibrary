@@ -15,7 +15,6 @@ namespace YsrisCoreLibrary.Models.Financial
     /// </summary>    
     public class Instrument : AbstractEntity, IAbstractEntity
     {
-
         [Key]
         [DataMember]
         public int id { get; set; }
@@ -67,5 +66,42 @@ namespace YsrisCoreLibrary.Models.Financial
 
         [DataMember]
         public string importFileUri { get; set; }
+
+
+        [DataMember]
+        public string exchange { get; set; }
+
+        [DataMember]
+        public string category { get; set; }
+
+        [DataMember]
+        public string producttype { get; set; }
+
+        [DataMember]
+        public string unitvalue { get; set; }
+
+        [DataMember]
+        public string currency { get; set; }
+
+
+
+        // OHLC, date and period type needed for valuation fo current instrument
+
+
+        [DataMember]
+        [NotMapped]
+        public decimal open { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public decimal high { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public decimal low { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public decimal close { get; set; }
     }
 }
