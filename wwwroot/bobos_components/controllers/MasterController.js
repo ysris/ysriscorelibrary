@@ -82,7 +82,10 @@ angular.module("frontendAngularClientApp").controller("MasterController", functi
         //    $rootScope.ConnectedUserNotifications = [];
         //$rootScope.ConnectedUserNotifications.push({ id: $rootScope.ConnectedUserNotifications.length + 1, msg: notificationMsg });
         //window.localStorage.ConnectedUserNotifications = JSON.stringify($rootScope.ConnectedUserNotifications);
-        new PNotify({ title: notificationMsg, text: notificationMsg, type: 'success', styling: 'bootstrap3', delay: 2000 });
+        var n = new PNotify({ title: notificationMsg, text: notificationMsg, type: 'success', styling: 'bootstrap3', delay: 2000, buttons: { closer: false, sticker: false } });
+        n.get().click(function () {
+            n.remove();
+        });
     };
 
     $rootScope.removeNotifications = function () {
@@ -157,8 +160,7 @@ angular.module("frontendAngularClientApp").controller("MasterController", functi
         $rootScope.PageHeaderSubTitle = subtitle;
     };
 
-    $rootScope.SetPageMocked = function(choice)
-    {        
+    $rootScope.SetPageMocked = function (choice) {
         $rootScope.IsMockedPage = choice;
 
     };
