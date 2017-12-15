@@ -20,7 +20,7 @@ angular.module("frontendAngularClientApp")
             $rootScope.IsBusy = true;
             userService.logIn($scope.login, $scope.password).then(function (response) {
                 $rootScope.setConnectedUser(response.data);
-                 $rootScope.avatarUri = "/api/customer/avatar";
+                $rootScope.avatarUri = "/api/customer/avatar";
                 $state.go("dashboard");
                 $rootScope.IsBusy = false;
             }, function errorCallback(e) {

@@ -18,6 +18,7 @@ namespace YsrisCoreLibrary.Models
 
     public class GlobalSearchTableStateEntity {
         public string any { get; set; }
+        public string instrumentcategorykey { get; set; }
     }
 
 }
