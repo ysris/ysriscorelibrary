@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.Serialization;
 using ysriscorelibrary.Interfaces;
+using YsrisCoreLibrary.Model;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Models.Abstract;
 
@@ -58,7 +59,7 @@ namespace YsrisCoreLibrary.Models.Financial
 
         [DataMember]
         [NotMapped]
-        public object echartOptions { get; set; }        
+        public object echartOptions { get; set; }
 
         [DataMember]
         [NotMapped]
@@ -72,7 +73,7 @@ namespace YsrisCoreLibrary.Models.Financial
         public string exchange { get; set; }
 
         [DataMember]
-        public string category { get; set; }
+        public string category { get; set; }        
 
         [DataMember]
         public string producttype { get; set; }
@@ -103,5 +104,9 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         [NotMapped]
         public decimal close { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public InstrumentCategory instrumentCategory { get; set; }
     }
 }
