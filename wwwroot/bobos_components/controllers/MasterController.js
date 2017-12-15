@@ -43,6 +43,11 @@ angular.module("frontendAngularClientApp").controller("MasterController", functi
         });
     }
 
+    $rootScope.toggleDebugDisplay = function () {
+        $rootScope.debugDisplay = window.localStorage.debugDisplay == 0 || window.localStorage.debugDisplay == undefined ? 1 : 0;
+        window.localStorage.debugDisplay = $rootScope.debugDisplay;
+    };
+
 
     //TODO : Refactor this : should be abstracted
     var remove = function (item, collection) {
