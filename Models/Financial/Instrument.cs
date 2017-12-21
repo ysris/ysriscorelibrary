@@ -16,6 +16,37 @@ namespace YsrisCoreLibrary.Models.Financial
     /// </summary>    
     public class Instrument : AbstractEntity, IAbstractEntity
     {
+        public Instrument()
+        {
+
+        }
+
+        public Instrument(Instrument values)
+        {
+            id = values.id;
+            name = values.name;
+            code = values.code;
+            creationDate = values.creationDate;
+            entityModel = values.entityModel;
+            timeSerie = values.timeSerie;
+            isFavorite = values.isFavorite;
+            echartOptions = values.echartOptions;
+            indicators = values.indicators;
+            importFileUri = values.importFileUri;
+            exchange = values.exchange;
+            category = values.category;
+            producttype = values.producttype;
+            unitvalue = values.unitvalue;
+            currency = values.currency;
+            open = values.open;
+            high = values.high;
+            low = values.low;
+            close = values.close;
+            instrumentCategory = values.instrumentCategory;
+        }
+
+
+
         [Key]
         [DataMember]
         public int id { get; set; }
@@ -73,7 +104,7 @@ namespace YsrisCoreLibrary.Models.Financial
         public string exchange { get; set; }
 
         [DataMember]
-        public string category { get; set; }        
+        public string category { get; set; }
 
         [DataMember]
         public string producttype { get; set; }
@@ -108,5 +139,17 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         [NotMapped]
         public InstrumentCategory instrumentCategory { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public bool openClose => close >= open;
+
+        [DataMember]
+        [NotMapped]
+        public decimal? delta => close - open;
+
+        [DataMember]
+        [NotMapped]
+        public decimal? deltaPct => close != 0 && open != 0 ? Math.Round(100 * ((close / open) - 1), 2) : null as decimal?;
     }
 }
