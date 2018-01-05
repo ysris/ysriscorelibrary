@@ -18,7 +18,7 @@ namespace YsrisCoreLibrary.Models.Financial
     {
         public Instrument()
         {
-
+            
         }
 
         public Instrument(Instrument values)
@@ -110,7 +110,7 @@ namespace YsrisCoreLibrary.Models.Financial
         public string producttype { get; set; }
 
         [DataMember]
-        public string unitvalue { get; set; }
+        public decimal? unitvalue { get; set; }
 
         [DataMember]
         public string currency { get; set; }
@@ -122,19 +122,19 @@ namespace YsrisCoreLibrary.Models.Financial
 
         [DataMember]
         [NotMapped]
-        public decimal open { get; set; }
+        public decimal? open { get; set; }
 
         [DataMember]
         [NotMapped]
-        public decimal high { get; set; }
+        public decimal? high { get; set; }
 
         [DataMember]
         [NotMapped]
-        public decimal low { get; set; }
+        public decimal? low { get; set; }
 
         [DataMember]
         [NotMapped]
-        public decimal close { get; set; }
+        public decimal? close { get; set; }
 
         [DataMember]
         [NotMapped]
@@ -150,6 +150,6 @@ namespace YsrisCoreLibrary.Models.Financial
 
         [DataMember]
         [NotMapped]
-        public decimal? deltaPct => close != 0 && open != 0 ? Math.Round(100 * ((close / open) - 1), 2) : null as decimal?;
+        public decimal? deltaPct => close != null && open != null ? Math.Round(100 * (((decimal)close / (decimal)open) - 1), 2) : null as decimal?;
     }
 }

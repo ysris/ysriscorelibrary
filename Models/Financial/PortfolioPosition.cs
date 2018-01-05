@@ -11,6 +11,7 @@ namespace YsrisCoreLibrary.Models.Financial
     [DataContract]
     public class PortfolioPosition : AbstractEntity, IAbstractEntity
     {
+
         [Key]
         [DataMember]
         public int id { get; set; }
@@ -22,7 +23,7 @@ namespace YsrisCoreLibrary.Models.Financial
         public string instrumentName { get; set; }
 
         [DataMember]
-        public int instrumentId { get; set; }
+        public int? instrumentId { get; set; }
 
         [DataMember]
         public string portfolioName { get; set; }
@@ -33,11 +34,11 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         public DateTime valuationDate { get; set; }
 
-        [DataMember]
-        public Portfolio portfolio { get; set; }
+        //[DataMember]
+        //public Portfolio portfolio { get; set; }
 
         [DataMember]
-        public int portfolioId { get; set; }
+        public int? portfolioId { get; set; }
 
         [DataMember]
         public string importFileUri { get; set; }
@@ -49,11 +50,11 @@ namespace YsrisCoreLibrary.Models.Financial
         [NotMapped]
         public List<object> entityModel { get; set; }
 
+        //[DataMember]
+        //public Instrument instrument { get; set; }
+
         [DataMember]
-        public Instrument instrument { get; set; }
-
-
-
+        public string simulationName { get; set; }
 
     }
 }

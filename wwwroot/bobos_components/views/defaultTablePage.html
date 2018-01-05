@@ -1,0 +1,38 @@
+﻿
+<div class="content-wrapper">
+    <div class="panel panel-flat">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th ng-repeat="curCol in entitylist[0].entityModel">
+                        {{curCol.name}}
+                    </th>
+                    <th>
+                        <input type="button" class="pull-right btn btn-primary" value="Add" ng-click="add()" />
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="cur in entitylist">
+                    <td ng-repeat="curCol in entitylist[0].entityModel">
+                        {{cur[curCol.name]}}
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="icon-menu7"></i> <span class="caret"></span></a>
+                            <ul class="dropdown-menu dropdown-menu-right">
+                                <li>
+                                    <a ng-click="edit(cur)">
+                                        <i class="fa fa-edit"></i>
+                                        Edit
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>

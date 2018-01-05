@@ -21,4 +21,12 @@ namespace YsrisCoreLibrary.Models
         public string instrumentcategorykey { get; set; }
     }
 
+    public class GlobalSearchPortfolioTableStateEntity
+    {
+        public string any { get; set; }
+        public string portfoliocategorykey { get; set; }
+    }
+
+    
+
 }

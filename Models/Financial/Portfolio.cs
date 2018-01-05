@@ -13,15 +13,26 @@ namespace YsrisCoreLibrary.Models.Financial
     [DataContract]
     public class Portfolio : AbstractEntity, IAbstractEntity
     {
+        
+
+        [DataMember]
+        [NotMapped]
+        public string portfolioStrategy { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public PortfolioMapping portfolioMapping { get; set; }
+
+
         [Key]
         [DataMember]
         public int id { get; set; }
 
         [DataMember]
-        public DateTime valuationDate { get; set; }
+        public string name { get; set; }
 
         [DataMember]
-        public string name { get; set; }
+        public string description { get; set; }
 
         // [DataMember]
         // public decimal valuationPortfolioCcy { get; set; }
@@ -38,9 +49,9 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         public string importFileUri { get; set; }
 
-        /// related .equ file
-        [DataMember]
-        public string portfolioValuationfileName { get; set; }
+        ///// related .equ file
+        //[DataMember]
+        //public string portfolioValuationfileName { get; set; }
 
         [DataMember]
         public DateTime creationDate { get; set; }
@@ -84,5 +95,37 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         [NotMapped]
         public string prettyName => name;
+
+
+        [DataMember]
+        [NotMapped]
+        public DateTime valuationDate { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public object chg1D { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public object chg1M { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public object chgYTD { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public object date1D { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public object date1M { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public object dateYTD { get; set; }
+
+
+
     }
 }

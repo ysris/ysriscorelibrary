@@ -1,32 +1,36 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Threading.Tasks;
 using ysriscorelibrary.Interfaces;
-using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Models.Abstract;
 
 namespace YsrisCoreLibrary.Models.Financial
 {
-    [DataContract]
-    public class PortfolioValuation : AbstractEntity, IAbstractEntity
+    /// <summary>
+    /// 
+    /// </summary>
+    public class PortfolioMapping : AbstractEntity, IAbstractEntity
     {
-        [DataMember]
-        public string portfolioName { get; set; }
-
         [Key]
         [DataMember]
         public int id { get; set; }
 
         [DataMember]
-        public string fileName { get; set; }
+        public string portfolioCode { get; set; }
 
         [DataMember]
-        public DateTime valuationDate { get; set; }
+        public decimal? portfolioSize { get; set; }
 
         [DataMember]
-        public decimal valuationAmount { get; set; }
+        public bool isVisible { get; set; }
+
+        [DataMember]
+        public string portfolioCategoryCode { get; set; }
 
         [DataMember]
         [NotMapped]
