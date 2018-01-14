@@ -60,6 +60,10 @@ namespace YsrisCoreLibrary.Models.Financial
         public DateTime deletionDate { get; set; }
 
         [DataMember]
+        public DateTime valuationDate { get; set; }
+
+
+        [DataMember]
         [NotMapped]
         public bool isFavorite { get; set; }
 
@@ -97,21 +101,18 @@ namespace YsrisCoreLibrary.Models.Financial
         public string prettyName => name;
 
 
-        [DataMember]
-        [NotMapped]
-        public DateTime valuationDate { get; set; }
 
         [DataMember]
         [NotMapped]
-        public object chg1D { get; set; }
+        public decimal chg1D { get; set; }
 
         [DataMember]
         [NotMapped]
-        public object chg1M { get; set; }
+        public decimal chg1M { get; set; }
 
         [DataMember]
         [NotMapped]
-        public object chgYTD { get; set; }
+        public decimal chgYTD { get; set; }
 
         [DataMember]
         [NotMapped]

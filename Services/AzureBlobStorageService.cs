@@ -38,7 +38,7 @@ namespace YsrisCoreLibrary.Services
             Env = env;
         }
 
-        public void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null, int? height = null)
+        public void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null)
         {
             // Get the stream
 
@@ -46,7 +46,8 @@ namespace YsrisCoreLibrary.Services
             postedFile.CopyTo(postedFile2);
 
             var img = Image.Load(postedFile2.ToArray());
-            if (width != null && height != null)
+            var height = width * 0.6;
+            
                 img.Resize((int)width, (int)height);
 
             img.SaveAsJpeg(postedFile2);

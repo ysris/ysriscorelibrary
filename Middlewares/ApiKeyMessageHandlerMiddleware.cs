@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,13 +22,33 @@ namespace YsrisCoreLibrary.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Headers.ContainsKey("api_key") && context.Request.Headers["api_key"].Equals(apiKey))
-                await _next.Invoke(context);
+            if (context.Request.Headers.ContainsKey("api_key"))
+            {
+                if (context.Request.Headers["api_key"].Equals(apiKey))
+                {
+                    // manage auth stuff and session helper bidning here
+                    await _next.Invoke(context);
+                }
+                else
+                {
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                    await context.Response.WriteAsync("Invalid API Key");
+                }
+            }
             else
             {
-                context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-                await context.Response.WriteAsync("Invalid API Key");
+                await _next.Invoke(context);
             }
+
+        }
+
+    }
+
+    public static class MyHandlerExtensions
+    {
+        public static IApplicationBuilder UseApiKeyMessageHandlerMiddleware(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<ApiKeyMessageHandlerMiddleware>();
         }
 
     }

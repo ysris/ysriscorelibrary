@@ -20,7 +20,7 @@ namespace YsrisCoreLibrary.Services
         private ILogger<MailHelperService> MyLogger;
         private IHostingEnvironment _env;
 
-        private string basePath => _env.ContentRootPath + "/uploads/";        
+        private string basePath => _env.ContentRootPath + "/uploads/";
 
         public LocalFileSystemStorageService(SessionHelperService sessionHelper, ILogger<MailHelperService> logger, IHostingEnvironment env)
         {
@@ -28,8 +28,9 @@ namespace YsrisCoreLibrary.Services
             _env = env;
         }
 
-        public void SavePictureTo(IFormFile postedFile, string fullPath, int? width, int? height)
+        public void SavePictureTo(IFormFile postedFile, string fullPath, int? width)
         {
+
 
             var outputStream = new MemoryStream();
             var inputstream = new MemoryStream();
@@ -39,9 +40,14 @@ namespace YsrisCoreLibrary.Services
             //using (var inputStream = fileInfo.CreateReadStream())
             using (var image = Image.Load(inputstream))
             {
-                image
-                    .Resize((int)width, (int)height)
-                    .SaveAsJpeg(outputStream);
+                var height = image.Height * (width / image.Width);
+                if (width != null && height != null)
+                    image                        
+                        .Resize((int)width, (int)height)
+                        .SaveAsJpeg(outputStream);
+                else
+                    image
+                        .SaveAsJpeg(outputStream);
             }
             outputStream.Seek(0, SeekOrigin.Begin);
 

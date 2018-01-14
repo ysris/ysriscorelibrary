@@ -9,7 +9,7 @@ namespace ysriscorelibrary.Interfaces
 {
     public interface IStorageService
     {
-        void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null, int? height = null);
+        void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null);
         void SaveFileTo(IFormFile postedFile, string fullPath);
         void SaveFileTo(MemoryStream postedFile2, string fullPath);
         Task<MemoryStream> GetFileContent(string fullPath);
