@@ -1,7 +1,7 @@
 angular.module('frontendAngularClientApp').component('eCharts', {
     template: '',
     bindings: { options: "<", style: "@" },
-    controller: function ($rootScope, $state, $element, $attrs, $window, $timeout) {
+    controller: function ($rootScope, $state, $element, $attrs, $window, $interval) {
         this.$onInit = function () {
         };
 
@@ -14,17 +14,16 @@ angular.module('frontendAngularClientApp').component('eCharts', {
             };
 
             id = guid();
-            $element.html('<div id="' + id + '" style="height:400px; width:100%; ' + this.style + ' "></div>');
+            $element.html('<div id="' + id + '" style="height:400px; ' + this.style + ' "></div>');
 
             var myChart = echarts.init(document.getElementById(id));
             if (this.options != null)
                 myChart.setOption(this.options);
-
-            alert(1);
-            $timeout(function () {
+            myChart.resize();
+            angular.element($window).bind('resize', function () {
                 myChart.resize();
-                alert(2);
-            }, 1000)
+            });
+
 
         };
     }
