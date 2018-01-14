@@ -1,7 +1,7 @@
 angular.module('frontendAngularClientApp').component('eCharts', {
     template: '',
     bindings: { options: "<", style: "@" },
-    controller: function ($rootScope, $state, $element, $attrs, $window) {
+    controller: function ($rootScope, $state, $element, $attrs, $window, $timeout) {
         this.$onInit = function () {
         };
 
@@ -19,7 +19,13 @@ angular.module('frontendAngularClientApp').component('eCharts', {
             var myChart = echarts.init(document.getElementById(id));
             if (this.options != null)
                 myChart.setOption(this.options);
-            myChart.resize();
+
+            alert(1);
+            $timeout(function () {
+                myChart.resize();
+                alert(2);
+            }, 1000)
+
         };
     }
 });
