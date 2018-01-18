@@ -139,6 +139,9 @@ namespace YsrisCoreLibrary.Models
         [DataMember]
         public string adrCountry { get; set; }
 
+        [DataMember]
+        public string apiKey { get; set; }
+
 
         [DataMember]
         [NotMapped]

@@ -27,7 +27,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual IQueryable<T> Get()
         {
             var set = _context.Set<T>();
@@ -40,7 +40,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpGet("empty")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual T GetEmpty()
         {
             var entity = new T { };
@@ -50,7 +50,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> Get([FromRoute] int id)
         {
             if (!ModelState.IsValid)
@@ -67,7 +67,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpPut("{id}")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> Put([FromRoute] int id, [FromBody] T client)
         {
             if (!ModelState.IsValid)
@@ -98,7 +98,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> Post([FromBody] T entity)
         {
             if (!ModelState.IsValid)
@@ -111,7 +111,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> Delete([FromRoute] int id)
         {
             if (!ModelState.IsValid)

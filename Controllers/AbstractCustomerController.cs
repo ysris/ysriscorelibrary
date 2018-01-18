@@ -19,6 +19,11 @@ using YsrisSaas2.Enums;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace YsrisCoreLibrary.Controllers
 {
@@ -31,8 +36,9 @@ namespace YsrisCoreLibrary.Controllers
         protected readonly IHostingEnvironment _env;
         protected readonly ILogger<AbstractCustomerController> _myLogger;
         protected readonly SessionHelperService _sessionHelperInstance;
-        public readonly IStorageService _storageService;
+        protected readonly IStorageService _storageService;
         protected AbstractCustomerDal _dal;
+        private IConfiguration _config;
 
         /// <summary>
         /// Default constructor
@@ -43,7 +49,9 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="mailHelperService"></param>
         public AbstractCustomerController(SessionHelperService sessionHelper,
             ILogger<AbstractCustomerController> logger, IHostingEnvironment env,
-            MailHelperService mailHelperService, IStorageService storageService)
+            MailHelperService mailHelperService, IStorageService storageService,
+            IConfiguration config
+            )
         {
             _sessionHelperInstance = sessionHelper;
             _myLogger = logger;
@@ -51,32 +59,30 @@ namespace YsrisCoreLibrary.Controllers
             _mailHelperService = mailHelperService;
             _storageService = storageService;
             _dal = new CustomerDal();
+            _config = config;
         }
 
         [HttpPost("Login")]
         public async Task<Customer> Login([FromBody] dynamic values)
         {
-            var fullEntity = _dal.Get((string)values.username.ToString(), (string)values.password.ToString());
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, fullEntity.email) };
-            if (!string.IsNullOrEmpty(fullEntity.rolesString))
-                foreach (var cur in fullEntity.rolesString.Split(',').Select(a => a.Trim()))
+            var customer = _dal.Get((string)values.username.ToString(), (string)values.password.ToString());
+
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, customer.email) };
+            if (!string.IsNullOrEmpty(customer.rolesString))
+                foreach (var cur in customer.rolesString.Split(',').Select(a => a.Trim()))
                     claims.Add(new Claim(ClaimTypes.Role, cur));
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
 
             // await HttpContext.Authentication.SignInAsync("MyCookieMiddlewareInstance", principal);
-            await HttpContext.SignInAsync("MyCookieAuthenticationScheme", principal);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-
-
-
-            _sessionHelperInstance.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(fullEntity));
-
-
-            return fullEntity;
+            //_sessionHelperInstance.HttpContext
+            HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(customer));
+            return customer;
         }
 
         [HttpPost("Logout")]
-        public async void Logout() => await HttpContext.SignOutAsync("MyCookieAuthenticationScheme");
+        public async void Logout() => await HttpContext.SignOutAsync();
 
         [HttpPost("recover")]
         [AllowAnonymous]
@@ -241,7 +247,7 @@ namespace YsrisCoreLibrary.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost("avatar")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual object UploadAvatar(IFormFile file)
         {
             var x = _sessionHelperInstance.User.id;
@@ -266,7 +272,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="values"></param>
         /// <returns></returns>
         [HttpPost("update")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual Customer Update([FromBody] dynamic values)
         {
             var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
@@ -298,7 +304,7 @@ namespace YsrisCoreLibrary.Controllers
         /// </summary>
         /// <returns>Customer</returns>
         [HttpGet("me")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         //[ServiceFilter(typeof(CustomAuthorize))]
         public virtual Customer GetMe()
         {
@@ -321,7 +327,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="id"></param>
         /// <returns>Customer</returns>
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual object Get(int id)
         {
             var entity = _dal.Get(id, _sessionHelperInstance.User.id);
@@ -337,7 +343,7 @@ namespace YsrisCoreLibrary.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("avatar")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual IActionResult GetAvatar()
         {
             if (_sessionHelperInstance.User != null)
@@ -362,7 +368,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="id"></param>
         /// <returns></returns>
         [HttpGet("avatar/{id}")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual IActionResult GetAvatar(int id)
         {
             var smallUri = _dal.Get((int)id, _sessionHelperInstance.User.id).picture;
@@ -380,7 +386,7 @@ namespace YsrisCoreLibrary.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpDelete]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public void Delete()
         {
             var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
@@ -414,7 +420,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         [HttpGet("empty")]
-        [Authorize]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual Customer GetEmpty()
         {
             var entity = new Customer
@@ -445,6 +451,46 @@ namespace YsrisCoreLibrary.Controllers
         [HttpPost("disableasadmin")]
         [Authorize("Administrator")]
         public Customer DisableAsAdmin([FromBody] dynamic values) => _dal.UpdateStatus(new Customer(values).id, CustomerStatus.Disabled, _sessionHelperInstance.User.id);
+
+
+        [AllowAnonymous]
+        [HttpPost("GenerateToken")]
+        public IActionResult GenerateToken([FromBody] LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = _dal.Get(model.Email.ToString(), model.Password.ToString());
+
+                if (user != null)
+                {
+                    var claims = new[]
+                    {
+                      new Claim(JwtRegisteredClaimNames.Sub, user.email),
+                      new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    };
+
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+                    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                    var token = new JwtSecurityToken(_config["Tokens:Issuer"],
+                      _config["Tokens:Issuer"],
+                      claims,
+                      expires: DateTime.Now.AddMinutes(30),
+                      signingCredentials: creds);
+
+                    return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+                }
+            }
+
+            return BadRequest("Could not create token");
+        }
+
+        public class LoginViewModel
+        {
+            public string Email { get; set; }
+            public string Password { get; set; }
+        }
+
 
     }
 }

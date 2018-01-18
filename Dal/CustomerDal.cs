@@ -22,5 +22,16 @@ namespace YsrisCoreLibrary.Dal
                 return entity;
             }
         }
+
+        public Customer GetByApiKey(string apiKey, string tableName = "Customer")
+        {
+            using (var conn = _getConnection(ConfigurationHelper.ConnectionString))
+            {
+                conn.Open();
+                var sql = $"SELECT * FROM {tableName} WHERE apiKey='{apiKey}' AND AccountStatus='Activated' AND DeletionDate IS NULL";
+                var entity = conn.Query<Customer>(sql).SingleOrDefault();
+                return entity;
+            }
+        }
     }
 }

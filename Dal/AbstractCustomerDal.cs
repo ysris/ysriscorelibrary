@@ -14,9 +14,6 @@ namespace YsrisCoreLibrary.Dal
 {
     public abstract class AbstractCustomerDal : AbstractDal<Customer>
     {
-
-
-
         public override Customer Get(string username, int userId, string tableName = "Customer")
         {
             var sql = $"SELECT * FROM {tableName} WHERE email = '{username}' AND DeletionDate IS NULL";
