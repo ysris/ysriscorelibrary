@@ -28,10 +28,35 @@ namespace YsrisCoreLibrary.Services
             _env = env;
         }
 
+
+        public void SaveCroppedPictureTo(IFormFile postedFile, string fullPath, int width)
+        {
+            var outputStream = new MemoryStream();
+            var inputstream = new MemoryStream();
+            postedFile.CopyToAsync(inputstream);
+            inputstream.Seek(0, SeekOrigin.Begin);
+
+            //using (var inputStream = fileInfo.CreateReadStream())
+            using (var image = Image.Load(inputstream))
+            {
+                var height = image.Height * (width / image.Width);
+                if (width != null && height != null)
+                    image
+                        .Resize((int)width, (int)height)
+                        .Crop((int)width, (int)width)
+                        .SaveAsJpeg(outputStream);
+                else
+                    image
+                        .SaveAsJpeg(outputStream);
+            }
+            outputStream.Seek(0, SeekOrigin.Begin);
+
+
+            SaveFileTo(outputStream, fullPath.TrimStart('/'));
+        }
+
         public void SavePictureTo(IFormFile postedFile, string fullPath, int? width)
         {
-
-
             var outputStream = new MemoryStream();
             var inputstream = new MemoryStream();
             postedFile.CopyToAsync(inputstream);

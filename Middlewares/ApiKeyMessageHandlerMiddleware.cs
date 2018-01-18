@@ -22,11 +22,14 @@ namespace YsrisCoreLibrary.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Headers.ContainsKey("api_key"))
+            if (
+                context.Request.Headers.ContainsKey("Authorization")
+                && !string.IsNullOrEmpty(context.Request.Headers.ContainsKey("Authorization").ToString())
+            )
             {
-                if (context.Request.Headers["api_key"].Equals(apiKey))
+                if (context.Request.Headers["Authorization"].Equals(apiKey))
                 {
-                    // manage auth stuff and session helper bidning here
+                    //TODO:set current user and session helper
                     await _next.Invoke(context);
                 }
                 else

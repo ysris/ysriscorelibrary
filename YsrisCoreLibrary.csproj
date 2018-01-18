@@ -33,6 +33,7 @@
     <PackageReference Include="OAuth.DotNetCore" Version="1.0.4" />
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="1.0.1" />
     <PackageReference Include="SimpleCrypto.NetCore" Version="1.0.0" />
+    <PackageReference Include="Stripe.net" Version="11.10.0" />
     <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="ta-lib" Version="0.5.0.3" />

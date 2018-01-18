@@ -16,5 +16,6 @@ namespace ysriscorelibrary.Interfaces
         IEnumerable<string> ListFiles(string baseDirectory);
         void MoveFile(string from, string to);
         string GetFullPath(string cur);
+        void SaveCroppedPictureTo(IFormFile file, string largePath, int v);
     }
 }

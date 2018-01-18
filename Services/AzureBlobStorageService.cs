@@ -137,5 +137,10 @@ namespace YsrisCoreLibrary.Services
         {
             throw new NotImplementedException();
         }
+
+        public void SaveCroppedPictureTo(IFormFile file, string largePath, int v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

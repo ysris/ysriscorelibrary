@@ -24,7 +24,7 @@ namespace YsrisCoreLibrary.Dal
             return item;
         }
 
-        public abstract Tuple<int, string> Get(string userName, string passsword, string tableName = "Customer");
+        public abstract Customer Get(string userName, string passsword, string tableName = "Customer");
 
         public Customer UpdateStatus(int customerId, string status, int connectedUserId)
         {

@@ -19,10 +19,10 @@ angular.module('frontendAngularClientApp').component('eCharts', {
             var myChart = echarts.init(document.getElementById(id));
             if (this.options != null)
                 myChart.setOption(this.options);
-            myChart.resize();
-            angular.element($window).bind('resize', function () {
-                myChart.resize();
-            });
+            $interval(function () { myChart.resize(); }, 200);
+            //angular.element($window).bind('resize', function () {
+            //    myChart.resize();
+            //});
 
 
         };

@@ -56,14 +56,8 @@ namespace YsrisCoreLibrary.Controllers
         [HttpPost("Login")]
         public async Task<Customer> Login([FromBody] dynamic values)
         {
-            var entity = _dal.Get((string)values.username.ToString(), (string)values.password.ToString());
-
-            if (entity == null)
-                throw new Exception("UnknownUser");
-
-            var fullEntity = _dal.Get((int)entity.Item1, (int)entity.Item1);
-
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, entity.Item2) };
+            var fullEntity = _dal.Get((string)values.username.ToString(), (string)values.password.ToString());
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, fullEntity.email) };
             if (!string.IsNullOrEmpty(fullEntity.rolesString))
                 foreach (var cur in fullEntity.rolesString.Split(',').Select(a => a.Trim()))
                     claims.Add(new Claim(ClaimTypes.Role, cur));
@@ -256,7 +250,7 @@ namespace YsrisCoreLibrary.Controllers
             _myLogger.LogInformation($"+ UploadAvatar file={file}");
 
             var largePath = $"/avatars/large/{_sessionHelperInstance.User.id}.jpg";
-            _storageService.SavePictureTo(file, largePath, 300);
+            _storageService.SaveCroppedPictureTo(file, largePath, 300);
 
             var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
             entity.picture = largePath;
@@ -349,6 +343,11 @@ namespace YsrisCoreLibrary.Controllers
             if (_sessionHelperInstance.User != null)
             {
                 var smallUri = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id).picture;
+                if (smallUri == null)
+                {
+                    var path = Path.Combine(_env.WebRootPath, "bobos_components\\assets\\images\\profile-placeholder.png");
+                    return File(System.IO.File.ReadAllBytes(path), "image/png");
+                }
                 var result = _storageService.GetFileContent(smallUri)?.Result?.ToArray();
                 if (result == null)
                     return null;
