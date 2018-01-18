@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YsrisCoreLibrary.Dal;
 using YsrisCoreLibrary.Models;
 
 namespace YsrisCoreLibrary.Services
@@ -12,10 +13,12 @@ namespace YsrisCoreLibrary.Services
     public class SessionHelperService
     {
         private readonly IHttpContextAccessor _accessor;
+        private readonly CustomerDal _dal;
 
-        public SessionHelperService(IHttpContextAccessor accessor)
+        public SessionHelperService(IHttpContextAccessor accessor, CustomerDal dal)
         {
             _accessor = accessor;
+            _dal = dal;
         }
 
         public HttpContext HttpContext => _accessor.HttpContext;
@@ -27,7 +30,11 @@ namespace YsrisCoreLibrary.Services
                 var str = _accessor.HttpContext.Session.GetString("UserEntity");
                 if (str != null)
                     return JsonConvert.DeserializeObject<Customer>(str);
-                return null;
+                else
+                {
+                    var email = HttpContext.User.Claims.First().Value;
+                    return _dal.Get(email, 0);
+                }
             }
         }
 
