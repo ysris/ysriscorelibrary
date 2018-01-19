@@ -463,11 +463,15 @@ namespace YsrisCoreLibrary.Controllers
 
                 if (user != null)
                 {
-                    var claims = new[]
+                    var claims = new List<Claim>
                     {
                       new Claim(JwtRegisteredClaimNames.Sub, user.email),
                       new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     };
+
+                    if (!string.IsNullOrEmpty(user.rolesString))
+                        foreach (var cur in user.rolesString.Split(',').Select(a => a.Trim()))
+                            claims.Add(new Claim(ClaimTypes.Role, cur));
 
                     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
                     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
