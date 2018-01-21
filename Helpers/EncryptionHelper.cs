@@ -1,4 +1,5 @@
-﻿using SimpleCrypto;
+﻿using Microsoft.Extensions.Configuration;
+using SimpleCrypto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,14 @@ namespace YsrisCoreLibrary.Helpers
     /// </summary>
     public class EncryptionHelper
     {
-        private string Salt => ConfigurationHelper.EncryptionSalt;
+        private IConfiguration _configuration;
+
+        public EncryptionHelper(IConfiguration configuration)
+        {
+            this._configuration = configuration;
+        }
+
+        private string Salt => _configuration.GetValue<string>("Data:EncryptionSalt");
         private readonly ICryptoService cryptoService = new PBKDF2();
 
         /// <summary>

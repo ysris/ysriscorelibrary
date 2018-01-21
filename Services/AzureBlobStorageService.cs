@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using ysriscorelibrary.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace YsrisCoreLibrary.Services
 {
@@ -30,12 +31,14 @@ namespace YsrisCoreLibrary.Services
         private SessionHelperService SessionHelperInstance;
         private ILogger<MailHelperService> MyLogger;
         private IHostingEnvironment Env;
+        private IConfiguration _configuration;
 
-        public AzureBlobStorageService(SessionHelperService sessionHelper, ILogger<MailHelperService> logger, IHostingEnvironment env)
+        public AzureBlobStorageService(SessionHelperService sessionHelper, ILogger<MailHelperService> logger, IHostingEnvironment env, IConfiguration configuration)
         {
             SessionHelperInstance = sessionHelper;
             MyLogger = logger;
             Env = env;
+            _configuration = configuration;
         }
 
         public void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null)
@@ -69,7 +72,7 @@ namespace YsrisCoreLibrary.Services
             fullPath = fullPath.TrimStart('/');
 
             //    //Connect to Azure
-            var storageAccount = CloudStorageAccount.Parse(ConfigurationHelper.BlobStorageConnectionString);
+            var storageAccount = CloudStorageAccount.Parse(_configuration.GetValue<string>("Data:BlobStorageConnectionString"));
             var blobClient = storageAccount.CreateCloudBlobClient();
 
             var container = blobClient.GetContainerReference("ConfigurationHelper.StorageContainerName");
@@ -95,7 +98,7 @@ namespace YsrisCoreLibrary.Services
 
             try
             {
-                var storageAccount = CloudStorageAccount.Parse(ConfigurationHelper.BlobStorageConnectionString);
+                var storageAccount = CloudStorageAccount.Parse(_configuration.GetValue<string>("Data:BlobStorageConnectionString"));
                 var blobClient = storageAccount.CreateCloudBlobClient();
                 var container = blobClient.GetContainerReference("inoutdata");
                 var blockBlob = container.GetBlockBlobReference(fullPath);
@@ -113,7 +116,7 @@ namespace YsrisCoreLibrary.Services
 
         public IEnumerable<string> ListFiles(string directory)
         {
-            var storageAccount = CloudStorageAccount.Parse(ConfigurationHelper.BlobStorageConnectionString);
+            var storageAccount = CloudStorageAccount.Parse(_configuration.GetValue<string>("Data:BlobStorageConnectionString"));
             var blobClient = storageAccount.CreateCloudBlobClient();
             var blockBlob = blobClient.GetContainerReference("inoutdata").GetDirectoryReference(directory);
             BlobContinuationToken continuationToken = null;

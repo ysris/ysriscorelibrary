@@ -39,6 +39,7 @@ namespace YsrisCoreLibrary.Controllers
         protected readonly IStorageService _storageService;
         protected AbstractCustomerDal _dal;
         private IConfiguration _config;
+        private EncryptionHelper _encryptionHelper;
 
         /// <summary>
         /// Default constructor
@@ -50,7 +51,7 @@ namespace YsrisCoreLibrary.Controllers
         public AbstractCustomerController(SessionHelperService sessionHelper,
             ILogger<AbstractCustomerController> logger, IHostingEnvironment env,
             MailHelperService mailHelperService, IStorageService storageService,
-            IConfiguration config
+            IConfiguration config, CustomerDal dal, EncryptionHelper encryptionHelper
             )
         {
             _sessionHelperInstance = sessionHelper;
@@ -58,8 +59,9 @@ namespace YsrisCoreLibrary.Controllers
             _env = env;
             _mailHelperService = mailHelperService;
             _storageService = storageService;
-            _dal = new CustomerDal();
+            _dal = dal;
             _config = config;
+            _encryptionHelper = encryptionHelper;
         }
 
         [HttpPost("Login")]
@@ -82,7 +84,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         [HttpPost("Logout")]
-        public async void Logout() => await HttpContext.SignOutAsync();
+        public async void Logout() => await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
         [HttpPost("recover")]
         [AllowAnonymous]
@@ -133,7 +135,7 @@ namespace YsrisCoreLibrary.Controllers
             {
                 entity.activationCode = null;
                 entity.recoverAskDate = null;
-                entity.password = new EncryptionHelper().GetHash(password);
+                entity.password = _encryptionHelper.GetHash(password);
                 entity.accountStatus = CustomerStatus.Activated;
                 _dal.AddOrUpdate(entity, 0);
 
@@ -218,7 +220,7 @@ namespace YsrisCoreLibrary.Controllers
             };
             if (values.passwordForTyping == null)
                 throw new Exception("Password is null");
-            entity.password = new EncryptionHelper().GetHash(values.passwordForTyping.ToString()); //keep here for avoiding the model binding
+            entity.password = _encryptionHelper.GetHash(values.passwordForTyping.ToString()); //keep here for avoiding the model binding
             entity.companyId = 0;
             entity.id = (int)_dal.AddOrUpdate(entity, 0);
 
@@ -290,7 +292,7 @@ namespace YsrisCoreLibrary.Controllers
                 {
                     if (values.rawPasswordConfirm.ToString() != values.passwordForTyping.ToString())
                         throw new Exception("Password confirmation mismatch");
-                    entity.password = new EncryptionHelper().GetHash(values.passwordForTyping.ToString());
+                    entity.password = _encryptionHelper.GetHash(values.passwordForTyping.ToString());
                 }
 
             _dal.AddOrUpdate(entity, _sessionHelperInstance.User.id);

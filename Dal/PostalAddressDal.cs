@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,5 +10,12 @@ namespace YsrisCoreLibrary.Dal
 {
     public class PostalAddressDal : AbstractDal<PostalAddress>
     {
+        private IConfiguration _configuration;
+
+        public PostalAddressDal(IConfiguration configuration) : base(configuration)
+        {
+            _configuration = configuration;
+
+        }
     }
 }

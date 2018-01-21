@@ -9,11 +9,17 @@ using YsrisCoreLibrary.Dal;
 using YsrisCoreLibrary.Helpers;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Enums;
+using Microsoft.Extensions.Configuration;
 
 namespace YsrisCoreLibrary.Dal
 {
     public abstract class AbstractCustomerDal : AbstractDal<Customer>
     {
+        public AbstractCustomerDal(IConfiguration configuration) : base(configuration)
+        {
+
+        }
+
         public override Customer Get(string username, int userId, string tableName = "Customer")
         {
             var sql = $"SELECT * FROM {tableName} WHERE email = '{username}' AND DeletionDate IS NULL";

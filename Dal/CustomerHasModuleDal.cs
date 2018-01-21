@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,13 @@ namespace YsrisCoreLibrary.Dal
 {
     public class CustomerHasModuleDal : AbstractDal<CustomerHasModule>
     {
+        private IConfiguration _configuration;
+
+        public CustomerHasModuleDal(IConfiguration configuration) : base(configuration)
+        {
+            _configuration = configuration;
+        }
+
         public IEnumerable<CustomerHasModule> ListFor(int id, int userId)
         {
             var set = QuerySql($@"SELECT * FROM {_tableName} WHERE CustomerId='{id}' AND DeletionDate IS NULL;", userId).ToList();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,12 @@ namespace YsrisCoreLibrary.Dal
 {
     public class CustomerModuleDal : AbstractDal<object>
     {
+        private IConfiguration _configuration;
 
+        public CustomerModuleDal(IConfiguration configuration) : base(configuration)
+        {
+            _configuration = configuration;
+        }
 
         //public IEnumerable<CustomerHasModule> ListModules(Customer user, int userId)
         //{

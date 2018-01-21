@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,8 @@ namespace YsrisCoreLibrary.Dal
     /// <typeparam name="T"></typeparam>
     public abstract class AbstractDal<T> where T : class
     {
+        private IConfiguration Configuration { get; }
+
         /// <summary>
         /// From T, we get the name of the SQL table (table name == entity name)
         /// </summary>
@@ -30,7 +33,7 @@ namespace YsrisCoreLibrary.Dal
         public virtual string ConnectionString { get; }
 
         public IDbConnection _getConnection(string connString) =>
-            ConfigurationHelper.ConnectionType == "MySql"
+            Configuration.GetValue<string>("Data:DefaultConnection:ConnectionType") == "MySql"
             ? (IDbConnection)new MySqlConnection(connString)
             : (IDbConnection)new SqlConnection(connString);
 
@@ -48,10 +51,11 @@ namespace YsrisCoreLibrary.Dal
         /// <summary>
         /// Default constructor
         /// </summary>
-        public AbstractDal()
+        public AbstractDal(IConfiguration configuration)
         {
+            this.Configuration = configuration;
             _tableName = typeof(T).Name;
-            ConnectionString = ConfigurationHelper.ConnectionString;
+            ConnectionString = Configuration.GetValue<string>("Data:DefaultConnection:ConnectionString");
         }
 
         #region Querying
@@ -173,7 +177,7 @@ namespace YsrisCoreLibrary.Dal
             string sql = null;
 
 
-            if (ConfigurationHelper.ConnectionType == "MySql")
+            if (Configuration.GetValue<string>("Data:DefaultConnection:ConnectionType") == "MySql")
             {
                 sql = $@"INSERT INTO `{__tableName ?? tableName}` ( {string.Join(" , ", all.Select(a => $"`{a.Key}`"))} ) 
                     VALUES ( {string.Join(" , ", all.Select(a => $"{formatter(a.Value)}"))} )
@@ -202,7 +206,7 @@ namespace YsrisCoreLibrary.Dal
                 conn.Open();
 
 
-                if (ConfigurationHelper.ConnectionType == "MySql")
+                if (Configuration.GetValue<string>("Data:DefaultConnection:ConnectionType") == "MySql")
                 {
                     var exec = conn.Query(sql, values).SingleOrDefault();
                     return (int)exec.id;
