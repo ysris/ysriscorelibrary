@@ -15,9 +15,9 @@ namespace YsrisCoreLibrary.Models.Financial
     {
         
 
-        [DataMember]
-        [NotMapped]
-        public string portfolioStrategy { get; set; }
+        //[DataMember]
+        //[NotMapped]
+        //public string portfolioStrategy { get; set; }
 
         [DataMember]
         [NotMapped]

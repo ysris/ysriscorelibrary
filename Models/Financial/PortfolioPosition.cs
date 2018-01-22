@@ -53,8 +53,8 @@ namespace YsrisCoreLibrary.Models.Financial
         //[DataMember]
         //public Instrument instrument { get; set; }
 
-        [DataMember]
-        public string simulationName { get; set; }
+        //[DataMember]
+        //public string simulationName { get; set; }
 
     }
 }
