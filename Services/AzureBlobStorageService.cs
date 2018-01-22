@@ -75,7 +75,7 @@ namespace YsrisCoreLibrary.Services
             var storageAccount = CloudStorageAccount.Parse(_configuration.GetValue<string>("Data:BlobStorageConnectionString"));
             var blobClient = storageAccount.CreateCloudBlobClient();
 
-            var container = blobClient.GetContainerReference("ConfigurationHelper.StorageContainerName");
+            var container = blobClient.GetContainerReference("StorageContainerName");
             var x = container.CreateIfNotExistsAsync().Result;
 
             //  ref to the file
