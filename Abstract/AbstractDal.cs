@@ -128,7 +128,11 @@ namespace YsrisCoreLibrary.Dal
         /// List the T's that were not flagged as removed
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<T> SafeList(int userId, string tableName = null) => QuerySql($"SELECT * FROM {tableName ?? typeof(T).Name} WHERE DeletionDate IS NULL;", userId);
+        public virtual IEnumerable<T> SafeList(int userId, string tableName = null)
+        {
+            var sql = $"SELECT * FROM {tableName ?? typeof(T).Name} WHERE DeletionDate IS NULL;";
+            return QuerySql(sql, userId);
+        }
 
         /// <summary>
         /// Get a T object

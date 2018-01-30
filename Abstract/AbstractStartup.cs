@@ -70,6 +70,12 @@ namespace YsrisCoreLibrary.Abstract
 
             services.AddAuthorization(options =>
             {
+                options.AddPolicy("All", p =>
+                {
+                    p.RequireAuthenticatedUser();
+                    p.RequireClaim(ClaimTypes.Role, new List<string> { "Administrator", "User", "Coach" });
+                    p.Build();
+                });
                 options.AddPolicy("Administrator", p =>
                 {
                     p.RequireAuthenticatedUser();
@@ -80,6 +86,12 @@ namespace YsrisCoreLibrary.Abstract
                 {
                     p.RequireAuthenticatedUser();
                     p.RequireClaim(ClaimTypes.Role, "User");
+                    p.Build();
+                });
+                options.AddPolicy("Coach", p =>
+                {
+                    p.RequireAuthenticatedUser();
+                    p.RequireClaim(ClaimTypes.Role, "Coach");
                     p.Build();
                 });
             });
