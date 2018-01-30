@@ -9,12 +9,13 @@ using System.Text;
 using System.Threading.Tasks;
 using YsrisCoreLibrary.Helpers;
 using YsrisCoreLibrary.Models;
+using YsrisCoreLibrary.Services;
 
 namespace YsrisCoreLibrary.Dal
 {
     public class CustomerDal : AbstractCustomerDal
     {
-        public CustomerDal(IConfiguration configuration, EncryptionHelper encryptionHelper) : base(configuration)
+        public CustomerDal(IConfiguration configuration, EncryptionService encryptionHelper) : base(configuration)
         {
             Configuration = configuration;
             _encryptionHelper = encryptionHelper;
@@ -22,7 +23,7 @@ namespace YsrisCoreLibrary.Dal
 
         public IConfiguration Configuration { get; }
 
-        private EncryptionHelper _encryptionHelper;
+        private EncryptionService _encryptionHelper;
 
         public override Customer Get(string userName, string passsword, string tableName = "Customer")
         {

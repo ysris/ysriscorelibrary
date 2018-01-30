@@ -29,15 +29,15 @@ namespace YsrisCoreLibrary.Models.Financial
             date = Tools.UnixTimeStampToDateTime(entity.date);
         }
 
-        [Key]
-        [DataMember]
-        public int id { get; set; }
+        //[Key]
+        //[DataMember]
+        //public int id { get; set; }
 
         [DataMember]
         public string Instrument { get; set; }
 
-        [DataMember]
-        public string Market { get; set; }
+        //[DataMember]
+        //public string Market { get; set; }
 
         [DataMember]
         public DateTime date { get; set; }

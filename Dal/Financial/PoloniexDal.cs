@@ -36,7 +36,7 @@ namespace YsrisCoreLibrary.Dal.Financial
                     JsonConvert.DeserializeObject<IEnumerable<PoloniexTimeSerieItemRaw>>(raw)
                         ?? Enumerable.Empty<PoloniexTimeSerieItemRaw>();
 
-                var set = obj.Select(a => new TimeSerieItem(a) { Instrument = ccyPair, Market = "Poloniex", Period = period }).ToList();
+                var set = obj.Select(a => new TimeSerieItem(a) { Instrument = ccyPair, Period = period }).ToList();
 
                 return set;
             }

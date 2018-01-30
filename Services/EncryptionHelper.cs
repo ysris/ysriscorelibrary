@@ -7,16 +7,16 @@ using System.Text;
 using System.Threading.Tasks;
 using YsrisCoreLibrary.Helpers;
 
-namespace YsrisCoreLibrary.Helpers
+namespace YsrisCoreLibrary.Services
 {
     /// <summary>
     /// Encryption helper
     /// </summary>
-    public class EncryptionHelper
+    public class EncryptionService
     {
         private IConfiguration _configuration;
 
-        public EncryptionHelper(IConfiguration configuration)
+        public EncryptionService(IConfiguration configuration)
         {
             this._configuration = configuration;
         }

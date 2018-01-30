@@ -39,7 +39,7 @@ namespace YsrisCoreLibrary.Controllers
         protected readonly IStorageService _storageService;
         protected AbstractCustomerDal _dal;
         private IConfiguration _config;
-        private EncryptionHelper _encryptionHelper;
+        private EncryptionService _encryptionHelper;
 
         /// <summary>
         /// Default constructor
@@ -48,11 +48,16 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="logger"></param>
         /// <param name="env"></param>
         /// <param name="mailHelperService"></param>
-        public AbstractCustomerController(SessionHelperService sessionHelper,
-            ILogger<AbstractCustomerController> logger, IHostingEnvironment env,
-            MailHelperService mailHelperService, IStorageService storageService,
-            IConfiguration config, CustomerDal dal, EncryptionHelper encryptionHelper
-            )
+        public AbstractCustomerController(
+            SessionHelperService sessionHelper,
+            ILogger<AbstractCustomerController> logger,
+            IHostingEnvironment env,
+            MailHelperService mailHelperService,
+            IStorageService storageService,
+            IConfiguration config,
+            CustomerDal dal,
+            EncryptionService encryptionHelper
+        )
         {
             _sessionHelperInstance = sessionHelper;
             _myLogger = logger;

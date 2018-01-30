@@ -25,6 +25,8 @@ namespace YsrisCoreLibrary.Extensions
         /// <returns></returns>
         public static bool Between(this DateTime date, Tuple<DateTime, DateTime> range) => date >= range.Item1 && date <= range.Item2;
 
+        public static bool Between(this DateTime date, (DateTime, DateTime) range) => Between(date, range.Item1, range.Item2);
+
         /// <summary>
         /// Foreach implementation for enumerable
         /// Why did i do that ? I don't know

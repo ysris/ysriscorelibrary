@@ -129,7 +129,7 @@ namespace YsrisCoreLibrary.Abstract
             services.AddSingleton<MailHelperService>();
             services.AddSingleton<IStorageService, LocalFileSystemStorageService>();
 
-            services.AddSingleton<EncryptionHelper>();
+            services.AddSingleton<EncryptionService>();
             services.AddTransient<CustomerDal>();
 
         }
@@ -159,7 +159,10 @@ namespace YsrisCoreLibrary.Abstract
             app.UseStaticFiles();
             app.UseSession(); // IMPORTANT: This session thing MUST go before UseMvc()
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
-            app.UseMvc();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            });
 
 
 
