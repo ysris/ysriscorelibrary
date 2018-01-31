@@ -1,6 +1,4 @@
-﻿/** THEBOBOS**/
-"use strict";
-angular.module("frontendAngularClientApp").controller("MasterController", function ($uibModal, $scope, $rootScope, $state, userService, $location, SweetAlert) {
+﻿angular.module("frontendAngularClientApp").controller("MasterController", function ($scope, $rootScope, $state, userService, $location, SweetAlert) {
     (function () {
         $rootScope.$on('$locationChangeSuccess',
             function (cur, next) {
@@ -171,43 +169,6 @@ angular.module("frontendAngularClientApp").controller("MasterController", functi
     };
 
 
-    //
-    // Custom
-    //
-
-    $rootScope.inscriptionmodal = function (userType) {
-
-        var modalInstance = $uibModal.open({
-            component: 'inscriptionModalComponent',
-            resolve: {
-                userType: function () {
-                    return userType;
-                }
-            }
-        });
-        modalInstance.result.then(function (selectedItem) {
-            // alert(1);
-        }, function () {
-            // alert(2);
-        });
-
-    };
-
-    $rootScope.loginmodal = function () {
-        var modalInstance = $uibModal.open({
-            component: 'loginModalComponent',
-            // resolve: {
-            //   items: function () {
-            //     return $scope.items;
-            //   }
-            // }
-        });
-        modalInstance.result.then(function (selectedItem) {
-            // alert(1);
-        }, function () {
-            // alert(2);
-        });
-    };
 
 
 
