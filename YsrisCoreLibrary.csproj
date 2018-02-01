@@ -8,11 +8,15 @@
     <None Remove="bobos_components_orig\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="wwwroot\bobos_components\assets\images\robot.png" />
     <None Remove="wwwroot\bobos_components\components\_Component.js.MODEL" />
     <None Remove="wwwroot\bobos_components\controllers\_Controller.js.MODEL" />
     <None Remove="wwwroot\bobos_components\services\_Service.js.MODEL" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="wwwroot\bobos_components\assets\images\robot.png">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="wwwroot\bobos_components\components\_Component.js.MODEL">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
