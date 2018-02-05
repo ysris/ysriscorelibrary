@@ -94,6 +94,10 @@ namespace YsrisCoreLibrary.Models.Financial
 
         [DataMember]
         [NotMapped]
+        public int? positionsCount => positions?.Count();
+
+        [DataMember]
+        [NotMapped]
         public List<object> entityModel { get; set; }
 
         [DataMember]
