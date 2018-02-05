@@ -1,0 +1,61 @@
+﻿<div class="panel panel-flat">
+    <div class="panel-heading">
+        <h6 class="panel-title">Conversation avec {{destCustomerId}}<a class="heading-elements-toggle" ng-click="refresh()"><i class="fa fa-refresh"></i></a></h6>
+    </div>
+
+
+    <div class="panel-body">
+        <ul class="media-list chat-list content-group" style="height:250px">
+            <!--<li class="media date-step content-divider">
+                <span>Monday, Feb 10</span>
+            </li>-->
+
+
+            <li ng-repeat="cur in entitylist">
+                <div class="media reversed" ng-if="cur.isConnectedUserAuthor == true">
+                    <div class="media-body">
+                        <div class="media-content">{{cur.message}}</div>
+                        <span class="media-annotation display-block mt-10">{{cur.creationDate}}</span>
+                    </div>
+                    <div class="media-right">
+                        <a href="bobos_components/assets/images/placeholder.jpg">
+                            <img src="bobos_components/assets/images/placeholder.jpg" class="img-circle img-md" alt="">
+                        </a>
+                    </div>
+                </div>
+                <div class="media" ng-if="cur.isConnectedUserAuthor == false">
+                    <div class="media-left">
+                        <a href="assets/images/placeholder.jpg">
+                            <img src="bobos_components/assets/images/placeholder.jpg" class="img-circle img-md" alt="">
+                        </a>
+                    </div>
+
+                    <div class="media-body">
+                        <div class="media-content">{{cur.message}}</div>
+                        <span class="media-annotation display-block mt-10">{{cur.creationDate}}</span>
+                    </div>
+                </div>
+            </li>
+
+
+
+
+        </ul>
+
+        <textarea name="enter-message" ng-model="entity.message" class="form-control content-group" rows="3" cols="1" placeholder="Enter your message..."></textarea>
+
+        <div class="row">
+            <div class="col-xs-6">
+                <ul class="icons-list icons-list-extended mt-10">
+                    <!--<li><a href="#" data-popup="tooltip" title="" data-container="body" data-original-title="Send photo"><i class="icon-file-picture"></i></a></li>
+                    <li><a href="#" data-popup="tooltip" title="" data-container="body" data-original-title="Send video"><i class="icon-file-video"></i></a></li>
+                    <li><a href="#" data-popup="tooltip" title="" data-container="body" data-original-title="Send file"><i class="icon-file-plus"></i></a></li>-->
+                </ul>
+            </div>
+
+            <div class="col-xs-6 text-right">
+                <button type="button" class="btn bg-teal-400 btn-labeled btn-labeled-right" ng-click="send()"><b><i class="icon-circle-right2"></i></b> Send</button>
+            </div>
+        </div>
+    </div>
+</div>

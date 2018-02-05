@@ -10,8 +10,12 @@
   <ItemGroup>
     <None Remove="wwwroot\bobos_components\assets\images\robot.png" />
     <None Remove="wwwroot\bobos_components\components\_Component.js.MODEL" />
+    <None Remove="wwwroot\bobos_components\controllers\conversationContactController.js" />
+    <None Remove="wwwroot\bobos_components\controllers\conversationMessageController.js" />
     <None Remove="wwwroot\bobos_components\controllers\_Controller.js.MODEL" />
     <None Remove="wwwroot\bobos_components\services\_Service.js.MODEL" />
+    <None Remove="wwwroot\bobos_components\views\conversation.html" />
+    <None Remove="wwwroot\bobos_components\views\conversationContacts.html" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="wwwroot\bobos_components\assets\images\robot.png">
@@ -20,10 +24,22 @@
     <Content Include="wwwroot\bobos_components\components\_Component.js.MODEL">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Include="wwwroot\bobos_components\controllers\conversationContactController.js">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot\bobos_components\controllers\conversationMessageController.js">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
     <Content Include="wwwroot\bobos_components\controllers\_Controller.js.MODEL">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="wwwroot\bobos_components\services\_Service.js.MODEL">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot\bobos_components\views\conversation.html">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot\bobos_components\views\conversationContacts.html">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>

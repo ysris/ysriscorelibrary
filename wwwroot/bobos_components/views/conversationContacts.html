@@ -1,0 +1,38 @@
+﻿<div class="content-wrapper">
+
+    <!-- Simple panel -->
+    <div class="panel panel-flat">
+        <div class="panel-heading">
+            <h5 class="panel-title">Contacts</h5>
+            <div class="heading-elements">
+                <ul class="icons-list">
+                    <li><a data-action="collapse"></a></li>
+                    <li><a data-action="close"></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="panel-body">
+            <ul class="media-list">
+                <li class="media" ng-repeat="item in entitylist">
+                    <!--<pre>{{item|json}}</pre>-->
+                    <div class="media-left">
+                        <img src="bobos_components/assets/images/placeholder.jpg" class="img-circle img-xs" alt="">
+                        <span class="badge bg-danger-400 media-badge">999</span>
+                    </div>
+
+                    <div class="media-body">
+                        <a ui-sref="conversation({destCustomerid:item.id})">
+                            {{item.prettyName}}
+                            <span class="media-annotation pull-right">99:99</span>
+                        </a>
+
+                        <span class="display-block text-muted">{{item.rolesString}}</span>
+                    </div>
+                </li>
+
+               
+            </ul>
+        </div>
+    </div>
+</div>
