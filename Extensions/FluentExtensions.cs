@@ -15,7 +15,7 @@ namespace YsrisCoreLibrary.Extensions
         /// <param name="rangeFrom">date range from</param>
         /// <param name="rangeTo">date range to</param>
         /// <returns></returns>
-        public static bool Between(this DateTime date, DateTime rangeFrom, DateTime rangeTo) => date >= rangeFrom && date <= rangeTo;
+        //public static bool Between(this DateTime date, DateTime rangeFrom, DateTime rangeTo) => date >= rangeFrom && date <= rangeTo;
 
         /// <summary>
         /// Check if a date is in a given date range
@@ -23,9 +23,9 @@ namespace YsrisCoreLibrary.Extensions
         /// <param name="date">to check</param>
         /// <param name="range">date range</param>
         /// <returns></returns>
-        public static bool Between(this DateTime date, Tuple<DateTime, DateTime> range) => date >= range.Item1 && date <= range.Item2;
+        //public static bool Between(this DateTime date, Tuple<DateTime, DateTime> range) => date >= range.Item1 && date <= range.Item2;
 
-        public static bool Between(this DateTime date, (DateTime, DateTime) range) => Between(date, range.Item1, range.Item2);
+        //public static bool Between(this DateTime date, (DateTime, DateTime) range) => Between(date, range.Item1, range.Item2);
 
         /// <summary>
         /// Foreach implementation for enumerable

@@ -12,10 +12,7 @@ namespace YsrisCoreLibrary.Abstract
 {
     public abstract class AbstractConversationContactController : AbstractController<Customer>
     {
-        public AbstractConversationContactController(DbContext context) : base(context)
-        {
-        }
-
+    
         private SessionHelperService _session;
         private ILogger<AbstractConversationContactController> _logger;
 
@@ -34,8 +31,9 @@ namespace YsrisCoreLibrary.Abstract
 
         public override IQueryable<Customer> Get()
         {
+            var set = _context.Set<ConversationMessage>();
             var contactIds =
-                from a in _context.Set<ConversationMessage>()
+                from a in set
                 where a.authorId == _session.User.id || a.destId == _session.User.id
                 select a.authorId == _session.User.id ? a.destId : a.authorId
                 ;
