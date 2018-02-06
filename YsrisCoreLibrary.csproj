@@ -9,7 +9,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="wwwroot\bobos_components\assets\images\robot.png" />
-    <None Remove="wwwroot\bobos_components\components\_Component.js.MODEL" />
     <None Remove="wwwroot\bobos_components\controllers\conversationContactController.js" />
     <None Remove="wwwroot\bobos_components\controllers\conversationMessageController.js" />
     <None Remove="wwwroot\bobos_components\controllers\_Controller.js.MODEL" />
@@ -19,9 +18,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="wwwroot\bobos_components\assets\images\robot.png">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\bobos_components\components\_Component.js.MODEL">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="wwwroot\bobos_components\controllers\conversationContactController.js">

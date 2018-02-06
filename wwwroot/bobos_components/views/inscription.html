@@ -1,79 +1,64 @@
-﻿<div class="alert alert-danger" role="alert" ng-if="ErrorMsg != null">
-    {{ErrorMsg}}
-</div>
-<form action="index/html" name="registrationForm" class="registration-form" novalidate>
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel">
-                <div class="panel-body">
-                    <div class="text-center">
-                        <div class="icon-object border-success text-success">
-                            <i class="icon-plus3"></i>
-                        </div>
-                        <h5 class="content-group-lg">Inscrivez-vous </h5>
+﻿<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+
+
+        <!-- Advanced login -->
+        <form action="index/html" name="myForm" class="registration-form">
+            <div class="panel panel-body login-form">
+                <div class="text-center">
+                    <div class="icon-object border-success text-success"><i class="icon-plus3"></i></div>
+                    <h5 class="content-group">Create account <small class="display-block">All fields are required</small></h5>
+                </div>
+
+                <div class="content-divider text-muted form-group"><span>Credentials</span></div>
+
+                <div class="form-group has-feedback has-feedback-left">
+                    <input type="text" class="form-control" placeholder="Email" ng-model="Entity.email" name="email" required>
+                    <div class="form-control-feedback">
+                        <i class="icon-mention text-muted"></i>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 col-md-offset-3">
-                            <div class="form-group has-feedback">
-                                <input type="text" name="lastName" class="form-control" placeholder="Nom" ng-model="Entity.lastName" required>
-                                <div class="form-control-feedback">
-                                    <i class="icon-user-check text-muted"></i>
-                                </div>
+                    <span class="help-block text-danger" ng-show="myForm.email.$touched && myForm.email.$valid == false"><i class="icon-cancel-circle2 position-left"></i>This field is required</span>
+                </div>
+
+                <div class="form-group has-feedback has-feedback-left">
+                    <input type="password" class="form-control" placeholder="Password" ng-model="Entity.passwordForTyping" name="passwordForTyping" required>
+                    <div class="form-control-feedback">
+                        <i class="icon-user-lock text-muted"></i>
+                    </div>
+                    <span class="help-block text-danger" ng-show="myForm.passwordForTyping.$touched && myForm.passwordForTyping.$valid == false"><i class="icon-cancel-circle2 position-left"></i>This field is required</span>
+                </div>
+
+                <div class="content-divider text-muted form-group"><span>Account owner</span></div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group has-feedback">
+                            <input type="text" class="form-control" placeholder="First name" ng-model="Entity.firstName" name="firstName" required>
+                            <div class="form-control-feedback">
+                                <i class="icon-user-check text-muted"></i>
                             </div>
+                            <span class="help-block text-danger" ng-show="myForm.firstName.$touched && myForm.firstName.$valid == false"><i class="icon-cancel-circle2 position-left"></i>This field is required</span>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 col-md-offset-3">
-                            <div class="form-group has-feedback">
-                                <input type="text" name="firstName" class="form-control" placeholder="Prenom" ng-model="Entity.firstName" required>
-                                <div class="form-control-feedback">
-                                    <i class="icon-user-check text-muted"></i>
-                                </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group has-feedback">
+                            <input type="text" class="form-control" placeholder="Last name" ng-model="Entity.lastName" name="lastName" required>
+                            <div class="form-control-feedback">
+                                <i class="icon-user-check text-muted"></i>
                             </div>
+                            <span class="help-block text-danger" ng-show="myForm.lastName.$touched && myForm.lastName.$valid == false"><i class="icon-cancel-circle2 position-left"></i>This field is required</span>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 col-md-offset-3">
-                            <div class="form-group has-feedback">
-                                <input type="email" name="email" class="form-control" placeholder="Email" required ng-model="Entity.email">
-                                <div class="form-control-feedback">
-                                    <i class="icon-mention text-muted"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-              
-                    <div class="row">
-                        <div class="col-md-6 col-md-offset-3">
-                            <div class="form-group has-feedback">
-                                <input type="password" name="passwordForTyping" class="form-control" placeholder="Mot de passe" ng-model="Entity.passwordForTyping" required>
-                                <div class="form-control-feedback">
-                                    <i class="icon-user-lock text-muted"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 col-md-offset-3">
-                            <div class="form-group has-feedback">
-                                <input type="password" name="RawPasswordConfirm" class="form-control" placeholder="Confirmation mot de passe" ng-model="Entity.RawPasswordConfirm" required compare-to="Entity.passwordForTyping">
-                                <div class="form-control-feedback">
-                                    <i class="icon-user-lock text-muted"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                 
-                    
-                    <div class="clearfix">
-                        <p class="text-center" style="margin-top: 25px;">
-                            <button type="button" class="btn bg-pink-400 btn-labeled btn-labeled-right " ng-click="save()">
-                                <b><i class="icon-plus3"></i></b> Créer mon compte
-                            </button>
-                        </p>
                     </div>
                 </div>
+
+
+                <button type="button" class="btn bg-teal btn-block btn-lg" ng-click="save()" ng-disabled="!(myForm.$valid)" style="margin-bottom:25px;">
+                    Register <i class="icon-circle-right2 position-right"></i>
+                </button>
             </div>
-        </div>
+        </form>
+        <!-- /advanced login -->
+
     </div>
-</form>
+</div>

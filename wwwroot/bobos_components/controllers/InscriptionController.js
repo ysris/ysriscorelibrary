@@ -19,7 +19,7 @@ angular.module("frontendAngularClientApp").controller("InscriptionController", [
             function (resp) {
                 $rootScope.IsBusy = false;
                 $rootScope.addNotification("Account created, please check your email");
-                $state.go("home");
+                $state.go("signin2");
             },
             $rootScope.raiseErrorDelegate
         );

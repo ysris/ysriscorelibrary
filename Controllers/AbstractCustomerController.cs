@@ -191,6 +191,7 @@ namespace YsrisCoreLibrary.Controllers
                         customerType = Role.Coach;
                         break;
                     case "User":
+                    default:
                         rolesList.Add(Role.User);
                         customerType = Role.User;
                         break;
