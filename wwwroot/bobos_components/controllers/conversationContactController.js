@@ -8,6 +8,7 @@
     })
     .controller("conversationContactsController", function ($scope, $state, $stateParams, $rootScope, conversationContactService) {
         $scope.entitylist = null;
+        $scope.selectedContact = null;
 
         $scope.refresh = function () {
             $rootScope.IsBusy = true;
@@ -17,6 +18,8 @@
                 $rootScope.IsBusy = false;
             }, $rootScope.raiseErrorDelegate);
         };
+
+        $scope.setSelected = function (item) { $scope.selectedContact = item; };
 
         //$scope.send = function () {
         //    var entity = { message: $scope.entity.message, destId: $scope.destCustomerId };

@@ -155,6 +155,6 @@ namespace YsrisCoreLibrary.Models
 
         [DataMember]
         [NotMapped]
-        public List<string> roles => !string.IsNullOrEmpty(rolesString) ? rolesString.Split(',').ToList() : null;
+        public List<string> roles => !string.IsNullOrEmpty(rolesString) ? rolesString.Split(',').Select(a => a.Trim()).ToList() : null;
     }
 }

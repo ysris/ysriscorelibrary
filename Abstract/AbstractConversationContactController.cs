@@ -13,8 +13,8 @@ namespace YsrisCoreLibrary.Abstract
     public abstract class AbstractConversationContactController : AbstractController<Customer>
     {
     
-        private SessionHelperService _session;
-        private ILogger<AbstractConversationContactController> _logger;
+        protected SessionHelperService _session;
+        protected ILogger<AbstractConversationContactController> _logger;
 
         /// <summary>
         /// Default constructor
@@ -29,6 +29,10 @@ namespace YsrisCoreLibrary.Abstract
             _logger = logger;
         }
 
+        /// <summary>
+        /// Default way of getting contacts of a customer (by using distinct values of already started discussions)
+        /// </summary>
+        /// <returns></returns>
         public override IQueryable<Customer> Get()
         {
             var set = _context.Set<ConversationMessage>();
