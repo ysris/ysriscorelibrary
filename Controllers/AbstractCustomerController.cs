@@ -69,10 +69,19 @@ namespace YsrisCoreLibrary.Controllers
             _encryptionHelper = encryptionHelper;
         }
 
+        public class LoginCustomerEntity
+        {
+            public Customer customer { get; set; }            
+        }
+
+
         [HttpPost("Login")]
-        public async Task<Customer> Login([FromBody] dynamic values)
+        public virtual async Task<LoginCustomerEntity> Login([FromBody] dynamic values)
         {
             var customer = _dal.Get((string)values.username.ToString(), (string)values.password.ToString());
+
+            if (customer == null)
+                throw new Exception("Unknown User");
 
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, customer.email) };
             if (!string.IsNullOrEmpty(customer.rolesString))
@@ -85,15 +94,15 @@ namespace YsrisCoreLibrary.Controllers
 
             //_sessionHelperInstance.HttpContext
             HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(customer));
-            return customer;
+            return new LoginCustomerEntity { customer = customer };
         }
 
         [HttpPost("Logout")]
-        public async void Logout() => await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        public virtual async void Logout() => await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
         [HttpPost("recover")]
         [AllowAnonymous]
-        public void Recover([FromBody]dynamic obj)
+        public virtual void Recover([FromBody]dynamic obj)
         {
             string email = obj?.email;
             if (email == null)
@@ -125,7 +134,7 @@ namespace YsrisCoreLibrary.Controllers
         [HttpPost]
         [Route("recover2")]
         [AllowAnonymous]
-        public void Recover2([FromBody]dynamic obj)
+        public virtual void Recover2([FromBody]dynamic obj)
         {
             string
                 email = obj.email,
