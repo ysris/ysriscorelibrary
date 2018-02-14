@@ -31,11 +31,11 @@ namespace YsrisCoreLibrary.Abstract
         public virtual IQueryable<T> Get()
         {
             var set = _context.Set<T>();
-            if (set.Select(a => a.entityModel).Distinct().All(a => a == null))
-                foreach (var a in set)
-                {
-                    a.entityModel = _entityModel;
-                }
+            //if (set.Select(a => a.entityModel).Distinct().All(a => a == null))
+            //    foreach (var a in set)
+            //    {
+            //        a.entityModel = _entityModel;
+            //    }
             return set;
         }
 
@@ -44,8 +44,8 @@ namespace YsrisCoreLibrary.Abstract
         public virtual T GetEmpty()
         {
             var entity = new T { };
-            if (_entityModel != null)
-                entity.entityModel = _entityModel;
+            //if (_entityModel != null)
+            //    entity.entityModel = _entityModel;
             return entity;
         }
 
@@ -57,8 +57,8 @@ namespace YsrisCoreLibrary.Abstract
                 return BadRequest(ModelState);
 
             var entity = await _context.Set<T>().FindAsync(id);
-            if (_entityModel != null)
-                entity.entityModel = _entityModel;
+            //if (_entityModel != null)
+            //    entity.entityModel = _entityModel;
 
             if (entity == null)
                 return NotFound();

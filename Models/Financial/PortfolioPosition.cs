@@ -32,6 +32,9 @@ namespace YsrisCoreLibrary.Models.Financial
         public decimal? position { get; set; }
 
         [DataMember]
+        public int longshort { get; set; }
+
+        [DataMember]
         public DateTime valuationDate { get; set; }
 
         //[DataMember]

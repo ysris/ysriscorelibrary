@@ -2,6 +2,7 @@
     $scope.entitylist = null;
 
     var refresh = function () {
+        $rootScope.SetPageTitle("Customers", "");
         $rootScope.SetPageMocked(false);
         $rootScope.IsBusy = true;
         userService.List().then(function (resp) {

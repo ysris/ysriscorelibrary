@@ -177,7 +177,7 @@ namespace YsrisCoreLibrary.Abstract
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
 
-            StripeConfiguration.SetApiKey(Configuration.GetValue<string>("Data:StripeSecretApiKey"));
+            
 
             // Everyday at 4AM UTC (5AM GVA)
             //RecurringJob.AddOrUpdate(() => dal.SyncAll(), Cron.Daily(4));
