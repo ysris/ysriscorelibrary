@@ -29,7 +29,7 @@ namespace YsrisCoreLibrary.Services
         }
 
 
-        public void SaveCroppedPictureTo(IFormFile postedFile, string fullPath, int width)
+        public void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null)
         {
             var outputStream = new MemoryStream();
             var inputstream = new MemoryStream();
@@ -39,15 +39,23 @@ namespace YsrisCoreLibrary.Services
             //using (var inputStream = fileInfo.CreateReadStream())
             using (var image = Image.Load(inputstream))
             {
-                var height = image.Height * (width / image.Width);
-                if (width != null && height != null)
-                    image
-                        .Resize((int)width, (int)height)
-                        .Crop((int)width, (int)width)
-                        .SaveAsJpeg(outputStream);
+                if (width != null)
+                {
+
+                    var height = image.Height * (width / image.Width);
+                    if (width != null && height != null)
+                        image
+                            .Resize((int)width, (int)height)
+                            .Crop((int)width, (int)width)
+                            .SaveAsJpeg(outputStream);
+                    else
+                        image
+                            .SaveAsJpeg(outputStream);
+                }
                 else
-                    image
-                        .SaveAsJpeg(outputStream);
+                {
+                    image.SaveAsJpeg(outputStream);
+                }
             }
             outputStream.Seek(0, SeekOrigin.Begin);
 
@@ -55,31 +63,7 @@ namespace YsrisCoreLibrary.Services
             SaveFileTo(outputStream, fullPath.TrimStart('/'));
         }
 
-        public void SavePictureTo(IFormFile postedFile, string fullPath, int? width)
-        {
-            var outputStream = new MemoryStream();
-            var inputstream = new MemoryStream();
-            postedFile.CopyToAsync(inputstream);
-            inputstream.Seek(0, SeekOrigin.Begin);
 
-            //using (var inputStream = fileInfo.CreateReadStream())
-            using (var image = Image.Load(inputstream))
-            {
-                var height = image.Height * (width / image.Width);
-                if (width != null && height != null)
-                    image                        
-                        .Resize((int)width, (int)height)
-                        .SaveAsJpeg(outputStream);
-                else
-                    image
-                        .SaveAsJpeg(outputStream);
-            }
-            outputStream.Seek(0, SeekOrigin.Begin);
-
-
-            SaveFileTo(outputStream, fullPath.TrimStart('/'));
-
-        }
         public void SaveFileTo(IFormFile postedFile, string fullPath)
         {
             var postedFile2 = new MemoryStream();

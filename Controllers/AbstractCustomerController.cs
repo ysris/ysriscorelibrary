@@ -273,7 +273,7 @@ namespace YsrisCoreLibrary.Controllers
             _myLogger.LogInformation($"+ UploadAvatar file={file}");
 
             var largePath = $"/avatars/large/{_sessionHelperInstance.User.id}.jpg";
-            _storageService.SaveCroppedPictureTo(file, largePath, 300);
+            _storageService.SavePictureTo(file, largePath, 300);
 
             var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
             entity.picture = largePath;
