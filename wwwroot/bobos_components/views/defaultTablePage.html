@@ -4,8 +4,8 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th ng-repeat="curCol in entitylist[0].entityModel">
-                        {{curCol.name}}
+                    <th ng-repeat="(curCol, value) in entitylist[0]">
+                        {{curCol}}
                     </th>
                     <th>
                         <input type="button" class="pull-right btn btn-primary" value="Add" ng-click="add()" />
@@ -14,8 +14,8 @@
             </thead>
             <tbody>
                 <tr ng-repeat="cur in entitylist">
-                    <td ng-repeat="curCol in entitylist[0].entityModel">
-                        {{cur[curCol.name]}}
+                    <td ng-repeat="(curCol, value) in cur">
+                        {{value}}
                     </td>
                     <td>
                         <div class="dropdown">

@@ -19,8 +19,6 @@ namespace YsrisCoreLibrary.Abstract
     {
         protected DbContext _context;
 
-        protected List<object> _entityModel;
-
         public AbstractController(DbContext context)
         {
             _context = context;

@@ -30,10 +30,6 @@ namespace YsrisCoreLibrary.Models.Financial
         public bool isVisible { get; set; }
 
         [DataMember]
-        public string portfolioCategoryCode { get; set; }
-
-        [DataMember]
-        [NotMapped]
-        public List<object> entityModel { get; set; }
+        public string portfolioCategoryCode { get; set; }        
     }
 }

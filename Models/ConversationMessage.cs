@@ -64,10 +64,5 @@ namespace YsrisCoreLibrary.Models
         [DataMember]
         [NotMapped]
         public bool isConnectedUserAuthor { get; set; }
-
-
-        [DataMember]
-        [NotMapped]
-        public List<object> entityModel { get; set; }
     }
 }
