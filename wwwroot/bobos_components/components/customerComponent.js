@@ -1,31 +1,63 @@
-angular.module('frontendAngularClientApp').component('customerComponent', {
-  templateUrl: '/bobos_components/views/defaultComponent.html',
-  bindings: { resolve: '<', close: '&', dismiss: '&' },
-  controller: function ($rootScope, userService, $state, customerService, clientService) {
-    var $ctrl = this;
-    $ctrl.entity = null;
+angular.module('frontendAngularClientApp')
+    .component('customerComponent', {
+        templateUrl: '/bobos_components/views/defaultComponent.html',
+        bindings: { resolve: '<', close: '&', dismiss: '&' },
+        controller: function ($rootScope, userService, $state, customerService, clientService) {
+            var $ctrl = this;
+            $ctrl.entity = null;
 
-    $ctrl.modalTitle = "Customer";
+            $ctrl.modalTitle = "Customer";
 
-    $ctrl.$onInit = function () {
-      $ctrl.entity = $ctrl.resolve.entity;
+            $ctrl.$onInit = function () {
+                $ctrl.entity = $ctrl.resolve.entity;
 
-      if ($ctrl.entity == null)
-        customerService.GetEmptyEntity().then(function (resp) {
-          $ctrl.entity = resp.data;
-        })
-    };
+                if ($ctrl.entity == null)
+                    customerService.GetEmptyEntity().then(function (resp) {
+                        $ctrl.entity = resp.data;
+                    })
+            };
 
-    $ctrl.cancel = function () {
-      $ctrl.dismiss({ $value: 'cancel' });
-    };
+            $ctrl.cancel = function () {
+                $ctrl.dismiss({ $value: 'cancel' });
+            };
 
-    $ctrl.submit = function () {
-      console.log("entity", $ctrl.entity);
-      userService.createAccount($ctrl.entity).then(function (resp) {
-        $rootScope.addNotification("Customer added");
-        $ctrl.close({ $value: $ctrl.entity });
-      }, $rootScope.raiseErrorDelegate);
-    };
-  }
-});
+            $ctrl.submit = function () {
+                console.log("entity", $ctrl.entity);
+                userService.createAccount($ctrl.entity).then(function (resp) {
+                    $rootScope.addNotification("Customer added");
+                    $ctrl.close({ $value: $ctrl.entity });
+                }, $rootScope.raiseErrorDelegate);
+            };
+        }
+    })
+    .component('inviteCustomerComponent', {
+        templateUrl: '/bobos_components/views/inviteCustomerComponent.html',
+        bindings: { resolve: '<', close: '&', dismiss: '&' },
+        controller: function ($rootScope, userService, $state, customerService, clientService) {
+            var $ctrl = this;
+            $ctrl.entity = null;
+
+            $ctrl.modalTitle = "Invite a Customer";
+
+            $ctrl.$onInit = function () {
+                //$ctrl.entity = $ctrl.resolve.entity;
+
+                //if ($ctrl.entity == null)
+                //    customerService.GetEmptyEntity().then(function (resp) {
+                //        $ctrl.entity = resp.data;
+                //    })
+            };
+
+            $ctrl.cancel = function () {
+                $ctrl.dismiss({ $value: 'cancel' });
+            };
+
+            $ctrl.submit = function () {
+                userService.inviteCustomer($ctrl.entity).then(function (resp) {
+                    $rootScope.addNotification("Customer invited");
+                    $ctrl.close({ $value: $ctrl.entity });
+                }, $rootScope.raiseErrorDelegate);
+            };
+        }
+    })
+    ;

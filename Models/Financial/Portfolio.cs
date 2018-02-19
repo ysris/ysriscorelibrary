@@ -90,7 +90,7 @@ namespace YsrisCoreLibrary.Models.Financial
 
         [DataMember]
         [NotMapped]
-        public IEnumerable<PortfolioPosition> positions { get; set; }
+        public List<PortfolioPosition> positions { get; set; }
 
         [DataMember]
         [NotMapped]

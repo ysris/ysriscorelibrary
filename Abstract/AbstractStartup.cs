@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Stripe;
 using Swashbuckle.AspNetCore.Swagger;
@@ -164,7 +165,11 @@ namespace YsrisCoreLibrary.Abstract
             app.UseHangfireServer();
             app.UseHangfireDashboard();
 
-
+            app.UseStatusCodePages(async context =>
+            {
+                context.HttpContext.Response.ContentType = "text/json";
+                await context.HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(new { context.HttpContext.Response.StatusCode }));
+            });
 
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
@@ -177,7 +182,7 @@ namespace YsrisCoreLibrary.Abstract
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
 
-            
+
 
             // Everyday at 4AM UTC (5AM GVA)
             //RecurringJob.AddOrUpdate(() => dal.SyncAll(), Cron.Daily(4));

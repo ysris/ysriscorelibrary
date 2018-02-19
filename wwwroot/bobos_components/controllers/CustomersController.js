@@ -49,7 +49,22 @@
             // items: function () {return $scope.items;}
             // }
         });
-        modalInstance.result.then(function (selectedItem) {            
+        modalInstance.result.then(function (selectedItem) {
+            refresh();
+        }, function () {
+            // alert(2);
+        });
+
+    };
+
+    $scope.invite = function () {
+        var modalInstance = $uibModal.open({
+            component: "inviteCustomerComponent",
+            // resolve: {
+            // items: function () {return $scope.items;}
+            // }
+        });
+        modalInstance.result.then(function (selectedItem) {
             refresh();
         }, function () {
             // alert(2);

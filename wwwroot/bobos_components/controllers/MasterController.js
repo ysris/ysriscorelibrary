@@ -100,8 +100,12 @@
      * When something has something to complain about, it comes here
      */
     $rootScope.raiseErrorDelegate = function (e) {
+
+        if (e.data.StatusCode == 404)
+            $state.go("signin2");
+
         console.log("rootScope.raiseErrorDelegate->e", e);
-        $rootScope.addNotification(e.statusText + " " + e.data.ExceptionMessage + " " + e.data.error);
+        $rootScope.addNotification(e.data.StatusCode + " " + e.statusText + " " + e.data.ExceptionMessage + " " + e.data.error);
         $rootScope.IsBusy = false;
     };
 

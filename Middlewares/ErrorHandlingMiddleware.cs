@@ -37,7 +37,7 @@ namespace YsrisCoreLibrary.Middlewares
 
             var result = JsonConvert.SerializeObject(new { error = exception.Message });
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)500;
+            context.Response.StatusCode = StatusCodes.Status200OK;
             return context.Response.WriteAsync(result);
         }
     }

@@ -53,6 +53,10 @@ namespace YsrisCoreLibrary.Models.Financial
         [NotMapped]
         public List<object> entityModel { get; set; }
 
+        [DataMember]
+        [NotMapped]
+        public Instrument instrument { get; set; }
+
         //[DataMember]
         //public Instrument instrument { get; set; }
 
