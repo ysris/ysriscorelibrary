@@ -101,11 +101,12 @@
      */
     $rootScope.raiseErrorDelegate = function (e) {
 
-        if (e.data.StatusCode == 404)
-            $state.go("signin2");
+        //if (e.data.StatusCode == 404)
+            //$state.go("signin", { suppl: null });
 
         console.log("rootScope.raiseErrorDelegate->e", e);
-        $rootScope.addNotification(e.data.StatusCode + " " + e.statusText + " " + e.data.ExceptionMessage + " " + e.data.error);
+        //" " + e.statusText + " " + e.data.ExceptionMessage + " " +
+        $rootScope.addNotification(e.data.StatusCode +  e.data.error);
         $rootScope.IsBusy = false;
     };
 

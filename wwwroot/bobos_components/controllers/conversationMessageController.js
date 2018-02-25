@@ -9,6 +9,9 @@
     .controller("conversationMessagesController", function ($scope, $state, $stateParams, $rootScope, conversationMessageService) {
         $scope.destCustomerId = $stateParams.destCustomerid;
 
+
+
+
         $scope.entitylist = null;
         $scope.entity = null;
 
@@ -36,17 +39,35 @@
         //template: '<pre>{{$ctrl.entitylist|json}}</pre>',
         templateUrl: '/bobos_components/views/conversationComponentView.html',
         bindings: { customer: "<" },
-        controller: function ($rootScope, $state, $element, $attrs, $window, $interval, conversationMessageService) {
+        controller: function ($rootScope, $scope, $state, $element, $attrs, $window, $interval, conversationMessageService) {
             var $ctrl = this;
+
+            //$ctrl.customer FROM BINDINGS
+            $ctrl.entitylist = null;
+            $ctrl.entity = null;
+
+
 
             //$ctrl.$onInit = function () { };
             $ctrl.$onChanges = function (changesObj) {
                 $ctrl.refresh();
             };
 
-            //$ctrl.customer FROM BINDINGS
-            $ctrl.entitylist = null;
-            $ctrl.entity = null;
+
+            var eventHook = $rootScope.$on('onPusherMessage', function (event, data) {
+                switch (data.type) {
+                    case "ConversationMessageSent":
+                        if (data.destId == $rootScope.ConnectedUserId && data.authorId == $ctrl.customer.id) {
+                            //alert("We should update conversation with id=" + data.authorId);
+                            $ctrl.refresh();
+
+                        }
+                        break;
+
+                    default:
+                }
+            });
+            $scope.$on('$destroy', function () { eventHook(); });
 
 
             $ctrl.refresh = function () {
@@ -56,7 +77,8 @@
                 //alert("refresh");
                 //    //$rootScope.IsBusy = true;
                 conversationMessageService.listForDestCustomer($ctrl.customer.id).then(function (result) {
-                    $ctrl.entitylist = result.data;
+                    $ctrl.entitylist = result.data;                    
+
                     //$rootScope.IsBusy = false;
                 }, $rootScope.raiseErrorDelegate);
             };

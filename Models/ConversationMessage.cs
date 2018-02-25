@@ -62,6 +62,9 @@ namespace YsrisCoreLibrary.Models
         public bool isDaySwitch { get; set; }
 
         [DataMember]
+        public bool isReadByDest { get; set; }
+
+        [DataMember]
         [NotMapped]
         public bool isConnectedUserAuthor { get; set; }
     }

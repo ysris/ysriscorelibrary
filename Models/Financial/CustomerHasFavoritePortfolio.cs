@@ -17,6 +17,6 @@ namespace YsrisCoreLibrary.Models.Financial
         // [DataMember]
         // public string companyName { get; set; }
         public int customerId { get; set; }
-        public int portfolioId { get; set; }
+        public string portfolioName { get; set; }
     }
 }

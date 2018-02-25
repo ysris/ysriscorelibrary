@@ -61,7 +61,7 @@ namespace YsrisCoreLibrary.Abstract
             entity.authorId = _session.User.id;
 
             _context.Set<ConversationMessage>().Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             _logger.LogDebug("conversationmessage -Post");
 

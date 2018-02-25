@@ -10,6 +10,10 @@
         $scope.entitylist = null;
         $scope.selectedContact = null;
 
+        $rootScope.$on('onPusherMessage', function (event, data) {
+            console.log("achalandage", data); // 'Some data'
+        });
+
         $scope.refresh = function () {
             $rootScope.IsBusy = true;
             conversationContactService.list().then(function (result) {

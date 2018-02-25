@@ -25,12 +25,21 @@
         $scope.signIn = function () {
             $rootScope.IsBusy = true;
             userService.logIn($scope.login, $scope.password).then(function (response) {
+
+                if (response.data.error != null) {                    
+                    $rootScope.raiseErrorDelegate(response);
+                    return;
+                }
+
                 $rootScope.setConnectedUser(response.data.customer);
                 $rootScope.avatarUri = "/api/customer/avatar";
 
                 $scope.redirectBackDelegate(response);
 
                 $rootScope.IsBusy = false;
+
+                
+
             }, function errorCallback(e) {
                 new PNotify({ title: "Login error", text: e.data.error, type: "error", styling: "bootstrap3", delay: 2000 });
                 $state.go("home");

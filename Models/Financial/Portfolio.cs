@@ -13,7 +13,6 @@ namespace YsrisCoreLibrary.Models.Financial
     [DataContract]
     public class Portfolio : AbstractEntity, IAbstractEntity
     {
-        
 
         //[DataMember]
         //[NotMapped]
@@ -130,7 +129,8 @@ namespace YsrisCoreLibrary.Models.Financial
         [NotMapped]
         public object dateYTD { get; set; }
 
-
-
+        [DataMember]
+        [NotMapped]
+        public decimal? volatility { get; set; }
     }
 }
