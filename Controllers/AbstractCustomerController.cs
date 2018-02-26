@@ -394,7 +394,9 @@ namespace YsrisCoreLibrary.Controllers
                 var path = Path.Combine(_env.WebRootPath, "bobos_components\\assets\\images\\profile-placeholder.png");
                 return File(System.IO.File.ReadAllBytes(path), "image/png");
             }
-            return File(_storageService.GetFileContent(smallUri).Result.ToArray(), "image/jpeg");
+            var result = _storageService.GetFileContent(smallUri)?.Result?.ToArray();
+            if (result == null)
+            return File(result, "image/jpeg");
 
         }
 

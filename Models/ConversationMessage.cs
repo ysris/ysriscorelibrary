@@ -50,6 +50,10 @@ namespace YsrisCoreLibrary.Models
         public DateTime creationDate { get; set; }
 
         [DataMember]
+        [NotMapped]
+        public string creationDateFormatted => creationDate.ToString("dddd dd MMMM, hh:mm");
+
+        [DataMember]
         public string message { get; set; }
 
         [DataMember]

@@ -106,7 +106,7 @@
 
         console.log("rootScope.raiseErrorDelegate->e", e);
         //" " + e.statusText + " " + e.data.ExceptionMessage + " " +
-        $rootScope.addNotification(e.data.StatusCode +  e.data.error);
+        $rootScope.addNotification(e.data.StatusCode + ' ' + e.data.error);
         $rootScope.IsBusy = false;
     };
 

@@ -5,7 +5,7 @@
 
 
     <div class="panel-body">
-        <ul class="media-list chat-list content-group" style="height:250px">
+        <ul class="media-list chat-list content-group" style="height:250px" scroll-glue>
             <!--<li class="media date-step content-divider">
                 <span>Monday, Feb 10</span>
             </li>-->
@@ -18,21 +18,21 @@
                         <span class="media-annotation display-block mt-10">{{cur.creationDate}}</span>
                     </div>
                     <div class="media-right">
-                        <a href="bobos_components/assets/images/placeholder.jpg">
-                            <img src="bobos_components/assets/images/placeholder.jpg" class="img-circle img-md" alt="">
+                        <a>
+                            <img ng-src="/api/customer/avatar/{{cur.authorId}}" class="img-circle img-md" alt="">
                         </a>
                     </div>
                 </div>
                 <div class="media" ng-if="cur.isConnectedUserAuthor == false">
                     <div class="media-left">
-                        <a href="assets/images/placeholder.jpg">
-                            <img src="bobos_components/assets/images/placeholder.jpg" class="img-circle img-md" alt="">
+                        <a>
+                            <img ng-src="/api/customer/avatar/{{cur.authorId}}" class="img-circle img-md" alt="">
                         </a>
                     </div>
 
                     <div class="media-body">
                         <div class="media-content">{{cur.message}}</div>
-                        <span class="media-annotation display-block mt-10">{{cur.creationDate}}</span>
+                        <span class="media-annotation display-block mt-10">{{cur.creationDateFormatted}}</span>
                     </div>
                 </div>
             </li>
@@ -42,10 +42,12 @@
 
         </ul>
 
-        <textarea name="enter-message" ng-model="$ctrl.entity.message" class="form-control content-group" rows="3" cols="1" placeholder="Enter your message..."></textarea>
+        <div>
+        </div>
 
         <div class="row">
-            <div class="col-xs-6">
+            <div class="col-xs-10">
+                <input type="text" ng-model="$ctrl.entity.message" class="form-control content-group" rows="3" cols="1" placeholder="Enter your message..."></input>
                 <ul class="icons-list icons-list-extended mt-10">
                     <!--<li><a href="#" data-popup="tooltip" title="" data-container="body" data-original-title="Send photo"><i class="icon-file-picture"></i></a></li>
                     <li><a href="#" data-popup="tooltip" title="" data-container="body" data-original-title="Send video"><i class="icon-file-video"></i></a></li>
@@ -53,8 +55,8 @@
                 </ul>
             </div>
 
-            <div class="col-xs-6 text-right">
-                <button type="button" class="btn bg-teal-400 btn-labeled btn-labeled-right" ng-click="$ctrl.send()"><b><i class="icon-circle-right2"></i></b> Send</button>
+            <div class="col-xs-2 text-right">
+                <button type="button" class="btn bg-teal-400 btn-labeled btn-labeled-right pull-right btn-group-justified" ng-click="$ctrl.send()"><b><i class="icon-circle-right2"></i></b> Send</button>
             </div>
         </div>
     </div>
