@@ -396,6 +396,7 @@ namespace YsrisCoreLibrary.Controllers
             }
             var result = _storageService.GetFileContent(smallUri)?.Result?.ToArray();
             if (result == null)
+                return null;
             return File(result, "image/jpeg");
 
         }
