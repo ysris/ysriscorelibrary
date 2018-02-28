@@ -191,7 +191,7 @@ namespace YsrisCoreLibrary.Controllers
         {
 
             var entity = _dal.Get(obj.email, 0);
-            if (entity == null || entity.activationCode == null || entity.recoverAskDate == null)
+            if (entity == null || entity.activationCode == null)
                 throw new Exception("BadRequest");
 
             if (obj.activationcode == entity.activationCode)
