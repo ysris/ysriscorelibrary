@@ -12,4 +12,9 @@ namespace YsrisCoreLibrary.Models.ViewModel
         public IFormFile file { get; set; }
         public T entity { get; set; }
     }
+
+    public class UploadViewModel
+    {
+        public IFormFile file { get; set; }
+    }
 }
