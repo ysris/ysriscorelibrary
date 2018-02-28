@@ -69,13 +69,7 @@ namespace YsrisCoreLibrary.Controllers
             _encryptionHelper = encryptionHelper;
         }
 
-        public class LoginCustomerEntity
-        {
-            public Customer customer { get; set; }            
-        }
-
-
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public virtual async Task<LoginCustomerEntity> Login([FromBody] dynamic values)
         {
             var customer = _dal.Get((string)values.username.ToString(), (string)values.password.ToString());
@@ -97,7 +91,7 @@ namespace YsrisCoreLibrary.Controllers
             return new LoginCustomerEntity { customer = customer };
         }
 
-        [HttpPost("Logout")]
+        [HttpPost("logout")]
         public virtual async void Logout() => await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
         [HttpPost("recover")]
@@ -169,6 +163,109 @@ namespace YsrisCoreLibrary.Controllers
                 );
             }
         }
+
+
+
+
+
+        [AllowAnonymous]
+        [HttpGet("activateinvitation")]
+        public virtual IActionResult ActivateInvitation()
+        {
+            var username = Request.Query["username"];
+            var activatioNCode = Request.Query["activationCode"];
+            return Redirect($"/#!/activateinvitation/{username}/{activatioNCode}");
+        }
+
+
+        public class ActivationViewModel
+        {
+            public string email { get; set; }
+            public string activationcode { get; set; }
+            public string password { get; set; }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("activateinvitation")]
+        public virtual IActionResult ActivateInvitation2([FromBody] ActivationViewModel obj)
+        {
+
+            var entity = _dal.Get(obj.email, 0);
+            if (entity == null || entity.activationCode == null || entity.recoverAskDate == null)
+                throw new Exception("BadRequest");
+
+            if (obj.activationcode == entity.activationCode)
+            {
+                entity.activationCode = null;
+                entity.recoverAskDate = null;
+                entity.password = _encryptionHelper.GetHash(obj.password);
+                entity.accountStatus = CustomerStatus.Activated;
+                _dal.AddOrUpdate(entity, 0);
+
+                _mailHelperService.SendMail(
+                    entity.email,
+                    subject: "Password recover",
+                    templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordResetConfirmation.cshtml",
+                    mailViewBag:
+                    new Dictionary<string, string>
+                    {
+                        {"UserFirstName", entity.firstName},
+                        //{
+                        //    "RecoverUrl",
+                        //    $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/signin"
+                        //}
+                    }
+                );
+            }
+
+            return Ok(new { });
+        }
+
+
+        [HttpPost("invite")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")] //todo : the default policy is probably incorrect
+        public virtual Customer Invite([FromBody] InviteCustomerViewModel obj)
+        {
+            _myLogger.LogDebug($"CustomerController +Post");
+
+            var test = _dal.SafeList(0).Where(a => a.email == obj.email);
+            if (test.Any())
+                throw new Exception("Already assigned email");
+
+            var entity = new Customer()
+            {
+                email = obj.email,
+                activationCode = Guid.NewGuid().ToString(),
+                customerType = Role.User,
+                createdAt = DateTime.Now,
+                accountStatus = CustomerStatus.PendingActivationWithPasswordChange,
+                rolesString = string.Join(",", new List<string>() { Role.User }),
+            };
+
+            entity.id = (int)_dal.AddOrUpdate(entity, 0);
+
+            // 4. User notification
+            _myLogger.LogDebug($"+++User notification (mail)");
+            _mailHelperService.SendMail(
+                entity.email,
+                subject: $"You have been invited to join {HttpContext.Request.Host}",
+                templateUri: _env.ContentRootPath + "/Views/Emails/CustomerInvitation.cshtml",
+                mailViewBag:
+                new Dictionary<string, string>
+                {
+                    {"FirstName", entity.firstName},
+                    {
+                        "ActivationUrl",
+                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/customer/activateinvitation?username={entity.email}&activationCode={entity.activationCode}"
+                    }
+                }
+            );
+
+            return entity;
+        }
+
+
+
 
         /// <summary>
         /// account creation action
@@ -465,11 +562,11 @@ namespace YsrisCoreLibrary.Controllers
         public IActionResult Forbidden() => Unauthorized();
 
         [HttpPost("activateasadmin")]
-        [Authorize("Administrator")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
         public Customer ActivateAsAdmin([FromBody] dynamic values) => _dal.UpdateStatus(new Customer(values).id, CustomerStatus.Activated, _sessionHelperInstance.User.id);
 
         [HttpPost("disableasadmin")]
-        [Authorize("Administrator")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
         public Customer DisableAsAdmin([FromBody] dynamic values) => _dal.UpdateStatus(new Customer(values).id, CustomerStatus.Disabled, _sessionHelperInstance.User.id);
 
 
@@ -515,6 +612,15 @@ namespace YsrisCoreLibrary.Controllers
             public string Password { get; set; }
         }
 
+        public class LoginCustomerEntity
+        {
+            public Customer customer { get; set; }
+        }
+
+        public class InviteCustomerViewModel
+        {
+            public string email { get; set; }
+        }
 
     }
 }
