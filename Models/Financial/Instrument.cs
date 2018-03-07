@@ -73,6 +73,13 @@ namespace YsrisCoreLibrary.Models.Financial
         [NotMapped]
         public List<TimeSerieItem> timeSerie { get; set; }
 
+        /// <summary>
+        /// for display in grid
+        /// </summary>
+        [DataMember]
+        [NotMapped]
+        public IEnumerable<TimeSerieItem> timeSerieForDisplay => timeSerie?.OrderByDescending(a => a.date);
+
         [DataMember]
         [NotMapped]
         public bool isFavorite { get; set; }
