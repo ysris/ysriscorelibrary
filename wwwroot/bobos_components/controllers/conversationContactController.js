@@ -18,7 +18,7 @@
             $rootScope.IsBusy = true;
             conversationContactService.list().then(function (result) {
                 $scope.entitylist = result.data;
-                $rootScope.SetPageTitle("Contacts", "");
+                $rootScope.SetPageTitle("Inbox", "");
                 $rootScope.IsBusy = false;
             }, $rootScope.raiseErrorDelegate);
         };

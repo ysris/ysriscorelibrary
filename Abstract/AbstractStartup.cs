@@ -99,6 +99,8 @@ namespace YsrisCoreLibrary.Abstract
             });
 
 
+            services.AddMemoryCache();
+
             services.AddMvc().AddJsonOptions(options =>
             {
                 options.SerializerSettings.Converters.Add(new StringEnumConverter { CamelCaseText = false });
