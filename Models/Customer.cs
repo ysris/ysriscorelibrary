@@ -18,7 +18,7 @@ using ysriscorelibrary.Interfaces;
 namespace YsrisCoreLibrary.Models
 {
     [DataContract]
-    public class Customer : AbstractEntity, IAbstractEntity
+    public class Customer : AbstractEntity, IAbstractEntity, ICustomer
     {
         public Customer()
         {
