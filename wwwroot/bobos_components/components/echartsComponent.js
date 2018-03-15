@@ -16,6 +16,8 @@ angular.module('frontendAngularClientApp').component('eCharts', {
             id = guid();
             $element.html('<div id="' + id + '" style="height:400px; ' + this.style + ' "></div>');
 
+            //passer un parameter pour dire si on doit refresh every x seconds
+
             var myChart = echarts.init(document.getElementById(id));
             if (this.options != null)
                 myChart.setOption(this.options);

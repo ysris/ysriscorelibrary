@@ -13,6 +13,12 @@ namespace YsrisCoreLibrary.Models.Financial
     [DataContract]
     public class Portfolio : AbstractEntity, IAbstractEntity
     {
+        [NotMapped]
+        [DataMember]
+        public IEnumerable<string> valuationDates { get; set; }
+        [NotMapped]
+        [DataMember]
+        public IEnumerable<decimal> valuationAmounts { get; set; }
 
         //[DataMember]
         //[NotMapped]
@@ -66,15 +72,15 @@ namespace YsrisCoreLibrary.Models.Financial
         [NotMapped]
         public bool isFavorite { get; set; }
 
-        [DataMember]
-        [NotMapped]
-        public object echartOptions { get; set; }
+        //[DataMember]
+        //[NotMapped]
+        //public object echartOptions { get; set; }
 
         [DataMember]
         [NotMapped]
         //['2013/1/25', 2300, 2291.3, 2288.26, 2308.38],
         public object chartTimeSerie { get; set; }
-        
+
 
         //[DataMember]
         [NotMapped]
@@ -90,6 +96,10 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         [NotMapped]
         public List<PortfolioPosition> positions { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public object echartOptions { get; set; }
 
         [DataMember]
         [NotMapped]
@@ -132,5 +142,13 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         [NotMapped]
         public decimal? volatility { get; set; }
+
+
+        //TODO : Should be overriden in greenfarfalle, not here
+        [NotMapped]
+        [DataMember]
+        public decimal? dailyChange { get; set; }
+
+
     }
 }

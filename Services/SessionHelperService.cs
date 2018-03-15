@@ -27,8 +27,8 @@ namespace YsrisCoreLibrary.Services
         {
             get
             {
-                //try
-                //{
+                try
+                {
                     var str = _accessor.HttpContext.Session.GetString("UserEntity");
                     if (str != null)
                         return JsonConvert.DeserializeObject<Customer>(str);
@@ -37,11 +37,11 @@ namespace YsrisCoreLibrary.Services
                         var email = HttpContext.User.Claims.First().Value;
                         return _dal.Get(email, 0);
                     }
-                //}
-                //catch
-                //{
-                //    return null;
-                //}
+                }
+                catch
+                {
+                    return null;
+                }
             }
         }
 
