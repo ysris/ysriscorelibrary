@@ -1,9 +1,12 @@
 angular.module('frontendAngularClientApp').component('eCharts', {
     template: '',
     bindings: { options: "<", style: "@" },
-    controller: function ($rootScope, $state, $element, $attrs, $window, $interval) {
+    controller: function ($rootScope, $state, $element, $attrs, $window, $interval, $timeout) {
+        var $ctrl = this;
         this.$onInit = function () {
         };
+
+
 
         this.$onChanges = function (changesObj) {
             var guid = function guid() {
@@ -18,14 +21,19 @@ angular.module('frontendAngularClientApp').component('eCharts', {
 
             //passer un parameter pour dire si on doit refresh every x seconds
 
-            var myChart = echarts.init(document.getElementById(id));
+            var xxx = echarts.init(document.getElementById(id));
+            $ctrl.myChart = xxx;
             if (this.options != null)
-                myChart.setOption(this.options);
-            $interval(function () { myChart.resize(); }, 200);
-            angular.element($window).bind('resize', function () {
-                myChart.resize();
-            });
+                $ctrl.myChart.setOption(this.options);
 
+
+            $rootScope.$on('onChartRefresh', function () {
+                $timeout(function () {
+                    $ctrl.myChart.resize();
+                }, 1);
+            });
+            //angular.element($window).bind('resize', function () {
+            //});
 
         };
     }
