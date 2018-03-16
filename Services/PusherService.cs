@@ -28,12 +28,13 @@ namespace YsrisCoreLibrary.Services
                 );
         }
 
-        public async Task Send(object msgObj)
+        public async Task Send(object msgObj, string callerSocketId = null)
         {
             await _pusher.TriggerAsync(
                 _configuration.GetValue<string>("Data:PusherChannelName"),
                 _configuration.GetValue<string>("Data:PusherEventName"),
-                msgObj
+                msgObj,
+                new TriggerOptions { SocketId = callerSocketId }
             );
         }
     }
