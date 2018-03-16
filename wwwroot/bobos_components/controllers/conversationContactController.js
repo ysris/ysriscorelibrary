@@ -10,14 +10,22 @@
         $scope.entitylist = null;
         $scope.selectedContact = null;
 
-        $rootScope.$on('onPusherMessage', function (event, data) {
+
+
+        var listener = $rootScope.$on('onPusherMessage', function (event, data) {
             console.log("achalandage", data); // 'Some data'
         });
+        // Unregister
+        $scope.$on('$destroy', function () { listener(); });
 
         $scope.refresh = function () {
             $rootScope.IsBusy = true;
             conversationContactService.list().then(function (result) {
                 $scope.entitylist = result.data;
+
+                if ($scope.entitylist.length == 1)
+                    $scope.selectedContact = $scope.entitylist[0];
+
                 $rootScope.SetPageTitle("Inbox", "");
                 $rootScope.IsBusy = false;
             }, $rootScope.raiseErrorDelegate);
