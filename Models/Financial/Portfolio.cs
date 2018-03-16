@@ -13,6 +13,8 @@ namespace YsrisCoreLibrary.Models.Financial
     [DataContract]
     public class Portfolio : AbstractEntity, IAbstractEntity
     {
+
+
         [NotMapped]
         [DataMember]
         public IEnumerable<string> valuationDates { get; set; }
@@ -149,6 +151,8 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         public decimal? dailyChange { get; set; }
 
-
+        [NotMapped]
+        [DataMember]
+        public decimal? lastValue { get; set; }
     }
 }
