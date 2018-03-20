@@ -54,6 +54,9 @@
             };
 
 
+            /**
+             * Pusher event received
+             */
             var eventHook = $rootScope.$on('onPusherMessage', function (event, data) {
                 switch (data.type) {
                     case "ConversationMessageSent":

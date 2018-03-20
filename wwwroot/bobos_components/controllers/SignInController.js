@@ -1,5 +1,5 @@
 ﻿angular.module("frontendAngularClientApp")
-    .controller("SignInController", function ($scope, $state, $rootScope, $stateParams, userService) {
+    .controller("SignInController", function ($scope, $state, $rootScope, $stateParams, customerService) {
         $scope.login = "";
         $scope.password = "";
 
@@ -24,7 +24,7 @@
         **/
         $scope.signIn = function () {
             $rootScope.IsBusy = true;
-            userService.logIn($scope.login, $scope.password).then(function (response) {
+            customerService.logIn($scope.login, $scope.password).then(function (response) {
 
                 if (response.data.error != null) {                    
                     $rootScope.raiseErrorDelegate(response);

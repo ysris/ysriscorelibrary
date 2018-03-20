@@ -1,6 +1,6 @@
 ﻿"use strict";
 
-angular.module("frontendAngularClientApp").controller("InscriptionController", ["$scope", "$state", "$rootScope", "userService", function ($scope, $state, $rootScope, userService) {
+angular.module("frontendAngularClientApp").controller("InscriptionController", function ($scope, $state, $rootScope, customerService) {
     $scope.Entity = null;
     $scope.UserType = null;
 
@@ -8,14 +8,14 @@ angular.module("frontendAngularClientApp").controller("InscriptionController", [
         switch ($state.current.name) {
             case "inscription":
                 $scope.UserType = "User";
-                break;   
+                break;
         }
     })();
 
     $scope.save = function () {
         $rootScope.IsBusy = true;
         $scope.Entity.UserType = $scope.UserType;
-        userService.createAccount($scope.Entity).then(
+        customerService.createAccount($scope.Entity).then(
             function (resp) {
                 $rootScope.IsBusy = false;
                 $rootScope.addNotification("Account created, please check your email");
@@ -24,4 +24,4 @@ angular.module("frontendAngularClientApp").controller("InscriptionController", [
             $rootScope.raiseErrorDelegate
         );
     };
-}]);
+});

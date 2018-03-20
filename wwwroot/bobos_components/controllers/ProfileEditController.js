@@ -1,20 +1,18 @@
-﻿"use strict";
-
-angular.module("frontendAngularClientApp")
-    .controller("ProfileEditController", ["$scope", "$state", "$rootScope", "userService", function ($scope, $state, $rootScope, userService) {
+﻿angular.module("frontendAngularClientApp")
+    .controller("ProfileEditController", function ($scope, $state, $rootScope, customerService) {
         $scope.Entity = null;
         $scope.ProfilePicPreview = "/api/customer/avatar";
         $rootScope.ProgressPct = null;
 
         (function () {
-            userService.get().then(function (resp) {
+            customerService.get().then(function (resp) {
                 $scope.Entity = resp.data;
             });
         })();
 
         $scope.submitProfileEdit = function () {
             $rootScope.IsBusy = true;
-            userService.update($scope.Entity).then(function (resp) {
+            customerService.update($scope.Entity).then(function (resp) {
                 $scope.Entity = resp.data;
                 $rootScope.setConnectedUser($scope.Entity);
 
@@ -23,7 +21,7 @@ angular.module("frontendAngularClientApp")
 
                 if ($scope.newFile != null) {
                     $rootScope.IsBusy = true;
-                    userService.uploadAvatar($scope.newFile).then(
+                    customerService.uploadAvatar($scope.newFile).then(
                         function (resp) {
                             $scope.Entity = resp.data;
                             $rootScope.setConnectedUser($scope.Entity);
@@ -54,7 +52,7 @@ angular.module("frontendAngularClientApp")
                 title: "Are you sure ?",
                 callBack: function (isConfirm) {
                     if (isConfirm) {
-                        userService.delete().then(
+                        customerService.delete().then(
                             function (resp) {
                                 $rootScope.logout();
                                 $rootScope.addNotification("Account deleted");
@@ -64,4 +62,4 @@ angular.module("frontendAngularClientApp")
                 }
             });
         };
-    }]);
+    });

@@ -1,7 +1,5 @@
-﻿"use strict";
-
-angular.module("frontendAngularClientApp")
-    .controller("PasswordRecover2Controller", ["$scope", "$state", "$rootScope", "userService", "$stateParams", function ($scope, $state, $rootScope, userService, $stateParams) {
+﻿angular.module("frontendAngularClientApp")
+    .controller("PasswordRecover2Controller", ["$scope", "$state", "$rootScope", "userService", "$stateParams", function ($scope, $state, $rootScope, customerService, $stateParams) {
         $scope.email = $stateParams.email;
         $scope.activationCode = $stateParams.activationcode;
         $scope.password = null;
@@ -12,7 +10,7 @@ angular.module("frontendAngularClientApp")
 
         $scope.recover = function () {
             $rootScope.IsBusy = true;
-            userService.recover2($scope.email, $scope.activationCode, $scope.password).then(function (response) {
+            customerService.recover2($scope.email, $scope.activationCode, $scope.password).then(function (response) {
                 $rootScope.addNotification("Password recovery done");
                 $state.go("signin2");
                 $rootScope.IsBusy = false;

@@ -12,8 +12,6 @@
     <None Remove="wwwroot\bobos_components\controllers\ActivateCustomerInvitationController.js" />
     <None Remove="wwwroot\bobos_components\controllers\conversationContactController.js" />
     <None Remove="wwwroot\bobos_components\controllers\conversationMessageController.js" />
-    <None Remove="wwwroot\bobos_components\controllers\_Controller.js.MODEL" />
-    <None Remove="wwwroot\bobos_components\services\_Service.js.MODEL" />
     <None Remove="wwwroot\bobos_components\views\activateinvitation.html" />
     <None Remove="wwwroot\bobos_components\views\conversation.html" />
     <None Remove="wwwroot\bobos_components\views\conversationContacts.html" />
@@ -29,12 +27,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="wwwroot\bobos_components\controllers\conversationMessageController.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\bobos_components\controllers\_Controller.js.MODEL">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="wwwroot\bobos_components\services\_Service.js.MODEL">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="wwwroot\bobos_components\views\activateinvitation.html">
@@ -69,5 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Interfaces\" />
+    <Folder Include="wwwroot\bobos_components\services\" />
   </ItemGroup>
 </Project>
