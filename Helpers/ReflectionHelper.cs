@@ -44,6 +44,7 @@ namespace YsrisCoreLibrary.Helpers
                         || x.PropertyType == typeof(decimal)
                         || x.PropertyType == typeof(decimal?)
                         || x.PropertyType == typeof(byte[])
+                        || x.PropertyType == typeof(bool)
                         || x.PropertyType.GetTypeInfo().BaseType == typeof(Enum)
                 let prop = entity.GetType().GetProperty(x.Name)
                 let pVal = prop.GetValue(entity, null)
