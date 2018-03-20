@@ -11,7 +11,10 @@ namespace YsrisCoreLibrary.Services
     public class PusherService
     {
         private IConfiguration _configuration;
-        private Pusher _pusher;
+        public Pusher _pusher;
+
+
+
 
         public PusherService(
             IConfiguration configuration
