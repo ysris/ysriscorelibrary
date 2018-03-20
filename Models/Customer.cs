@@ -44,6 +44,7 @@ namespace YsrisCoreLibrary.Models
             if (values.adrPostalCode != null) adrPostalCode = values.adrPostalCode;
             if (values.adrCity != null) adrCity = values.adrCity;
             if (values.adrCountry != null) adrCountry = values.adrCountry;
+            if (values.isMailingSuscribed != null) isMailingSuscribed = values.isMailingSuscribed;
         }
 
         /// <summary>
@@ -138,6 +139,9 @@ namespace YsrisCoreLibrary.Models
         public string adrCity { get; set; }
         [DataMember]
         public string adrCountry { get; set; }
+
+        [DataMember]
+        public bool isMailingSuscribed { get; set; }
 
 
 
