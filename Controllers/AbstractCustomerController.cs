@@ -164,10 +164,6 @@ namespace YsrisCoreLibrary.Controllers
             }
         }
 
-
-
-
-
         [AllowAnonymous]
         [HttpGet("activateinvitation")]
         public virtual IActionResult ActivateInvitation()
@@ -379,6 +375,24 @@ namespace YsrisCoreLibrary.Controllers
 
             return entity;
         }
+
+        /// <summary>
+        /// account update action
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        [HttpPost("updateasadmin")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
+        public virtual Customer UpdateAsAdmin([FromBody] dynamic values)
+        {
+            var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
+            entity.SetFromValues(values);
+            _dal.AddOrUpdate(entity, _sessionHelperInstance.User.id);
+            _sessionHelperInstance.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
+
+            return entity;
+        }
+
 
         /// <summary>
         /// account update action
