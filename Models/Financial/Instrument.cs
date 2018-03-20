@@ -92,7 +92,7 @@ namespace YsrisCoreLibrary.Models.Financial
             new
             {
                 categoryData = timeSerie.Select(a => a.date.ToString("dd/M/yyyy")),
-                values = timeSerie.Select(a => new object[] { a.open, a.close, a.high, a.low, })
+                values = timeSerie.Select(a => new object[] { a.open, a.close, a.low, a.high, })
             };
 
         [DataMember]
