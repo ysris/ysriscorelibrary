@@ -32,12 +32,12 @@ namespace YsrisCoreLibrary.Services
         public void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null)
         {
             var outputStream = new MemoryStream();
-            var inputstream = new MemoryStream();
-            postedFile.CopyToAsync(inputstream);
+            var inputstream = new MemoryStream();            
+            postedFile.CopyTo(inputstream);
             inputstream.Seek(0, SeekOrigin.Begin);
 
             //using (var inputStream = fileInfo.CreateReadStream())
-            using (var image = Image.Load(inputstream))
+            using (var image = Image.Load(inputstream, new DecoderOptions { IgnoreMetadata = true }))
             {
                 if (width != null)
                 {
