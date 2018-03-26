@@ -147,6 +147,7 @@ namespace YsrisCoreLibrary.Abstract
 
             services.AddSingleton<EncryptionService>();
             services.AddTransient<CustomerDal>();
+            services.AddTransient<ViewRenderService>();
 
         }
 

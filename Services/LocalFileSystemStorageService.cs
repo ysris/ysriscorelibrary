@@ -41,16 +41,25 @@ namespace YsrisCoreLibrary.Services
             {
                 if (width != null)
                 {
+                    Rectangle cropRectangle = new Rectangle();
 
-                    var height = image.Height * (width / image.Width);
-                    if (width != null && height != null)
-                        image
-                            .Resize((int)width, (int)height)
-                            .Crop((int)width, (int)width)
-                            .SaveAsJpeg(outputStream);
+                    if (image.Width > image.Height)
+                    {
+                        var cropX = Convert.ToInt32((image.Width - image.Height) / 2);
+                        var cropY = 0;
+                        cropRectangle = new Rectangle(cropX, cropY, (int)image.Height, (int)image.Height);
+                    }
                     else
-                        image
-                            .SaveAsJpeg(outputStream);
+                    {
+                        var cropX = 0;
+                        var cropY = Convert.ToInt32((image.Height - image.Width) / 2);
+                        cropRectangle = new Rectangle(cropX, cropY, (int)image.Width, (int)image.Width);
+                    }
+
+                    image
+                        .Crop(cropRectangle)
+                        .Resize((int)width, (int)width)
+                        .SaveAsJpeg(outputStream);
                 }
                 else
                 {

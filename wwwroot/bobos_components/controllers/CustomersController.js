@@ -17,22 +17,21 @@
             }
             , update: function (entity) { return $http.post("/api/customer/update", entity); }
             , updateasadmin: function (entity) { return $http.post("/api/customer/updateasadmin", entity); }
-            
+
             , uploadAvatar: function (file) { return Upload.upload({ url: "/api/customer/avatar/", data: { 'file': file } }) }
             , GetProjection: function () { return $http.get("/api/customer/projection"); }
-            , delete: function () { return $http.delete("/api/customer"); }
+            , delete: function (id) {
+                if (id == undefined)
+                    return $http.delete("/api/customer");
+                return $http.delete("/api/customer/" + id);
+            }
             , inviteCustomer: function (entity) { return $http.post("/api/customer/invite", entity); }
-        };
-    })
-    .factory("userService", function ($http, Upload) {
-        return {
-
         };
     })
     .component('customerComponent', {
         templateUrl: '/bobos_components/views/defaultComponent.html',
         bindings: { resolve: '<', close: '&', dismiss: '&' },
-        controller: function ($rootScope, userService, $state, customerService) {
+        controller: function ($rootScope, customerService, $state, customerService) {
             var $ctrl = this;
             $ctrl.entity = null;
 
@@ -63,9 +62,9 @@
     .component('inviteCustomerComponent', {
         templateUrl: '/bobos_components/views/inviteCustomerComponent.html',
         bindings: { resolve: '<', close: '&', dismiss: '&' },
-        controller: function ($rootScope, userService, $state, customerService) {
+        controller: function ($rootScope, customerService, $state, customerService) {
             var $ctrl = this;
-            $ctrl.entity = null;
+            $ctrl.entity = { email: undefined, boolSendEmail: true };
 
             $ctrl.modalTitle = "Invite a Customer";
 
@@ -83,7 +82,7 @@
             };
 
             $ctrl.submit = function () {
-                userService.inviteCustomer($ctrl.entity).then(function (resp) {
+                customerService.inviteCustomer($ctrl.entity).then(function (resp) {
                     $rootScope.addNotification("Customer invited");
                     $ctrl.close({ $value: $ctrl.entity });
                 }, $rootScope.raiseErrorDelegate);
@@ -125,6 +124,20 @@
                         customerService.disable(obj).then(function (resp) {
                             refresh();
                             $rootScope.addNotification("Account disabled");
+                        }, $rootScope.raiseErrorDelegate);
+                    }
+                }
+            });
+        };
+
+        $scope.deleteAccount = function (obj) {
+            $rootScope.askConfirm({
+                title: "Delete this account ?",
+                callBack: function (isConfirm) {
+                    if (isConfirm) {
+                        customerService.delete(obj.id).then(function (resp) {
+                            refresh();
+                            $rootScope.addNotification("Account deleted");
                         }, $rootScope.raiseErrorDelegate);
                     }
                 }

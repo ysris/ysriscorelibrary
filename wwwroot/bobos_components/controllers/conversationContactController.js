@@ -26,7 +26,7 @@
                 if ($scope.entitylist.length == 1)
                     $scope.selectedContact = $scope.entitylist[0];
 
-                $rootScope.SetPageTitle("Inbox", "");
+                $rootScope.SetPageTitle("", "");
                 $rootScope.IsBusy = false;
             }, $rootScope.raiseErrorDelegate);
         };

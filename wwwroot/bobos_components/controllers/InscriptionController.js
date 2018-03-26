@@ -1,6 +1,4 @@
-﻿"use strict";
-
-angular.module("frontendAngularClientApp").controller("InscriptionController", function ($scope, $state, $rootScope, customerService) {
+﻿angular.module("frontendAngularClientApp").controller("InscriptionController", function ($scope, $state, $rootScope, customerService) {
     $scope.Entity = null;
     $scope.UserType = null;
 

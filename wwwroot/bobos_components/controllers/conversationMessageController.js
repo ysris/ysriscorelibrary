@@ -6,6 +6,24 @@
             sendMessage: function (entity) { return $http.post("/api/conversationmessage", entity); }
         };
     })
+    .directive('enterSubmit', function () {
+        return {
+            restrict: 'A',
+            link: function (scope, elem, attrs) {
+
+                elem.bind('keydown', function (event) {
+                    var code = event.keyCode;
+
+                    if (code === 13) {
+                        if (event.ctrlKey) {
+                            event.preventDefault();
+                            scope.$apply(attrs.enterSubmit);
+                        }
+                    }
+                });
+            }
+        }
+    })
     .controller("conversationMessagesController", function ($scope, $state, $stateParams, $rootScope, conversationMessageService) {
         $scope.destCustomerId = $stateParams.destCustomerid;
 
@@ -80,7 +98,7 @@
                 //alert("refresh");
                 //    //$rootScope.IsBusy = true;
                 conversationMessageService.listForDestCustomer($ctrl.customer.id).then(function (result) {
-                    $ctrl.entitylist = result.data;                    
+                    $ctrl.entitylist = result.data;
 
                     //$rootScope.IsBusy = false;
                 }, $rootScope.raiseErrorDelegate);
@@ -90,6 +108,7 @@
                 var entity = { message: $ctrl.entity.message, destId: $ctrl.customer.id };
                 //    //$rootScope.IsBusy = true;
                 conversationMessageService.sendMessage(entity).then(function () {
+                    $ctrl.entity.message = null;
                     //        //$rootScope.IsBusy = false;
                     $ctrl.refresh();
                 }, $rootScope.raiseErrorDelegate);

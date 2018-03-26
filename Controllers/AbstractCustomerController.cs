@@ -241,21 +241,24 @@ namespace YsrisCoreLibrary.Controllers
             entity.id = (int)_dal.AddOrUpdate(entity, 0);
 
             // 4. User notification
-            _myLogger.LogDebug($"+++User notification (mail)");
-            _mailHelperService.SendMail(
-                entity.email,
-                subject: $"You have been invited to join {HttpContext.Request.Host}",
-                templateUri: _env.ContentRootPath + "/Views/Emails/CustomerInvitation.cshtml",
-                mailViewBag:
-                new Dictionary<string, string>
-                {
+            if (obj.boolSendEmail)
+            {
+                _myLogger.LogDebug($"+++User notification (mail)");
+                _mailHelperService.SendMail(
+                    entity.email,
+                    subject: $"You have been invited to join {HttpContext.Request.Host}",
+                    templateUri: _env.ContentRootPath + "/Views/Emails/CustomerInvitation.cshtml",
+                    mailViewBag:
+                    new Dictionary<string, string>
+                    {
                     {"FirstName", entity.firstName},
                     {
                         "ActivationUrl",
                         $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/customer/activateinvitation?username={entity.email}&activationCode={entity.activationCode}"
                     }
-                }
-            );
+                    }
+                );
+            }
 
             return entity;
         }
@@ -524,6 +527,19 @@ namespace YsrisCoreLibrary.Controllers
             _dal.SafeRemove(entity, _sessionHelperInstance.User.id);
         }
 
+        /// <summary>
+        /// Delete user account
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
+        public void DeleteAsAdmin(int id)
+        {
+            var entity = _dal.Get(id, _sessionHelperInstance.User.id);
+            _dal.SafeRemove(entity, _sessionHelperInstance.User.id);
+        }
+
+
         /// Now, ovverride of activate method is mandatory to simplify modification
         public virtual IActionResult Activate(string sucessActivationStatus = CustomerStatus.Activated)
         {
@@ -634,6 +650,7 @@ namespace YsrisCoreLibrary.Controllers
         public class InviteCustomerViewModel
         {
             public string email { get; set; }
+            public bool boolSendEmail { get; set; }
         }
 
     }

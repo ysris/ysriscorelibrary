@@ -1,18 +1,26 @@
-﻿<div class="modal-content">
+﻿
+<div class="modal-content">
     <div class="modal-header">
         <button type="button" class="close" ng-click="$ctrl.cancel()">×</button>
         <h5 class="modal-title">{{$ctrl.modalTitle}}</h5>
     </div>
 
     <div class="modal-body">
+        <pre>{{$ctrl.entity|json}}</pre>
         <form action="index/html" name="myForm" class="form-horizontal">
             <fieldset class="content-group">
                 <!-- <legend class="text-bold">Basic inputs</legend> -->
                 <div class="form-group">
-                     <label class="control-label col-lg-2">Email</label>
+                    <label class="control-label col-lg-2">Email</label>
                     <div class="col-lg-10">
                         <input type="email" class="form-control" ng-model="$ctrl.entity.email">
-                    </div> 
+                    </div>
+                </div>
+                <div class="form-group" ng-show="$ctrl.entity.email != undefined && $ctrl.entity.email != ''">
+                    <label class="control-label col-lg-6">Send the invitation to {{$ctrl.entity.email}}</label>
+                    <div class="col-lg-6">
+                        <input type="checkbox" ng-model="$ctrl.entity.boolSendEmail">
+                    </div>
                 </div>
             </fieldset>
         </form>

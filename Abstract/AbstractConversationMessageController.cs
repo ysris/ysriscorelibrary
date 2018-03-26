@@ -29,7 +29,7 @@ namespace YsrisCoreLibrary.Abstract
         [HttpGet("getforcustomer/{customerId}")]
         public IQueryable<ConversationMessage> GetForDestCustomer(int customerId)
         {
-            var set =
+            var collection =
                 (
                     from a in _context.Set<ConversationMessage>()
                     where a.authorId == _session.User.id || a.destId == _session.User.id
@@ -39,9 +39,16 @@ namespace YsrisCoreLibrary.Abstract
                 )
                 .ToList();
 
-            set.ForEach(a => a.isConnectedUserAuthor = a.authorId == _session.User.id);
+            foreach (var item in collection)
+            {
+                var idx = collection.IndexOf(item);
+                var precItem = idx > 0 ? collection[idx - 1] : null;
+                item.isDaySwitch = item.creationDate.Date != precItem?.creationDate.Date;
 
-            return set.AsQueryable();
+                item.isConnectedUserAuthor = item.authorId == _session.User.id;
+            }
+
+            return collection.AsQueryable();
         }
 
         /// <summary>

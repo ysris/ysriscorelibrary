@@ -42,7 +42,7 @@ namespace YsrisCoreLibrary.Services
         /// <param name="to">dest</param>
         /// <param name="subject">subject</param>
         /// <param name="htmlMsg">msg in html</param>
-        public void SendMail(string from, string to, string subject, string htmlMsg)
+        public void SendMail(string from, IEnumerable<string> to, string subject, string htmlMsg)
         {
             MyLogger.LogInformation($"+MailHelper:SendMail(from:'{from}', to:'{to}', subject:'{subject}', htmlMsg:'{htmlMsg.Replace(Environment.NewLine, string.Empty)}')");
             var smtpServerDns = _conf.GetValue<string>("Data:SmtpServer");
@@ -59,10 +59,10 @@ namespace YsrisCoreLibrary.Services
 
             var mail = new MimeMessage();
             mail.From.Add(new MailboxAddress(from));
-            mail.To.Add(new MailboxAddress(to));
-            mail.Subject = subject;
 
-            mail.Body = new BodyBuilder() {HtmlBody = htmlMsg, TextBody = htmlMsg }.ToMessageBody();
+            to.ForEach(a => mail.To.Add(new MailboxAddress(a)));
+            mail.Subject = subject;
+            mail.Body = new BodyBuilder() { HtmlBody = htmlMsg, TextBody = htmlMsg }.ToMessageBody();
 
             SmtpServer.Send(mail);
             MyLogger.LogInformation($"-MailHelper:SendMail");
@@ -73,7 +73,7 @@ namespace YsrisCoreLibrary.Services
             string from = _conf.GetValue<string>("Data:SmtpLogin");
             var htmlContent = File.ReadAllText(templateUri);
             mailViewBag.ForEach(a => htmlContent = htmlContent.Replace($"**{a.Key}**", a.Value));
-            SendMail(from, to, subject, htmlContent);
+            SendMail(from, new List<string> { to }, subject, htmlContent);
         }
     }
 }
