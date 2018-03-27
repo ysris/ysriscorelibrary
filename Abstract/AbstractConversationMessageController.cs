@@ -66,6 +66,7 @@ namespace YsrisCoreLibrary.Abstract
             //    entity = dal.Get((int)values.id, _session.User.id);
             entity.creationDate = DateTime.Now;
             entity.authorId = _session.User.id;
+            entity.isReadByDest = false;
 
             _context.Set<ConversationMessage>().Add(entity);
             await _context.SaveChangesAsync();

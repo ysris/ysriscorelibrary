@@ -502,17 +502,24 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual IActionResult GetAvatar(int id)
         {
+            var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
+
             var smallUri = _dal.Get((int)id, _sessionHelperInstance.User.id).picture;
             if (smallUri == null)
             {
-                var path = Path.Combine(_env.WebRootPath, "bobos_components\\assets\\images\\profile-placeholder.png");
                 return File(System.IO.File.ReadAllBytes(path), "image/png");
             }
-            var result = _storageService.GetFileContent(smallUri)?.Result?.ToArray();
-            if (result == null)
-                return null;
-            return File(result, "image/jpeg");
-
+            try
+            {
+                var result = _storageService.GetFileContent(smallUri)?.Result?.ToArray();
+                if (result == null)
+                    return File(System.IO.File.ReadAllBytes(path), "image/png");
+                return File(result, "image/jpeg");
+            }
+            catch
+            {
+                return File(System.IO.File.ReadAllBytes(path), "image/png");
+            }
         }
 
         /// <summary>
