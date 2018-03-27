@@ -96,6 +96,7 @@ namespace YsrisCoreLibrary.Abstract
                     p.RequireClaim(ClaimTypes.Role, "Coach");
                     p.Build();
                 });
+                //CompanyAdministrator
             });
 
 
