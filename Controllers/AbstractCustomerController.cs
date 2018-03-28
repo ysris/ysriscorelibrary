@@ -56,7 +56,7 @@ namespace YsrisCoreLibrary.Controllers
             IStorageService storageService,
             IConfiguration config,
             CustomerDal dal,
-            EncryptionService encryptionHelper
+            EncryptionService encryptionHelper            
         )
         {
             _sessionHelperInstance = sessionHelper;
@@ -70,7 +70,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         [HttpPost("login")]
-        public virtual async Task<LoginCustomerEntity> Login([FromBody] dynamic values)
+        public virtual LoginCustomerEntity Login([FromBody] dynamic values)
         {
             var customer = _dal.Get((string)values.username.ToString(), (string)values.password.ToString());
 
@@ -84,7 +84,7 @@ namespace YsrisCoreLibrary.Controllers
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
 
             // await HttpContext.Authentication.SignInAsync("MyCookieMiddlewareInstance", principal);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
             //_sessionHelperInstance.HttpContext
             HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(customer));
