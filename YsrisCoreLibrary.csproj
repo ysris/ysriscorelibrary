@@ -8,30 +8,96 @@
     <None Remove="bobos_components_orig\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="wwwroot\bobos_components\angular-locale_custom.js" />
+    <None Remove="wwwroot\bobos_components\angular-messages.js" />
     <None Remove="wwwroot\bobos_components\assets\images\robot.png" />
+    <None Remove="wwwroot\bobos_components\components\echartsComponent.js" />
     <None Remove="wwwroot\bobos_components\controllers\ActivateCustomerInvitationController.js" />
     <None Remove="wwwroot\bobos_components\controllers\conversationContactController.js" />
     <None Remove="wwwroot\bobos_components\controllers\conversationMessageController.js" />
+    <None Remove="wwwroot\bobos_components\controllers\CustomersController.js" />
+    <None Remove="wwwroot\bobos_components\controllers\HomeController.js" />
+    <None Remove="wwwroot\bobos_components\controllers\InscriptionController.js" />
+    <None Remove="wwwroot\bobos_components\controllers\MasterController.js" />
+    <None Remove="wwwroot\bobos_components\controllers\PaletteController.js" />
+    <None Remove="wwwroot\bobos_components\controllers\PasswordRecover2Controller.js" />
+    <None Remove="wwwroot\bobos_components\controllers\PasswordRecoverController.js" />
+    <None Remove="wwwroot\bobos_components\controllers\ProfileController.js" />
+    <None Remove="wwwroot\bobos_components\controllers\ProfileEditController.js" />
+    <None Remove="wwwroot\bobos_components\controllers\SignInController.js" />
+    <None Remove="wwwroot\bobos_components\directives\busyIndicator.js" />
+    <None Remove="wwwroot\bobos_components\directives\compareToDirective.js" />
+    <None Remove="wwwroot\bobos_components\directives\master-footer.js" />
+    <None Remove="wwwroot\bobos_components\directives\master-header.js" />
+    <None Remove="wwwroot\bobos_components\directives\master-navigation.js" />
+    <None Remove="wwwroot\bobos_components\filters\commonFilters.js" />
     <None Remove="wwwroot\bobos_components\views\activateinvitation.html" />
+    <None Remove="wwwroot\bobos_components\views\ajaxDefaultTablePage.html" />
     <None Remove="wwwroot\bobos_components\views\conversation.html" />
     <None Remove="wwwroot\bobos_components\views\conversationContacts.html" />
+    <None Remove="wwwroot\bobos_components\views\customers.html" />
+    <None Remove="wwwroot\bobos_components\views\defaultComponent.html" />
+    <None Remove="wwwroot\bobos_components\views\defaultTablePage.html" />
+    <None Remove="wwwroot\bobos_components\views\inscription.html" />
+    <None Remove="wwwroot\bobos_components\views\inviteCustomerComponent.html" />
+    <None Remove="wwwroot\bobos_components\views\palette.html" />
+    <None Remove="wwwroot\bobos_components\views\passwordrecover.html" />
+    <None Remove="wwwroot\bobos_components\views\passwordrecover2.html" />
+    <None Remove="wwwroot\bobos_components\views\profile.html" />
+    <None Remove="wwwroot\bobos_components\views\profileedit.html" />
+    <None Remove="wwwroot\bobos_components\views\signin.html" />
+    <None Remove="wwwroot\bobos_components\views\templates\busy-indicator.html" />
+    <None Remove="wwwroot\bobos_components\views\templates\master-footer.html" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="wwwroot\bobos_components\angular-locale_custom.js" />
+    <Content Include="wwwroot\bobos_components\angular-messages.js" />
     <Content Include="wwwroot\bobos_components\assets\images\robot.png">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Include="wwwroot\bobos_components\components\echartsComponent.js" />
     <Content Include="wwwroot\bobos_components\controllers\ActivateCustomerInvitationController.js">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="wwwroot\bobos_components\controllers\conversationContactController.js">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Include="wwwroot\bobos_components\controllers\CustomersController.js" />
+    <Content Include="wwwroot\bobos_components\controllers\HomeController.js" />
+    <Content Include="wwwroot\bobos_components\controllers\InscriptionController.js" />
+    <Content Include="wwwroot\bobos_components\controllers\MasterController.js" />
+    <Content Include="wwwroot\bobos_components\controllers\PaletteController.js" />
+    <Content Include="wwwroot\bobos_components\controllers\PasswordRecover2Controller.js" />
+    <Content Include="wwwroot\bobos_components\controllers\PasswordRecoverController.js" />
+    <Content Include="wwwroot\bobos_components\controllers\ProfileController.js" />
+    <Content Include="wwwroot\bobos_components\controllers\ProfileEditController.js" />
+    <Content Include="wwwroot\bobos_components\controllers\SignInController.js" />
+    <Content Include="wwwroot\bobos_components\directives\busyIndicator.js" />
+    <Content Include="wwwroot\bobos_components\directives\compareToDirective.js" />
+    <Content Include="wwwroot\bobos_components\directives\master-footer.js" />
+    <Content Include="wwwroot\bobos_components\directives\master-header.js" />
+    <Content Include="wwwroot\bobos_components\directives\master-navigation.js" />
+    <Content Include="wwwroot\bobos_components\filters\commonFilters.js" />
     <Content Include="wwwroot\bobos_components\views\activateinvitation.html">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Include="wwwroot\bobos_components\views\ajaxDefaultTablePage.html" />
     <Content Include="wwwroot\bobos_components\views\conversationContacts.html">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
+    <Content Include="wwwroot\bobos_components\views\customers.html" />
+    <Content Include="wwwroot\bobos_components\views\defaultComponent.html" />
+    <Content Include="wwwroot\bobos_components\views\defaultTablePage.html" />
+    <Content Include="wwwroot\bobos_components\views\inscription.html" />
+    <Content Include="wwwroot\bobos_components\views\inviteCustomerComponent.html" />
+    <Content Include="wwwroot\bobos_components\views\palette.html" />
+    <Content Include="wwwroot\bobos_components\views\passwordrecover.html" />
+    <Content Include="wwwroot\bobos_components\views\passwordrecover2.html" />
+    <Content Include="wwwroot\bobos_components\views\profile.html" />
+    <Content Include="wwwroot\bobos_components\views\profileedit.html" />
+    <Content Include="wwwroot\bobos_components\views\signin.html" />
+    <Content Include="wwwroot\bobos_components\views\templates\busy-indicator.html" />
+    <Content Include="wwwroot\bobos_components\views\templates\master-footer.html" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.4" />
