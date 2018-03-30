@@ -1,29 +1,33 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Newtonsoft.Json;
-using System;
 using System.Linq;
-using System.Reflection;
-using YsrisCoreLibrary.Models;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ysriscorelibrary.Interfaces;
 
 namespace YsrisCoreLibrary.Abstract
 {
+    /// <summary>
+    /// Abstract Controller CRUD actions
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class AbstractController<T> : Controller where T : class, IAbstractEntity, new()
     {
         protected DbContext _context;
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="context">Db Context</param>
         public AbstractController(DbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Default List
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual IQueryable<T> Get()
@@ -37,6 +41,10 @@ namespace YsrisCoreLibrary.Abstract
             return set;
         }
 
+        /// <summary>
+        /// Get an empty entity
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("empty")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual T GetEmpty()
@@ -47,6 +55,11 @@ namespace YsrisCoreLibrary.Abstract
             return entity;
         }
 
+        /// <summary>
+        /// Get a specific entity
+        /// </summary>
+        /// <param name="id">int identifier</param>
+        /// <returns>Entity</returns>
         [HttpGet("{id}")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> Get([FromRoute] int id)
@@ -64,6 +77,12 @@ namespace YsrisCoreLibrary.Abstract
             return Ok(entity);
         }
 
+        /// <summary>
+        /// Update an entity
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="client"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> Put([FromRoute] int id, [FromBody] T client)
@@ -95,6 +114,11 @@ namespace YsrisCoreLibrary.Abstract
             return NoContent();
         }
 
+        /// <summary>
+        /// Create an entity
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> Post([FromBody] T entity)
@@ -108,6 +132,11 @@ namespace YsrisCoreLibrary.Abstract
             return CreatedAtAction("Get", new { id = entity.id }, entity);
         }
 
+        /// <summary>
+        /// Delete an entity
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> Delete([FromRoute] int id)
@@ -125,6 +154,11 @@ namespace YsrisCoreLibrary.Abstract
             return Ok(client);
         }
 
+        /// <summary>
+        /// Check if entity exists
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         protected virtual bool EntityExists(int id)
         {
             return _context.Set<T>().Find(id) != null;

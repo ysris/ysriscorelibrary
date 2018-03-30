@@ -72,45 +72,15 @@ namespace YsrisCoreLibrary.Abstract
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("All", p =>
-                {
-                    p.RequireAuthenticatedUser();
-                    p.RequireClaim(ClaimTypes.Role, new List<string> { "Administrator", "User", "Coach" });
-                    p.Build();
-                });
-                options.AddPolicy("Administrator", p =>
-                {
-                    p.RequireAuthenticatedUser();
-                    p.RequireClaim(ClaimTypes.Role, "Administrator");
-                    p.Build();
-                });
-                options.AddPolicy("User", p =>
-                {
-                    p.RequireAuthenticatedUser();
-                    p.RequireClaim(ClaimTypes.Role, "User");
-                    p.Build();
-                });
-                options.AddPolicy("Coach", p =>
-                {
-                    p.RequireAuthenticatedUser();
-                    p.RequireClaim(ClaimTypes.Role, "Coach");
-                    p.Build();
-                });
-                //CompanyAdministrator
+                options.AddPolicy("All", p => { p.RequireAuthenticatedUser(); p.RequireClaim(ClaimTypes.Role, new List<string> { "Administrator", "User", "Coach" }); p.Build(); });
+                options.AddPolicy("Administrator", p => { p.RequireAuthenticatedUser(); p.RequireClaim(ClaimTypes.Role, "Administrator"); p.Build(); });
+                options.AddPolicy("User", p => { p.RequireAuthenticatedUser(); p.RequireClaim(ClaimTypes.Role, "User"); p.Build(); });
+                options.AddPolicy("Coach", p => { p.RequireAuthenticatedUser(); p.RequireClaim(ClaimTypes.Role, "Coach"); p.Build(); });
+                options.AddPolicy("CompanyAdministrator", p => { p.RequireAuthenticatedUser(); p.RequireClaim(ClaimTypes.Role, "CompanyAdministrator"); p.Build(); });
             });
-
 
             services.AddMemoryCache();
-
-            services.AddMvc().AddJsonOptions(options =>
-            {
-                options.SerializerSettings.Converters.Add(new StringEnumConverter { CamelCaseText = false });
-            });
-
-
-
-
-
+            services.AddMvc().AddJsonOptions(options => { options.SerializerSettings.Converters.Add(new StringEnumConverter { CamelCaseText = false }); });
 
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>

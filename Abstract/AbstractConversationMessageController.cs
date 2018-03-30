@@ -21,11 +21,17 @@ namespace YsrisCoreLibrary.Abstract
         protected SessionHelperService _session;
         protected ILogger _logger;
 
-        public override IQueryable<ConversationMessage> Get()
-        {
-            throw new NotImplementedException();
-        }
+        /// <summary>
+        /// Override to remove possibility of getting all customers for a single user
+        /// </summary>
+        /// <returns></returns>
+        public override IQueryable<ConversationMessage> Get() { throw new NotImplementedException(); }
 
+        /// <summary>
+        /// List messages for a specific dest customer
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
         [HttpGet("getforcustomer/{customerId}")]
         public IQueryable<ConversationMessage> GetForDestCustomer(int customerId)
         {
@@ -58,7 +64,7 @@ namespace YsrisCoreLibrary.Abstract
         }
 
         /// <summary>
-        /// 
+        /// Post a message
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>

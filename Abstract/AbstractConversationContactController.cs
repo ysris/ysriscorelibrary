@@ -10,6 +10,9 @@ using YsrisCoreLibrary.Services;
 
 namespace YsrisCoreLibrary.Abstract
 {
+    /// <summary>
+    /// Controller abstraction for conversation contact related
+    /// </summary>
     public abstract class AbstractConversationContactController : AbstractController<Customer>
     {
     
