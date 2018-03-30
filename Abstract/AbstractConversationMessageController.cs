@@ -48,6 +48,12 @@ namespace YsrisCoreLibrary.Abstract
                 item.isConnectedUserAuthor = item.authorId == _session.User.id;
             }
 
+            foreach (var item in collection.Where(a => a.destId == _session.User.id))
+                item.isReadByDest = true;
+
+            _context.UpdateRange(collection);
+            _context.SaveChanges();
+
             return collection.AsQueryable();
         }
 
