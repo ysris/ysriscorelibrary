@@ -88,6 +88,8 @@
         switch (condition) {
             case "NotConnectedUser":
                 return $scope.ConnectedUserId == null || $scope.ConnectedUserId == 'null';
+            case "ConnectedUser":
+                return $scope.ConnectedUserId != null && $scope.ConnectedUserId != 'null';
             default:
 
                 if ($rootScope.customer == null)

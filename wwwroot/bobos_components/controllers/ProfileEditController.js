@@ -4,6 +4,11 @@
         $scope.ProfilePicPreview = "/api/customer/avatar";
         $rootScope.ProgressPct = null;
 
+        $scope.subNavigation = "profileedit";
+        $scope.subNavigate = function (obj) {
+            $scope.subNavigation = obj; 
+        };
+
         (function () {
             customerService.get().then(function (resp) {
                 $scope.Entity = resp.data;
