@@ -6,7 +6,7 @@
 
         $scope.subNavigation = "profileedit";
         $scope.subNavigate = function (obj) {
-            $scope.subNavigation = obj; 
+            $scope.subNavigation = obj;
         };
 
         (function () {
@@ -24,32 +24,31 @@
                 $rootScope.addNotification("Profile updated");
                 $rootScope.IsBusy = false;
 
-                if ($scope.newFile != null) {
-                    $rootScope.IsBusy = true;
-                    customerService.uploadAvatar($scope.newFile).then(
-                        function (resp) {
-                            $scope.Entity = resp.data;
-                            $rootScope.setConnectedUser($scope.Entity);
-                            $scope.setImgProfileBox();
-                            $rootScope.addNotification("Profile pic uploaded");
-                            $rootScope.IsBusy = false;
-                        },
-                        $rootScope.raiseErrorDelegate,
-                        function (evt) { $rootScope.ProgressPct = parseInt(100.0 * evt.loaded / evt.total); });
-                }
+
             }, $rootScope.raiseErrorDelegate);
         };
 
-        $scope.setImgProfileBox = function () {
-            var newUrl = window.URL || window.webkitURL;
-            if (newUrl)
-                $rootScope.avatarUri = newUrl.createObjectURL($scope.newFile);
-        };
 
         $scope.setImg = function () {
-            var newUrl = window.URL || window.webkitURL;
-            if (newUrl)
-                $scope.ProfilePicPreview = newUrl.createObjectURL($scope.newFile);
+            if ($scope.newFile != null) {
+                $rootScope.IsBusy = true;
+                customerService.uploadAvatar($scope.newFile).then(
+                    function (resp) {
+                        $scope.Entity = resp.data;
+                        $rootScope.setConnectedUser($scope.Entity);
+
+                        var newUrl = window.URL || window.webkitURL;
+                        if (newUrl) {
+                            $scope.ProfilePicPreview = newUrl.createObjectURL($scope.newFile);
+                            $rootScope.avatarUri = newUrl.createObjectURL($scope.newFile);
+                        }
+
+                        $rootScope.addNotification("Profile pic uploaded");
+                        $rootScope.IsBusy = false;
+                    },
+                    $rootScope.raiseErrorDelegate,
+                    function (evt) { $rootScope.ProgressPct = parseInt(100.0 * evt.loaded / evt.total); });
+            }
         };
 
         $scope.deleteAccount = function () {
