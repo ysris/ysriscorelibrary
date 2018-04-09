@@ -11,12 +11,6 @@ namespace YsrisCoreLibrary.Models.Financial
     [DataContract]
     public class CustomerHasFavoriteInstrument
     {
-        // [Key]
-        // [DataMember]
-        // public int id {get; set;}
-
-        // [DataMember]
-        // public string companyName { get; set; }
         public int customerId { get; set; }
         public int instrumentId { get; set; }
     }
