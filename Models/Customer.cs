@@ -143,16 +143,6 @@ namespace YsrisCoreLibrary.Models
         [DataMember]
         public bool isMailingSuscribed { get; set; }
 
-
-
-        [DataMember]
-        [NotMapped]
-        public virtual List<object> entityModel { get; set; } =
-            new List<object>
-            {
-                // new { name = "clientId",type="select"},
-            };
-
         [DataMember]
         [NotMapped]
         public virtual string prettyName => !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName)) ? $"{firstName} {lastName}" : email;

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using ysriscorelibrary.Interfaces;
+using System;
+using YsrisCoreLibrary.Models;
 
 namespace YsrisCoreLibrary.Abstract
 {
@@ -39,6 +41,26 @@ namespace YsrisCoreLibrary.Abstract
             //        a.entityModel = _entityModel;
             //    }
             return set;
+        }
+
+        /// <summary>
+        /// Get registres
+        /// </summary>
+        /// <param name="start">from query string</param>
+        /// <param name="number">from query string</param>
+        /// <param name="tableState">from query string</param>
+        /// <returns></returns>
+        [HttpGet("getfiltered")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "All")]
+        public virtual IActionResult Get(int start = 0, int number = 100, TableStateEntity<T> tableStateObj = null)
+        {
+            var fullset = _context.Set<T>().AsQueryable();
+            var set = fullset.Skip(start).Take(number).AsQueryable();
+            return Ok(new
+            {
+                data = set,
+                numberOfPages = Math.Ceiling(fullset.Count() / number * 1f),
+            });
         }
 
         /// <summary>

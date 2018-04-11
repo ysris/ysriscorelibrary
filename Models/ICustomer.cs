@@ -17,7 +17,6 @@ namespace YsrisCoreLibrary.Models
         string customerType { get; set; }
         DateTime? deletionDate { get; set; }
         string email { get; set; }
-        List<object> entityModel { get; set; }
         string firstName { get; set; }
         int id { get; set; }
         string lastName { get; set; }

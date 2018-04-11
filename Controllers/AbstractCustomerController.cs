@@ -56,7 +56,7 @@ namespace YsrisCoreLibrary.Controllers
             IStorageService storageService,
             IConfiguration config,
             CustomerDal dal,
-            EncryptionService encryptionHelper            
+            EncryptionService encryptionHelper
         )
         {
             _sessionHelperInstance = sessionHelper;
@@ -69,10 +69,17 @@ namespace YsrisCoreLibrary.Controllers
             _encryptionHelper = encryptionHelper;
         }
 
+
+
+        /// <summary>
+        /// Standard cookie login
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
         [HttpPost("login")]
-        public virtual LoginCustomerEntity Login([FromBody] dynamic values)
+        public virtual LoginCustomerEntity Login([FromBody] LoginViewModel model)
         {
-            var customer = _dal.Get((string)values.username.ToString(), (string)values.password.ToString());
+            var customer = _dal.Get(model.username.ToString(), model.password.ToString());
 
             if (customer == null)
                 throw new Exception("Unknown User");
@@ -91,12 +98,19 @@ namespace YsrisCoreLibrary.Controllers
             return new LoginCustomerEntity { customer = customer };
         }
 
+        /// <summary>
+        /// Standard cookie logout
+        /// </summary>
         [HttpPost("logout")]
         public virtual async void Logout() => await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
+        /// <summary>
+        /// Password recover
+        /// </summary>
+        /// <param name="obj"></param>
         [HttpPost("recover")]
         [AllowAnonymous]
-        public virtual void Recover([FromBody]dynamic obj)
+        public virtual void Recover([FromBody]RecoverViewModel obj)
         {
             string email = obj?.email;
             if (email == null)
@@ -125,25 +139,24 @@ namespace YsrisCoreLibrary.Controllers
             );
         }
 
+        /// <summary>
+        /// Password recover callback 
+        /// </summary>
+        /// <param name="obj"></param>
         [HttpPost]
         [Route("recover2")]
         [AllowAnonymous]
-        public virtual void Recover2([FromBody]dynamic obj)
+        public virtual void Recover2([FromBody]RecoverViewModel obj)
         {
-            string
-                email = obj.email,
-                activationCode = obj.activationCode,
-                password = obj.password;
-
-            var entity = _dal.Get(email, 0);
+            var entity = _dal.Get(obj.email, 0);
             if (entity == null || entity.activationCode == null || entity.recoverAskDate == null)
                 throw new Exception("BadRequest");
 
-            if (activationCode == entity.activationCode && (DateTime.Now - (DateTime)entity.recoverAskDate).Minutes <= 10)
+            if (obj.activationCode == entity.activationCode && (DateTime.Now - (DateTime)entity.recoverAskDate).Minutes <= 10)
             {
                 entity.activationCode = null;
                 entity.recoverAskDate = null;
-                entity.password = _encryptionHelper.GetHash(password);
+                entity.password = _encryptionHelper.GetHash(obj.password);
                 entity.accountStatus = CustomerStatus.Activated;
                 _dal.AddOrUpdate(entity, 0);
 
@@ -164,6 +177,10 @@ namespace YsrisCoreLibrary.Controllers
             }
         }
 
+        /// <summary>
+        /// Invitation (customer account created by a site administrator) activation
+        /// </summary>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpGet("activateinvitation")]
         public virtual IActionResult ActivateInvitation()
@@ -171,14 +188,6 @@ namespace YsrisCoreLibrary.Controllers
             var username = Request.Query["username"];
             var activatioNCode = Request.Query["activationCode"];
             return Redirect($"/#!/activateinvitation/{username}/{activatioNCode}");
-        }
-
-
-        public class ActivationViewModel
-        {
-            public string email { get; set; }
-            public string activationcode { get; set; }
-            public string password { get; set; }
         }
 
         [AllowAnonymous]
@@ -265,7 +274,6 @@ namespace YsrisCoreLibrary.Controllers
 
 
 
-
         /// <summary>
         /// account creation action
         /// </summary>
@@ -273,7 +281,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public virtual Customer Post([FromBody] dynamic values)
+        public virtual Customer Post([FromBody] AccountCreationViewModel values)
         {
             _myLogger.LogDebug($"CustomerController +Post");
 
@@ -363,9 +371,6 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual object UploadAvatar(IFormFile file)
         {
-            var x = _sessionHelperInstance.User.id;
-
-
             _myLogger.LogInformation($"+ UploadAvatar file={file}");
 
             var largePath = $"/avatars/large/{_sessionHelperInstance.User.id}.jpg";
@@ -436,7 +441,6 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns>Customer</returns>
         [HttpGet("me")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        //[ServiceFilter(typeof(CustomAuthorize))]
         public virtual Customer GetMe()
         {
             if (_sessionHelperInstance.User == null)
@@ -577,21 +581,7 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual Customer GetEmpty()
         {
-            var entity = new Customer
-            {
-                entityModel =
-                    new List<object> {
-                        new { name="firstName", type="string" },
-                        new { name="lastName", type="string" },
-                        new { name="email", type="string" },
-                        new { name="passwordForTyping", type="string" },
-                        new { name="adrLine1", type="string" },
-                        new { name="adrLine2", type="string" },
-                        new { name="adrPostalCode", type="string" },
-                        new { name="adrCity", type="string" },
-                        new { name="adrCountry", type="string" }
-                    }
-            };
+            var entity = new Customer { };
             return entity;
         }
 
@@ -609,7 +599,7 @@ namespace YsrisCoreLibrary.Controllers
 
         [AllowAnonymous]
         [HttpPost("GenerateToken")]
-        public IActionResult GenerateToken([FromBody] LoginViewModel model)
+        public IActionResult GenerateToken([FromBody] GenerateTokenLoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -643,7 +633,36 @@ namespace YsrisCoreLibrary.Controllers
             return BadRequest("Could not create token");
         }
 
+
+        public class AccountCreationViewModel
+        {
+            public string UserType { get; set; }
+            public string email { get; set; }
+            public string passwordForTyping { get; set; }
+
+        }
+
+        public class ActivationViewModel
+        {
+            public string email { get; set; }
+            public string activationcode { get; set; }
+            public string password { get; set; }
+        }
+
+        public class RecoverViewModel
+        {
+            public string email { get; set; }
+            public string activationCode { get; set; }
+            public string password { get; set; }
+        }
+
         public class LoginViewModel
+        {
+            public string username { get; set; }
+            public string password { get; set; }
+        }
+
+        public class GenerateTokenLoginViewModel
         {
             public string Email { get; set; }
             public string Password { get; set; }
