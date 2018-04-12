@@ -52,7 +52,7 @@ namespace YsrisCoreLibrary.Abstract
         /// <returns></returns>
         [HttpGet("getfiltered")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "All")]
-        public virtual IActionResult Get(int start = 0, int number = 100, TableStateEntity<T> tableStateObj = null)
+        public virtual IActionResult Get(int start = 0, int number = 100, object tableStateObj = null)
         {
             var fullset = _context.Set<T>().AsQueryable();
             var set = fullset.Skip(start).Take(number).AsQueryable();
