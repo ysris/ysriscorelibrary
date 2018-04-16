@@ -144,11 +144,27 @@ namespace YsrisCoreLibrary.Models
         public bool? isMailingSuscribed { get; set; }
 
         [DataMember]
+        public string companyName { get; set; }
+
+        [DataMember]
+        public string phoneNumber { get; set; }
+
+        [DataMember]
+        public string freetext { get; set; }
+
+        [DataMember]
         [NotMapped]
         public virtual string prettyName => !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName)) ? $"{firstName} {lastName}" : email;
 
         [DataMember]
         [NotMapped]
         public List<string> roles => !string.IsNullOrEmpty(rolesString) ? rolesString.Split(',').Select(a => a.Trim()).ToList() : null;
+
+        [DataMember]
+        [NotMapped]
+        public virtual string initials =>
+            !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName))
+                ? $"{(firstName ?? string.Empty).FirstOrDefault()} {(lastName ?? string.Empty).FirstOrDefault()}"
+                : email;
     }
 }
