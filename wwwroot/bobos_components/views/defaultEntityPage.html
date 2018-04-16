@@ -1,0 +1,19 @@
+﻿<div class="content-wrapper">
+    <div class="panel panel-flat">
+        <div class="panel-heading">
+            <input type="button" class="pull-right btn btn-primary btn-rounded" value="Edit" ng-click="edit()" />
+            <h4>
+                <span class="text-semibold">{{PageHeaderTitle}}</span> <span class="pull-left;" ng-show="PageHeaderSubTitle != null && PageHeaderSubTitle != ''"
+                    class="display-block">- {{PageHeaderSubTitle}}</span>
+            </h4>
+        </div>
+        <div class="panel-body">
+            <div class="row form-group">
+                <div class="col-xs-2" ng-repeat="cur in entity.entityModel">
+                    <label class="text-semibold">{{cur.name}}:</label>
+                    <div class="form-control-static">{{entity[cur.name]}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
