@@ -11,6 +11,7 @@ namespace YsrisSaas2.Enums
     {
         public const string Administrator = "Administrator";
         public const string User = "User";
+        public const string CompanyAdministrator = "CompanyAdministrator";
         public const string Proprietaire = "Proprietaire";
         public const string Coach = "Coach";
         public const string Locataire = "Locataire";

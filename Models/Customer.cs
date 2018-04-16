@@ -24,12 +24,12 @@ namespace YsrisCoreLibrary.Models
         {
         }
 
-        public Customer(dynamic values)
+        public Customer(Customer values)
         {
             SetFromValues(values);
         }
 
-        public void SetFromValues(dynamic values)
+        public void SetFromValues(ICustomer values)
         {
             if (values.id != null) id = values.id;
             if (values.picture != null) picture = values.picture;
@@ -44,7 +44,7 @@ namespace YsrisCoreLibrary.Models
             if (values.adrPostalCode != null) adrPostalCode = values.adrPostalCode;
             if (values.adrCity != null) adrCity = values.adrCity;
             if (values.adrCountry != null) adrCountry = values.adrCountry;
-            if (values.isMailingSuscribed != null) isMailingSuscribed = values.isMailingSuscribed;
+            if (values.isMailingSuscribed != null) isMailingSuscribed = (bool)values.isMailingSuscribed;
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace YsrisCoreLibrary.Models
         [DataMember]
         public DateTime? recoverAskDate { get; set; }
 
-        
+
         [DataMember]
         public string adrLine1 { get; set; }
         [DataMember]
@@ -141,7 +141,7 @@ namespace YsrisCoreLibrary.Models
         public string adrCountry { get; set; }
 
         [DataMember]
-        public bool isMailingSuscribed { get; set; }
+        public bool? isMailingSuscribed { get; set; }
 
         [DataMember]
         [NotMapped]

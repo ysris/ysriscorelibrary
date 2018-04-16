@@ -24,6 +24,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 
 namespace YsrisCoreLibrary.Controllers
 {
@@ -40,6 +41,7 @@ namespace YsrisCoreLibrary.Controllers
         protected AbstractCustomerDal _dal;
         private IConfiguration _config;
         private EncryptionService _encryptionHelper;
+        private DbContext _context;
 
         /// <summary>
         /// Default constructor
@@ -56,7 +58,8 @@ namespace YsrisCoreLibrary.Controllers
             IStorageService storageService,
             IConfiguration config,
             CustomerDal dal,
-            EncryptionService encryptionHelper
+            EncryptionService encryptionHelper,
+            DbContext context
         )
         {
             _sessionHelperInstance = sessionHelper;
@@ -67,6 +70,7 @@ namespace YsrisCoreLibrary.Controllers
             _dal = dal;
             _config = config;
             _encryptionHelper = encryptionHelper;
+            _context = context;
         }
 
 
@@ -77,9 +81,18 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="values"></param>
         /// <returns></returns>
         [HttpPost("login")]
-        public virtual LoginCustomerEntity Login([FromBody] LoginViewModel model)
+        public virtual LoginCustomerEntity Login([FromBody] LoginViewModel model, IEnumerable<string> accountStatuses = null)
         {
-            var customer = _dal.Get(model.username.ToString(), model.password.ToString());
+            if (accountStatuses == null || !accountStatuses.Any())
+                accountStatuses = new List<string> { CustomerStatus.Activated };
+
+            var customer =
+                _context.Set<Customer>().SingleOrDefault(a =>
+                    a.email == model.username
+                    && a.password == _encryptionHelper.GetHash(model.password)
+                    && accountStatuses.Contains(a.accountStatus)
+                    && a.deletionDate == null
+                );
 
             if (customer == null)
                 throw new Exception("Unknown User");
@@ -328,8 +341,12 @@ namespace YsrisCoreLibrary.Controllers
                 customerType = Role.User;
             }
 
-            var entity = new Customer(values)
+
+            var entity = new Customer
             {
+                email = values.email,
+                firstName = values.firstName,
+                lastName = values.lastName,
                 activationCode = Guid.NewGuid().ToString(),
                 customerType = customerType,
                 createdAt = DateTime.Now,
@@ -352,13 +369,20 @@ namespace YsrisCoreLibrary.Controllers
                 mailViewBag:
                 new Dictionary<string, string>
                 {
-                    {"FirstName", entity.firstName},
+                    {"FirstName", entity.prettyName},
                     {
                         "ActivationUrl",
                         $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/customer/activate?username={entity.email}&activationCode={entity.activationCode}"
-                    }
+                    },
+                    {"AppName", _config.GetValue<string>("Data:AppName")},
+                    {
+                        "LogoDefault",
+                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png"
+                    },
+                    {"PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
                 }
             );
+
 
             return entity;
         }
@@ -638,6 +662,8 @@ namespace YsrisCoreLibrary.Controllers
         {
             public string UserType { get; set; }
             public string email { get; set; }
+            public string firstName { get; set; }
+            public string lastName { get; set; }
             public string passwordForTyping { get; set; }
 
         }

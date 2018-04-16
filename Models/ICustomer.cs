@@ -27,7 +27,8 @@ namespace YsrisCoreLibrary.Models
         DateTime? recoverAskDate { get; set; }
         List<string> roles { get; }
         string rolesString { get; set; }
+        bool? isMailingSuscribed { get; set; }
 
-        void SetFromValues(dynamic values);
+        void SetFromValues(ICustomer values);
     }
 }
