@@ -1,18 +1,18 @@
 ﻿angular.module("frontendAngularClientApp").controller("InscriptionController", function ($scope, $state, $rootScope, customerService) {
     $scope.Entity = null;
-    $scope.UserType = null;
+    $scope.customerType = null;
 
     (function () {
         switch ($state.current.name) {
             case "inscription":
-                $scope.UserType = "User";
+                $scope.customerType = "User";
                 break;
         }
     })();
 
     $scope.save = function () {
         $rootScope.IsBusy = true;
-        $scope.Entity.UserType = $scope.UserType;
+        $scope.Entity.customerType = $scope.customerType;
         customerService.createAccount($scope.Entity).then(
             function (resp) {
                 $rootScope.IsBusy = false;

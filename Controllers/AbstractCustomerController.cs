@@ -31,17 +31,17 @@ namespace YsrisCoreLibrary.Controllers
     /// <summary>
     /// Default customer management
     /// </summary>
-    public abstract class AbstractCustomerController : Controller
+    public abstract class AbstractCustomerController<T> : Controller where T : class, ICustomer, new()
     {
         protected readonly MailHelperService _mailHelperService;
         protected readonly IHostingEnvironment _env;
-        protected readonly ILogger<AbstractCustomerController> _myLogger;
+        protected readonly ILogger<AbstractCustomerController<T>> _myLogger;
         protected readonly SessionHelperService _sessionHelperInstance;
         protected readonly IStorageService _storageService;
-        protected AbstractCustomerDal _dal;
+        //protected AbstractCustomerDal _dal;
         private IConfiguration _config;
-        private EncryptionService _encryptionHelper;
-        private DbContext _context;
+        protected EncryptionService _encryptionHelper;
+        protected DbContext _context;
 
         /// <summary>
         /// Default constructor
@@ -52,12 +52,12 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="mailHelperService"></param>
         public AbstractCustomerController(
             SessionHelperService sessionHelper,
-            ILogger<AbstractCustomerController> logger,
+            ILogger<AbstractCustomerController<T>> logger,
             IHostingEnvironment env,
             MailHelperService mailHelperService,
             IStorageService storageService,
             IConfiguration config,
-            CustomerDal dal,
+            //CustomerDal dal,
             EncryptionService encryptionHelper,
             DbContext context
         )
@@ -67,7 +67,7 @@ namespace YsrisCoreLibrary.Controllers
             _env = env;
             _mailHelperService = mailHelperService;
             _storageService = storageService;
-            _dal = dal;
+            //_dal = dal;
             _config = config;
             _encryptionHelper = encryptionHelper;
             _context = context;
@@ -129,12 +129,14 @@ namespace YsrisCoreLibrary.Controllers
             if (email == null)
                 throw new Exception("incorrect parameters specified");
 
-            var entity = _dal.Get(email, 0);
+            var entity = _context.Set<T>().Single(a => a.email == email);
+
             entity.activationCode = Guid.NewGuid().ToString();
             entity.recoverAskDate = DateTime.Now;
             entity.accountStatus = CustomerStatus.PendingActivationWithPasswordChange;
 
-            _dal.AddOrUpdate(entity, 0);
+            _context.Set<T>().Update(entity);
+            _context.SaveChanges();
 
             _mailHelperService.SendMail(
                 entity.email,
@@ -161,7 +163,7 @@ namespace YsrisCoreLibrary.Controllers
         [AllowAnonymous]
         public virtual void Recover2([FromBody]RecoverViewModel obj)
         {
-            var entity = _dal.Get(obj.email, 0);
+            var entity = _context.Set<T>().Single(a => a.email == obj.email);
             if (entity == null || entity.activationCode == null || entity.recoverAskDate == null)
                 throw new Exception("BadRequest");
 
@@ -171,7 +173,9 @@ namespace YsrisCoreLibrary.Controllers
                 entity.recoverAskDate = null;
                 entity.password = _encryptionHelper.GetHash(obj.password);
                 entity.accountStatus = CustomerStatus.Activated;
-                _dal.AddOrUpdate(entity, 0);
+
+                _context.Set<T>().Update(entity);
+                _context.SaveChanges();
 
                 _mailHelperService.SendMail(
                     entity.email,
@@ -208,7 +212,7 @@ namespace YsrisCoreLibrary.Controllers
         public virtual IActionResult ActivateInvitation2([FromBody] ActivationViewModel obj)
         {
 
-            var entity = _dal.Get(obj.email, 0);
+            var entity = _context.Set<T>().Single(a => a.email == obj.email);
             if (entity == null || entity.activationCode == null)
                 throw new Exception("BadRequest");
 
@@ -218,7 +222,9 @@ namespace YsrisCoreLibrary.Controllers
                 entity.recoverAskDate = null;
                 entity.password = _encryptionHelper.GetHash(obj.password);
                 entity.accountStatus = CustomerStatus.Activated;
-                _dal.AddOrUpdate(entity, 0);
+
+                _context.Set<T>().Update(entity);
+                _context.SaveChanges();
 
                 _mailHelperService.SendMail(
                     entity.email,
@@ -242,15 +248,15 @@ namespace YsrisCoreLibrary.Controllers
 
         [HttpPost("invite")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")] //todo : the default policy is probably incorrect
-        public virtual Customer Invite([FromBody] InviteCustomerViewModel obj)
+        public virtual T Invite([FromBody] InviteCustomerViewModel obj)
         {
             _myLogger.LogDebug($"CustomerController +Post");
 
-            var test = _dal.SafeList(0).Where(a => a.email == obj.email);
+            var test = _context.Set<T>().Where(a => a.email == obj.email);
             if (test.Any())
                 throw new Exception("Already assigned email");
 
-            var entity = new Customer()
+            var entity = new T()
             {
                 email = obj.email,
                 activationCode = Guid.NewGuid().ToString(),
@@ -260,7 +266,10 @@ namespace YsrisCoreLibrary.Controllers
                 rolesString = string.Join(",", new List<string>() { Role.User }),
             };
 
-            entity.id = (int)_dal.AddOrUpdate(entity, 0);
+            _context.Set<T>().Add(entity);
+            _context.SaveChanges();
+
+            //entity.id = (int)_dal.AddOrUpdate(entity, 0);
 
             // 4. User notification
             if (obj.boolSendEmail)
@@ -294,13 +303,13 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
-        public virtual Customer Post([FromBody] AccountCreationViewModel values)
+        public virtual T Post([FromBody] T values)
         {
             _myLogger.LogDebug($"CustomerController +Post");
 
             var email = values.email;
 
-            var test = _dal.SafeList(0).Where(a => a.email == email.ToString());
+            var test = _context.Set<T>().Where(a => a.email == email.ToString());
             if (test.Any())
                 throw new Exception("Already assigned email");
 
@@ -308,9 +317,9 @@ namespace YsrisCoreLibrary.Controllers
             string customerType = Role.User;
 
 
-            if (values.UserType != null)
+            if (values.customerType != null)
             {
-                switch ((string)values.UserType.ToString())
+                switch (values.customerType)
                 {
                     case "Coach":
                         rolesList.Add(Role.Coach);
@@ -342,7 +351,7 @@ namespace YsrisCoreLibrary.Controllers
             }
 
 
-            var entity = new Customer
+            var entity = new T
             {
                 email = values.email,
                 firstName = values.firstName,
@@ -358,7 +367,10 @@ namespace YsrisCoreLibrary.Controllers
                 throw new Exception("Password is null");
             entity.password = _encryptionHelper.GetHash(values.passwordForTyping.ToString()); //keep here for avoiding the model binding
             entity.companyId = 0;
-            entity.id = (int)_dal.AddOrUpdate(entity, 0);
+
+            _context.Set<T>().Add(entity);
+            _context.SaveChanges();
+
 
             // 4. User notification
             _myLogger.LogDebug($"+++User notification (mail)");
@@ -400,10 +412,11 @@ namespace YsrisCoreLibrary.Controllers
             var largePath = $"/avatars/large/{_sessionHelperInstance.User.id}.jpg";
             _storageService.SavePictureTo(file, largePath, 300);
 
-            var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
             entity.picture = largePath;
 
-            _dal.AddOrUpdate(entity, _sessionHelperInstance.User.id);
+            _context.Set<T>().Update(entity);
+            _context.SaveChanges();
 
             return entity;
         }
@@ -415,11 +428,17 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns></returns>
         [HttpPost("updateasadmin")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public virtual Customer UpdateAsAdmin([FromBody] dynamic values)
+        public virtual T UpdateAsAdmin([FromBody] T values)
         {
-            var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+
+
+
             entity.SetFromValues(values);
-            _dal.AddOrUpdate(entity, _sessionHelperInstance.User.id);
+
+            _context.Set<T>().Update(entity);
+            _context.SaveChanges();
+
             _sessionHelperInstance.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
 
             return entity;
@@ -433,9 +452,9 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns></returns>
         [HttpPost("update")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual Customer Update([FromBody] dynamic values)
+        public virtual T Update([FromBody] T values)
         {
-            var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
             entity.SetFromValues(values);
 
             //var entity = new Customer(values);
@@ -453,7 +472,9 @@ namespace YsrisCoreLibrary.Controllers
                     entity.password = _encryptionHelper.GetHash(values.passwordForTyping.ToString());
                 }
 
-            _dal.AddOrUpdate(entity, _sessionHelperInstance.User.id);
+            _context.Set<T>().Update(entity);
+            _context.SaveChanges();
+
             _sessionHelperInstance.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
 
             return entity;
@@ -465,11 +486,11 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns>Customer</returns>
         [HttpGet("me")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual Customer GetMe()
+        public virtual T GetMe()
         {
             if (_sessionHelperInstance.User == null)
                 return null;
-            var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
             if (entity != null)
             {
                 entity.pictureClientAccessor = $"/api/customer/avatar/{entity.id}";
@@ -489,7 +510,7 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual object Get(int id)
         {
-            var entity = _dal.Get(id, _sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
             if (entity != null)
             {
                 entity.pictureClientAccessor = $"/api/customer/avatar/{entity.id}";
@@ -507,7 +528,9 @@ namespace YsrisCoreLibrary.Controllers
         {
             if (_sessionHelperInstance.User != null)
             {
-                var smallUri = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id).picture;
+                var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+                var smallUri = entity.picture;
+
                 if (smallUri == null)
                 {
                     var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
@@ -532,7 +555,9 @@ namespace YsrisCoreLibrary.Controllers
         {
             var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
 
-            var smallUri = _dal.Get((int)id, _sessionHelperInstance.User.id).picture;
+            var entity = _context.Set<T>().Find(id);
+            var smallUri = entity.picture;
+
             if (smallUri == null)
             {
                 return File(System.IO.File.ReadAllBytes(path), "image/png");
@@ -558,8 +583,9 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public void Delete()
         {
-            var entity = _dal.Get(_sessionHelperInstance.User.id, _sessionHelperInstance.User.id);
-            _dal.SafeRemove(entity, _sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+            _context.Set<T>().Remove(entity);
+            _context.SaveChanges();
         }
 
         /// <summary>
@@ -570,8 +596,9 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public void DeleteAsAdmin(int id)
         {
-            var entity = _dal.Get(id, _sessionHelperInstance.User.id);
-            _dal.SafeRemove(entity, _sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+            _context.Set<T>().Remove(entity);
+            _context.SaveChanges();
         }
 
 
@@ -581,7 +608,7 @@ namespace YsrisCoreLibrary.Controllers
             var activatioNCode = Request.Query["activationCode"];
             var username = Request.Query["username"];
 
-            var entity = _dal.Get(username, 0);
+            var entity = _context.Set<T>().Single(a => a.email == username);
 
             switch (entity.accountStatus)
             {
@@ -590,7 +617,10 @@ namespace YsrisCoreLibrary.Controllers
                     {
                         entity.activationCode = null;
                         entity.accountStatus = sucessActivationStatus;
-                        _dal.AddOrUpdate(entity, 0);
+
+                        _context.Set<T>().Update(entity);
+                        _context.SaveChanges();
+
                         _myLogger.LogDebug(
                             $"++ Updatied entity AccountStatus from {CustomerStatus.PendingActivationWithoutPasswordChange} to {entity.accountStatus}");
                         return Redirect("/#!/signin/activationsucceeded");
@@ -614,11 +644,30 @@ namespace YsrisCoreLibrary.Controllers
 
         [HttpPost("activateasadmin")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public Customer ActivateAsAdmin([FromBody] dynamic values) => _dal.UpdateStatus(new Customer(values).id, CustomerStatus.Activated, _sessionHelperInstance.User.id);
+        public T ActivateAsAdmin([FromBody] T values)
+        {
+            var entity = _context.Set<T>().Find(values.id);
+            entity.accountStatus = CustomerStatus.Activated;
+
+            _context.Set<T>().Update(entity);
+            _context.SaveChanges();
+
+            return entity;
+
+        }
 
         [HttpPost("disableasadmin")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public Customer DisableAsAdmin([FromBody] dynamic values) => _dal.UpdateStatus(new Customer(values).id, CustomerStatus.Disabled, _sessionHelperInstance.User.id);
+        public Customer DisableAsAdmin([FromBody] dynamic values)
+        {
+            var entity = _context.Set<T>().Find(values.id);
+            entity.accountStatus = CustomerStatus.Disabled;
+
+            _context.Set<T>().Update(entity);
+            _context.SaveChanges();
+
+            return entity;
+        }
 
 
         [AllowAnonymous]
@@ -627,7 +676,8 @@ namespace YsrisCoreLibrary.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = _dal.Get(model.Email.ToString(), model.Password.ToString());
+
+                var user = _context.Set<T>().Single(a => a.email == model.Email && a.password == _encryptionHelper.GetHash(model.Password));
 
                 if (user != null)
                 {

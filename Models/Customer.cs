@@ -45,6 +45,14 @@ namespace YsrisCoreLibrary.Models
             if (values.adrCity != null) adrCity = values.adrCity;
             if (values.adrCountry != null) adrCountry = values.adrCountry;
             if (values.isMailingSuscribed != null) isMailingSuscribed = (bool)values.isMailingSuscribed;
+
+
+            if (values.companyName != null) companyName = values.companyName;
+            if (values.phoneNumber != null) phoneNumber = values.phoneNumber;
+            if (values.freetext != null) freetext = values.freetext;
+
+
+
         }
 
         /// <summary>
@@ -141,7 +149,7 @@ namespace YsrisCoreLibrary.Models
         public string adrCountry { get; set; }
 
         [DataMember]
-        public bool? isMailingSuscribed { get; set; }
+        public bool isMailingSuscribed { get; set; }
 
         [DataMember]
         public string companyName { get; set; }
@@ -151,6 +159,16 @@ namespace YsrisCoreLibrary.Models
 
         [DataMember]
         public string freetext { get; set; }
+
+
+        [DataMember]
+        [NotMapped]
+        public string rawPasswordConfirm { get; set; }
+
+        [DataMember]
+        [NotMapped]
+        public string passwordForTyping { get; set; }
+
 
         [DataMember]
         [NotMapped]

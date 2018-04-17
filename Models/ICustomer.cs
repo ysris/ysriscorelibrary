@@ -27,8 +27,12 @@ namespace YsrisCoreLibrary.Models
         DateTime? recoverAskDate { get; set; }
         List<string> roles { get; }
         string rolesString { get; set; }
-        bool? isMailingSuscribed { get; set; }
-
+        bool isMailingSuscribed { get; set; }
+        string companyName { get; set; }
+        string phoneNumber { get; set; }
+        string freetext { get; set; }
+        string rawPasswordConfirm { get; set; }
+        string passwordForTyping { get; set; }
         void SetFromValues(ICustomer values);
     }
 }
