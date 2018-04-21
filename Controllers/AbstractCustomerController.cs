@@ -9,13 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using YsrisCoreLibrary.Dal;
-using YsrisCoreLibrary.Enums;
 using YsrisCoreLibrary.Helpers;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Services;
 using YsrisCoreLibrary.Abstract;
 using ysriscorelibrary.Interfaces;
-using YsrisSaas2.Enums;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
@@ -38,10 +36,9 @@ namespace YsrisCoreLibrary.Controllers
         protected readonly ILogger<AbstractCustomerController<T>> _myLogger;
         protected readonly SessionHelperService _sessionHelperInstance;
         protected readonly IStorageService _storageService;
-        //protected AbstractCustomerDal _dal;
-        private IConfiguration _config;
-        protected EncryptionService _encryptionHelper;
-        protected DbContext _context;
+        protected readonly IConfiguration _config;
+        protected readonly EncryptionService _encryptionHelper;
+        protected readonly DbContext _context;
 
         /// <summary>
         /// Default constructor
@@ -57,7 +54,6 @@ namespace YsrisCoreLibrary.Controllers
             MailHelperService mailHelperService,
             IStorageService storageService,
             IConfiguration config,
-            //CustomerDal dal,
             EncryptionService encryptionHelper,
             DbContext context
         )
@@ -73,8 +69,6 @@ namespace YsrisCoreLibrary.Controllers
             _context = context;
         }
 
-
-
         /// <summary>
         /// Standard cookie login
         /// </summary>
@@ -87,7 +81,8 @@ namespace YsrisCoreLibrary.Controllers
                 accountStatuses = new List<string> { CustomerStatus.Activated };
 
             var customer =
-                _context.Set<Customer>().SingleOrDefault(a =>
+                _context.Set<Customer>()
+                .SingleOrDefault(a =>
                     a.email == model.username
                     && a.password == _encryptionHelper.GetHash(model.password)
                     && accountStatuses.Contains(a.accountStatus)
@@ -101,13 +96,12 @@ namespace YsrisCoreLibrary.Controllers
             if (!string.IsNullOrEmpty(customer.rolesString))
                 foreach (var cur in customer.rolesString.Split(',').Select(a => a.Trim()))
                     claims.Add(new Claim(ClaimTypes.Role, cur));
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
 
-            // await HttpContext.Authentication.SignInAsync("MyCookieMiddlewareInstance", principal);
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
             HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-            //_sessionHelperInstance.HttpContext
             HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(customer));
+
             return new LoginCustomerEntity { customer = customer };
         }
 
@@ -125,11 +119,10 @@ namespace YsrisCoreLibrary.Controllers
         [AllowAnonymous]
         public virtual void Recover([FromBody]RecoverViewModel obj)
         {
-            string email = obj?.email;
-            if (email == null)
+            if (obj.email == null)
                 throw new Exception("incorrect parameters specified");
 
-            var entity = _context.Set<T>().Single(a => a.email == email);
+            var entity = _context.Set<T>().Single(a => a.email == obj.email);
 
             entity.activationCode = Guid.NewGuid().ToString();
             entity.recoverAskDate = DateTime.Now;
@@ -145,11 +138,8 @@ namespace YsrisCoreLibrary.Controllers
                 mailViewBag:
                 new Dictionary<string, string>
                 {
-                    {"UserFirstName", entity.firstName},
-                    {
-                        "RecoverUrl",
-                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/passwordrecover2/{entity.email}/{entity.activationCode}"
-                    }
+                    { "UserFirstName", entity.firstName },
+                    { "RecoverUrl", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/passwordrecover2/{entity.email}/{entity.activationCode}" }
                 }
             );
         }
@@ -181,15 +171,7 @@ namespace YsrisCoreLibrary.Controllers
                     entity.email,
                     subject: "Password recover",
                     templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordResetConfirmation.cshtml",
-                    mailViewBag:
-                    new Dictionary<string, string>
-                    {
-                        {"UserFirstName", entity.firstName},
-                        //{
-                        //    "RecoverUrl",
-                        //    $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/signin"
-                        //}
-                    }
+                    mailViewBag: new Dictionary<string, string> { { "UserFirstName", entity.firstName } }
                 );
             }
         }
@@ -211,7 +193,6 @@ namespace YsrisCoreLibrary.Controllers
         [HttpPost("activateinvitation")]
         public virtual IActionResult ActivateInvitation2([FromBody] ActivationViewModel obj)
         {
-
             var entity = _context.Set<T>().Single(a => a.email == obj.email);
             if (entity == null || entity.activationCode == null)
                 throw new Exception("BadRequest");
@@ -230,21 +211,12 @@ namespace YsrisCoreLibrary.Controllers
                     entity.email,
                     subject: "Password recover",
                     templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordResetConfirmation.cshtml",
-                    mailViewBag:
-                    new Dictionary<string, string>
-                    {
-                        {"UserFirstName", entity.firstName},
-                        //{
-                        //    "RecoverUrl",
-                        //    $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/signin"
-                        //}
-                    }
+                    mailViewBag: new Dictionary<string, string> { { "UserFirstName", entity.firstName } }
                 );
             }
 
             return Ok(new { });
         }
-
 
         [HttpPost("invite")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")] //todo : the default policy is probably incorrect
@@ -269,8 +241,6 @@ namespace YsrisCoreLibrary.Controllers
             _context.Set<T>().Add(entity);
             _context.SaveChanges();
 
-            //entity.id = (int)_dal.AddOrUpdate(entity, 0);
-
             // 4. User notification
             if (obj.boolSendEmail)
             {
@@ -294,8 +264,6 @@ namespace YsrisCoreLibrary.Controllers
             return entity;
         }
 
-
-
         /// <summary>
         /// account creation action
         /// </summary>
@@ -314,8 +282,7 @@ namespace YsrisCoreLibrary.Controllers
                 throw new Exception("Already assigned email");
 
             var rolesList = new List<string>();
-            string customerType = Role.User;
-
+            var customerType = Role.User;
 
             if (values.customerType != null)
             {
@@ -371,7 +338,6 @@ namespace YsrisCoreLibrary.Controllers
             _context.Set<T>().Add(entity);
             _context.SaveChanges();
 
-
             // 4. User notification
             _myLogger.LogDebug($"+++User notification (mail)");
             _mailHelperService.SendMail(
@@ -394,7 +360,6 @@ namespace YsrisCoreLibrary.Controllers
                     {"PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
                 }
             );
-
 
             return entity;
         }
@@ -431,9 +396,6 @@ namespace YsrisCoreLibrary.Controllers
         public virtual T UpdateAsAdmin([FromBody] T values)
         {
             var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
-
-
-
             entity.SetFromValues(values);
 
             _context.Set<T>().Update(entity);
@@ -457,11 +419,8 @@ namespace YsrisCoreLibrary.Controllers
             var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
             entity.SetFromValues(values);
 
-            //var entity = new Customer(values);
             if (entity.id != _sessionHelperInstance.User.id)
                 throw new Exception("Unauthorized");
-
-
 
             if (values.rawPasswordConfirm != null && values.passwordForTyping != null)
                 if (!string.IsNullOrEmpty(values.rawPasswordConfirm.ToString()) &&
@@ -491,10 +450,10 @@ namespace YsrisCoreLibrary.Controllers
             if (_sessionHelperInstance.User == null)
                 return null;
             var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+
             if (entity != null)
-            {
                 entity.pictureClientAccessor = $"/api/customer/avatar/{entity.id}";
-            }
+
             return entity;
         }
 
@@ -512,9 +471,7 @@ namespace YsrisCoreLibrary.Controllers
         {
             var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
             if (entity != null)
-            {
                 entity.pictureClientAccessor = $"/api/customer/avatar/{entity.id}";
-            }
             return entity;
         }
 
@@ -556,15 +513,13 @@ namespace YsrisCoreLibrary.Controllers
             var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
 
             var entity = _context.Set<T>().Find(id);
-            var smallUri = entity.picture;
 
-            if (smallUri == null)
-            {
+            if (entity.picture == null)
                 return File(System.IO.File.ReadAllBytes(path), "image/png");
-            }
+
             try
             {
-                var result = _storageService.GetFileContent(smallUri)?.Result?.ToArray();
+                var result = _storageService.GetFileContent(entity.picture)?.Result?.ToArray();
                 if (result == null)
                     return File(System.IO.File.ReadAllBytes(path), "image/png");
                 return File(result, "image/jpeg");
@@ -593,7 +548,7 @@ namespace YsrisCoreLibrary.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpDelete("{id}")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
         public void DeleteAsAdmin(int id)
         {
             var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);

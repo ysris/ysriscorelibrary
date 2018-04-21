@@ -7,14 +7,13 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using ysriscorelibrary.Interfaces;
-using YsrisCoreLibrary.Models.Abstract;
 
 namespace YsrisCoreLibrary.Models.Financial
 {
     /// <summary>
     /// 
     /// </summary>
-    public class PortfolioMapping : AbstractEntity, IAbstractEntity
+    public class PortfolioMapping : IAbstractEntity
     {
         [Key]
         [DataMember]

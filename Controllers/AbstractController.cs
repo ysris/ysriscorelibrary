@@ -7,7 +7,7 @@ using ysriscorelibrary.Interfaces;
 using System;
 using YsrisCoreLibrary.Models;
 
-namespace YsrisCoreLibrary.Abstract
+namespace YsrisCoreLibrary.Controllers
 {
     /// <summary>
     /// Abstract Controller CRUD actions
@@ -35,20 +35,15 @@ namespace YsrisCoreLibrary.Abstract
         public virtual IQueryable<T> Get()
         {
             var set = _context.Set<T>();
-            //if (set.Select(a => a.entityModel).Distinct().All(a => a == null))
-            //    foreach (var a in set)
-            //    {
-            //        a.entityModel = _entityModel;
-            //    }
             return set;
         }
 
         /// <summary>
-        /// Get registres
+        /// Get paginated T enumeration
         /// </summary>
-        /// <param name="start">from query string</param>
-        /// <param name="number">from query string</param>
-        /// <param name="tableState">from query string</param>
+        /// <param name="start">from item</param>
+        /// <param name="number">number of items to take</param>
+        /// <param name="tableState"></param>
         /// <returns></returns>
         [HttpGet("getfiltered")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "All")]
@@ -56,11 +51,8 @@ namespace YsrisCoreLibrary.Abstract
         {
             var fullset = _context.Set<T>().AsQueryable();
             var set = fullset.Skip(start).Take(number).AsQueryable();
-            return Ok(new
-            {
-                data = set,
-                numberOfPages = Math.Ceiling(fullset.Count() / number * 1f),
-            });
+            var numberOfPages = Math.Ceiling(fullset.Count() / number * 1f);
+            return Ok(new { data = set, numberOfPages, });
         }
 
         /// <summary>
@@ -72,8 +64,6 @@ namespace YsrisCoreLibrary.Abstract
         public virtual T GetEmpty()
         {
             var entity = new T { };
-            //if (_entityModel != null)
-            //    entity.entityModel = _entityModel;
             return entity;
         }
 
@@ -90,8 +80,6 @@ namespace YsrisCoreLibrary.Abstract
                 return BadRequest(ModelState);
 
             var entity = await _context.Set<T>().FindAsync(id);
-            //if (_entityModel != null)
-            //    entity.entityModel = _entityModel;
 
             if (entity == null)
                 return NotFound();
@@ -110,14 +98,7 @@ namespace YsrisCoreLibrary.Abstract
         public virtual async Task<IActionResult> Put([FromRoute] int id, [FromBody] T client)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
-
-            // if (id != client.id)
-            // {
-            //     return BadRequest();
-            // }
 
             _context.Entry(client).State = EntityState.Modified;
 
@@ -129,8 +110,7 @@ namespace YsrisCoreLibrary.Abstract
             {
                 if (!EntityExists(id))
                     return NotFound();
-                else
-                    throw;
+                throw;
             }
 
             return NoContent();

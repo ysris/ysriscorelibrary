@@ -6,12 +6,11 @@ using System.Linq;
 using System.Runtime.Serialization;
 using ysriscorelibrary.Interfaces;
 using YsrisCoreLibrary.Models;
-using YsrisCoreLibrary.Models.Abstract;
 
 namespace YsrisCoreLibrary.Models.Financial
 {
     [DataContract]
-    public class Portfolio : AbstractEntity, IAbstractEntity
+    public class Portfolio : IAbstractEntity
     {
 
 

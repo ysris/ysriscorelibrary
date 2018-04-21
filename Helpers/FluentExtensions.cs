@@ -9,38 +9,6 @@ namespace YsrisCoreLibrary.Extensions
     public static class FluentExtensions
     {
         /// <summary>
-        /// Check if a date is in a given date range
-        /// </summary>
-        /// <param name="date">to check</param>
-        /// <param name="rangeFrom">date range from</param>
-        /// <param name="rangeTo">date range to</param>
-        /// <returns></returns>
-        //public static bool Between(this DateTime date, DateTime rangeFrom, DateTime rangeTo) => date >= rangeFrom && date <= rangeTo;
-
-        /// <summary>
-        /// Check if a date is in a given date range
-        /// </summary>
-        /// <param name="date">to check</param>
-        /// <param name="range">date range</param>
-        /// <returns></returns>
-        //public static bool Between(this DateTime date, Tuple<DateTime, DateTime> range) => date >= range.Item1 && date <= range.Item2;
-
-        //public static bool Between(this DateTime date, (DateTime, DateTime) range) => Between(date, range.Item1, range.Item2);
-
-        /// <summary>
-        /// Foreach implementation for enumerable
-        /// Why did i do that ? I don't know
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="enumeration"></param>
-        /// <param name="action"></param>
-        public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
-        {
-            foreach (T item in enumeration)
-                action(item);
-        }
-
-        /// <summary>
         /// Divide a set in x subsets of partitionSize
         /// </summary>
         /// <typeparam name="Y">element type</typeparam>

@@ -20,7 +20,7 @@ namespace YsrisCoreLibrary.Dal
     /// <typeparam name="T"></typeparam>
     public abstract class AbstractDal<T> where T : class
     {
-        private IConfiguration Configuration { get; }
+        protected IConfiguration Configuration { get; }
 
         /// <summary>
         /// From T, we get the name of the SQL table (table name == entity name)
@@ -96,7 +96,6 @@ namespace YsrisCoreLibrary.Dal
                     conn.Open();
                     conn.Execute(sql);
                 }
-
             }
             catch (SqlException)
             {
@@ -180,7 +179,6 @@ namespace YsrisCoreLibrary.Dal
 
             string sql = null;
 
-
             if (Configuration.GetValue<string>("Data:DefaultConnection:ConnectionType") == "MySql")
             {
                 sql = $@"INSERT INTO `{__tableName ?? tableName}` ( {string.Join(" , ", all.Select(a => $"`{a.Key}`"))} ) 
@@ -196,19 +194,9 @@ namespace YsrisCoreLibrary.Dal
                    WHEN NOT MATCHED THEN INSERT({string.Join(",", values.Select(a => $"{a.Key}"))}) VALUES({string.Join(",", values.Select(a => $"@{a.Key}"))});
                    SELECT CAST(SCOPE_IDENTITY() as int); "; //Scope identity returns the index only in the case of an insert
 
-
-            //LogHelper.Debug<T>($"AddOrUpdate of UserId:{userId}");
-            //LogHelper.Debug<T>(
-            //    sql
-            //    //.Replace(Environment.NewLine, " ")
-            //    .Replace("                   ", "")
-            //);
-            //LogHelper.Debug<T>(string.Join(",", all.Select(a => a.Key + ":" + a.Value)));
-
             using (var conn = _getConnection(ConnectionString))
             {
                 conn.Open();
-
 
                 if (Configuration.GetValue<string>("Data:DefaultConnection:ConnectionType") == "MySql")
                 {
@@ -220,16 +208,6 @@ namespace YsrisCoreLibrary.Dal
                     var exec2 = conn.Query<int?>(sql, values).Single();
                     return (int)exec2;
                 }
-
-
-                if (key.Count() == 1)
-                {
-                    if (key.Single().Value is int)
-                        return (int)key.Single().Value;
-                    if (key.Single().Value is int)
-                        return key.Single().Value.ToString();
-                }
-                return 0;
             }
         }
 
@@ -243,27 +221,6 @@ namespace YsrisCoreLibrary.Dal
                 AddOrUpdate(cur, userId);
             }
         }
-        //    var partititioned = entities.Partitionate<T>(partitionSize: 500);
-
-
-        //    using (_getConnection(ConnectionString))
-        //    {
-        //        conn.Open();
-        //        foreach (var curSet in partititioned)
-        //        {
-        //            //using (var t = Connection.BeginTransaction())
-        //            //{
-        //            foreach (var curEntity in curSet)
-        //                AddOrUpdate(curEntity, userId);
-        //            //t.Commit();
-        //            //}
-        //        }
-        //    }
-        //}
-
-
-
-
 
         public virtual void SafeRemove(T entity, int userId)
         {
@@ -311,35 +268,6 @@ namespace YsrisCoreLibrary.Dal
             }
 
         }
-        //public virtual void Remove(T entity, int userId)
-        //{
-        //    var tableName = !string.IsNullOrEmpty(_tableName) ? _tableName : entity.GetType().Name;
-
-        //    var keyAsDictionary = ReflectionHelper.GetKeyPropertiesValues(entity);
-        //    if (!keyAsDictionary.Any())
-        //        throw new Exception($"No Key has been defined for entity type {typeof(T)}");
-
-        //    string sql = string.Empty;
-
-        //    try
-        //    {
-        //        sql = $"SELECT COUNT(*) FROM {tableName} WHERE " + string.Join(" AND ", keyAsDictionary.Select(a => a.Key + "='" + a.Value + "'"));
-        //        var count = Connection.Query<int>(sql).Single();
-
-        //        if (count != 1)
-        //            return;
-        //    }
-        //    catch (SqlException)
-        //    {
-        //        var sqlTxt = $"SQL Query error, statement:'{sql}'";
-        //        LogHelper.Error<T>(sqlTxt + $" userId:{userId}");
-        //        throw new Exception(sqlTxt);
-        //    }
-
-        //    sql = "DELETE FROM " + tableName + " WHERE " + string.Join(" AND ", keyAsDictionary.Select(a => a.Key + "='" + a.Value + "'"));
-        //    QuerySql(sql);
-        //}
-
         #endregion
     }
 }

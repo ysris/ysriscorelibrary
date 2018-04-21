@@ -13,9 +13,8 @@ namespace ysriscorelibrary.Interfaces
         void SaveFileTo(IFormFile postedFile, string fullPath);
         void SaveFileTo(MemoryStream postedFile2, string fullPath);
         Task<MemoryStream> GetFileContent(string fullPath);
-        IEnumerable<string> ListFiles(string baseDirectory);
+        IEnumerable<string> ListFiles(string baseDirectory, bool recursive = false);
         void MoveFile(string from, string to);
         string GetFullPath(string cur);
-        //void SavePictureTo(IFormFile file, string largePath, int? width);
     }
 }

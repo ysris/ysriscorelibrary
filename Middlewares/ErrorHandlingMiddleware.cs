@@ -1,7 +1,4 @@
-﻿
-
-using System;
-using System.Net;
+﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -31,14 +28,9 @@ namespace YsrisCoreLibrary.Middlewares
 
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            //if (exception is MyNotFoundException) code = HttpStatusCode.NotFound;
-            //else if (exception is MyUnauthorizedException) code = HttpStatusCode.Unauthorized;
-            //else if (exception is MyException) code = HttpStatusCode.BadRequest;
-
-            var result = JsonConvert.SerializeObject(new { error = exception.Message });
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = StatusCodes.Status200OK;
-            return context.Response.WriteAsync(result);
+            return context.Response.WriteAsync(JsonConvert.SerializeObject(new { error = exception.Message }));
         }
     }
 }

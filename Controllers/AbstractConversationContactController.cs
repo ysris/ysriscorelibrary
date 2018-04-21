@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Services;
 
-namespace YsrisCoreLibrary.Abstract
+namespace YsrisCoreLibrary.Controllers
 {
     /// <summary>
     /// Controller abstraction for conversation contact related
     /// </summary>
     public abstract class AbstractConversationContactController : AbstractController<Customer>
     {
-    
         protected SessionHelperService _session;
         protected ILogger<AbstractConversationContactController> _logger;
 

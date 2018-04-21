@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using ysriscorelibrary.Interfaces;
 using YsrisCoreLibrary.Models;
-using YsrisCoreLibrary.Models.Abstract;
 
 namespace YsrisCoreLibrary.Models.Financial
 {

@@ -1,24 +1,16 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using YsrisCoreLibrary.Attributes;
-using YsrisCoreLibrary.Enums;
-using YsrisCoreLibrary.Models;
-using YsrisCoreLibrary.Models.Abstract;
 using ysriscorelibrary.Interfaces;
 
 namespace YsrisCoreLibrary.Models
 {
     [DataContract]
-    public class Customer : AbstractEntity, IAbstractEntity, ICustomer
+    public class Customer : IAbstractEntity, ICustomer
     {
         public Customer()
         {

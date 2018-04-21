@@ -10,16 +10,16 @@ using Microsoft.Extensions.Logging;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Services;
 
-namespace YsrisCoreLibrary.Abstract
+namespace YsrisCoreLibrary.Controllers
 {
     public abstract class AbstractConversationMessageController : AbstractController<ConversationMessage>
     {
+        protected SessionHelperService _session;
+        protected ILogger _logger;
+
         public AbstractConversationMessageController(DbContext context) : base(context)
         {
         }
-
-        protected SessionHelperService _session;
-        protected ILogger _logger;
 
         /// <summary>
         /// Override to remove possibility of getting all customers for a single user
@@ -74,8 +74,6 @@ namespace YsrisCoreLibrary.Abstract
         {
             _logger.LogDebug("conversationmessage +Post");
 
-            //if (values.id != null)
-            //    entity = dal.Get((int)values.id, _session.User.id);
             entity.creationDate = DateTime.Now;
             entity.authorId = _session.User.id;
             entity.isReadByDest = false;
@@ -84,7 +82,6 @@ namespace YsrisCoreLibrary.Abstract
             await _context.SaveChangesAsync();
 
             _logger.LogDebug("conversationmessage -Post");
-
             return CreatedAtAction("Get", new { id = entity.id }, entity);
         }
     }

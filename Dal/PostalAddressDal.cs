@@ -15,7 +15,6 @@ namespace YsrisCoreLibrary.Dal
         public PostalAddressDal(IConfiguration configuration) : base(configuration)
         {
             _configuration = configuration;
-
         }
     }
 }

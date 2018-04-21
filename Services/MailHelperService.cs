@@ -60,7 +60,9 @@ namespace YsrisCoreLibrary.Services
             var mail = new MimeMessage();
             mail.From.Add(new MailboxAddress(from));
 
-            to.ForEach(a => mail.To.Add(new MailboxAddress(a)));
+            foreach (var a in to)
+                mail.To.Add(new MailboxAddress(a));
+
             mail.Subject = subject;
             mail.Body = new BodyBuilder() { HtmlBody = htmlMsg, TextBody = htmlMsg }.ToMessageBody();
 
@@ -72,7 +74,10 @@ namespace YsrisCoreLibrary.Services
         {
             string from = _conf.GetValue<string>("Data:SmtpLogin");
             var htmlContent = File.ReadAllText(templateUri);
-            mailViewBag.ForEach(a => htmlContent = htmlContent.Replace($"**{a.Key}**", a.Value));
+
+            foreach (var a in mailViewBag)
+                htmlContent = htmlContent.Replace($"**{a.Key}**", a.Value);
+
             SendMail(from, new List<string> { to }, subject, htmlContent);
         }
     }

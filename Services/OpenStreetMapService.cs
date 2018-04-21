@@ -11,11 +11,11 @@ using YsrisCoreLibrary.Models;
 
 namespace YsrisCoreLibrary.Dal
 {
-    public class OpenStreetMapDal : AbstractDal<OsmEntity>
+    public class OpenStreetMapService
     {
         private IConfiguration _configuration;
 
-        public OpenStreetMapDal(IConfiguration configuration) : base(configuration)
+        public OpenStreetMapService(IConfiguration configuration)
         {
             _configuration = configuration;
         }

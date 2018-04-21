@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,12 @@ namespace YsrisCoreLibrary.Services
     public class SessionHelperService
     {
         private readonly IHttpContextAccessor _accessor;
-        private readonly CustomerDal _dal;
+        private readonly DbContext _context;
 
-        public SessionHelperService(IHttpContextAccessor accessor, CustomerDal dal)
+        public SessionHelperService(IHttpContextAccessor accessor, DbContext context)
         {
             _accessor = accessor;
-            _dal = dal;
+            _context = context;
         }
 
         public HttpContext HttpContext => _accessor.HttpContext;
@@ -35,7 +36,7 @@ namespace YsrisCoreLibrary.Services
                     else
                     {
                         var email = HttpContext.User.Claims.First().Value;
-                        return _dal.Get(email, 0);
+                        return _context.Set<Customer>().Single(a => a.email == email);
                     }
                 }
                 catch

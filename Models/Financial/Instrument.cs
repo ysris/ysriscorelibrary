@@ -7,14 +7,13 @@ using System.Runtime.Serialization;
 using ysriscorelibrary.Interfaces;
 using YsrisCoreLibrary.Model;
 using YsrisCoreLibrary.Models;
-using YsrisCoreLibrary.Models.Abstract;
 
 namespace YsrisCoreLibrary.Models.Financial
 {
     /// <summary>
     /// Abstract im
     /// </summary>    
-    public class Instrument : AbstractEntity, IAbstractEntity
+    public class Instrument : IAbstractEntity
     {
         public Instrument()
         {

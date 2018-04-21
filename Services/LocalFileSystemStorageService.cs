@@ -32,7 +32,7 @@ namespace YsrisCoreLibrary.Services
         public void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null)
         {
             var outputStream = new MemoryStream();
-            var inputstream = new MemoryStream();            
+            var inputstream = new MemoryStream();
             postedFile.CopyTo(inputstream);
             inputstream.Seek(0, SeekOrigin.Begin);
 
@@ -114,12 +114,12 @@ namespace YsrisCoreLibrary.Services
 
         }
 
-        public IEnumerable<string> ListFiles(string directory)
+        public IEnumerable<string> ListFiles(string directory, bool recursive = false)
         {
             directory = basePath + directory.TrimStart('/');
             var set =
                 Directory.Exists(directory)
-                    ? Directory.GetFiles(directory, "*.*"/*, SearchOption.AllDirectories*/).Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim())
+                    ? Directory.GetFiles(directory, "*.*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim())
                     .Concat(Directory.GetDirectories(directory, "*.*").Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim()))
                     : new List<string>();
             return set;
@@ -129,7 +129,7 @@ namespace YsrisCoreLibrary.Services
         {
             if (!Directory.Exists(basePath + Path.GetDirectoryName(to.TrimStart('/'))))
                 Directory.CreateDirectory(basePath + Path.GetDirectoryName(to.TrimStart('/')));
-            File.Copy(basePath + from, basePath + to.TrimStart('/'));
+            File.Copy(basePath + from, basePath + to.TrimStart('/'), true);
             File.Delete(basePath + from);
         }
 
