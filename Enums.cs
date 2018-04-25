@@ -13,6 +13,9 @@ namespace YsrisCoreLibrary
         public const string PendingActivationWithoutPasswordChange = "PendingActivationWithoutPasswordChange";
         public const string Activated = "Activated";
 
+
+        public const string PendingSmsValidation = "PendingSmsValidation";
+
         //User has to fill an onboarding step 
         public const string PendingOnBoarding = "PendingOnBoarding";
 

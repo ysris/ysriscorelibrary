@@ -114,13 +114,13 @@ namespace YsrisCoreLibrary.Services
 
         }
 
-        public IEnumerable<string> ListFiles(string directory, bool recursive = false)
+        public IEnumerable<string> ListFiles(string directory, bool recursive = false, string searchPattern = "*.*")
         {
             directory = basePath + directory.TrimStart('/');
             var set =
                 Directory.Exists(directory)
-                    ? Directory.GetFiles(directory, "*.*", recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim())
-                    .Concat(Directory.GetDirectories(directory, "*.*").Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim()))
+                    ? Directory.GetFiles(directory, searchPattern, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim())
+                    //.Concat(Directory.GetDirectories(directory, "*.*").Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim()))
                     : new List<string>();
             return set;
         }

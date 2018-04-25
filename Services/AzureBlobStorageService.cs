@@ -114,7 +114,7 @@ namespace YsrisCoreLibrary.Services
             }
         }
 
-        public IEnumerable<string> ListFiles(string directory, bool recursive = false)
+        public IEnumerable<string> ListFiles(string directory, bool recursive = false, string searchPattern = "*.*")
         {
             var storageAccount = CloudStorageAccount.Parse(_configuration.GetValue<string>("Data:BlobStorageConnectionString"));
             var blobClient = storageAccount.CreateCloudBlobClient();

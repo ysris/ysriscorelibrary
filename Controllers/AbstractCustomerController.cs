@@ -55,8 +55,7 @@ namespace YsrisCoreLibrary.Controllers
             IStorageService storageService,
             IConfiguration config,
             EncryptionService encryptionHelper,
-            DbContext context
-        )
+            DbContext context)
         {
             _sessionHelperInstance = sessionHelper;
             _myLogger = logger;
@@ -92,15 +91,7 @@ namespace YsrisCoreLibrary.Controllers
             if (customer == null)
                 throw new Exception("Unknown User");
 
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, customer.email) };
-            if (!string.IsNullOrEmpty(customer.rolesString))
-                foreach (var cur in customer.rolesString.Split(',').Select(a => a.Trim()))
-                    claims.Add(new Claim(ClaimTypes.Role, cur));
-
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
-            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-            HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(customer));
+            _signin(customer);
 
             return new LoginCustomerEntity { customer = customer };
         }
@@ -109,14 +100,17 @@ namespace YsrisCoreLibrary.Controllers
         /// Standard cookie logout
         /// </summary>
         [HttpPost("logout")]
-        public virtual async void Logout() => await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        public virtual async void Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        }
 
         /// <summary>
         /// Password recover
         /// </summary>
         /// <param name="obj"></param>
-        [HttpPost("recover")]
         [AllowAnonymous]
+        [HttpPost("recover")]
         public virtual void Recover([FromBody]RecoverViewModel obj)
         {
             if (obj.email == null)
@@ -148,9 +142,8 @@ namespace YsrisCoreLibrary.Controllers
         /// Password recover callback 
         /// </summary>
         /// <param name="obj"></param>
-        [HttpPost]
-        [Route("recover2")]
         [AllowAnonymous]
+        [HttpPost("recover2")]
         public virtual void Recover2([FromBody]RecoverViewModel obj)
         {
             var entity = _context.Set<T>().Single(a => a.email == obj.email);
@@ -191,13 +184,13 @@ namespace YsrisCoreLibrary.Controllers
 
         [AllowAnonymous]
         [HttpPost("activateinvitation")]
-        public virtual IActionResult ActivateInvitation2([FromBody] ActivationViewModel obj)
+        public virtual IActionResult ActivateInvitation2([FromBody] RecoverViewModel obj)
         {
             var entity = _context.Set<T>().Single(a => a.email == obj.email);
             if (entity == null || entity.activationCode == null)
                 throw new Exception("BadRequest");
 
-            if (obj.activationcode == entity.activationCode)
+            if (obj.activationCode == entity.activationCode)
             {
                 entity.activationCode = null;
                 entity.recoverAskDate = null;
@@ -275,91 +268,14 @@ namespace YsrisCoreLibrary.Controllers
         {
             _myLogger.LogDebug($"CustomerController +Post");
 
-            var email = values.email;
-
-            var test = _context.Set<T>().Where(a => a.email == email.ToString());
-            if (test.Any())
-                throw new Exception("Already assigned email");
-
-            var rolesList = new List<string>();
-            var customerType = Role.User;
-
-            if (values.customerType != null)
-            {
-                switch (values.customerType)
-                {
-                    case "Coach":
-                        rolesList.Add(Role.Coach);
-                        customerType = Role.Coach;
-                        break;
-                    case "User":
-                    default:
-                        rolesList.Add(Role.User);
-                        customerType = Role.User;
-                        break;
-                    case "Proprietaire":
-                        rolesList.Add(Role.Proprietaire);
-                        customerType = Role.Proprietaire;
-                        break;
-                    case "Locataire":
-                        rolesList.Add(Role.Locataire);
-                        customerType = Role.Locataire;
-                        break;
-                    case "Business":
-                        rolesList.Add(Role.Business);
-                        customerType = Role.Business;
-                        break;
-                }
-            }
-            else
-            {
-                rolesList.Add(Role.User);
-                customerType = Role.User;
-            }
-
-
-            var entity = new T
-            {
-                email = values.email,
-                firstName = values.firstName,
-                lastName = values.lastName,
-                activationCode = Guid.NewGuid().ToString(),
-                customerType = customerType,
-                createdAt = DateTime.Now,
-                accountStatus = CustomerStatus.PendingActivationWithoutPasswordChange,
-                rolesString = string.Join(",", rolesList.Select(a => a.ToString())),
-                id = 0
-            };
-            if (values.passwordForTyping == null)
-                throw new Exception("Password is null");
-            entity.password = _encryptionHelper.GetHash(values.passwordForTyping.ToString()); //keep here for avoiding the model binding
-            entity.companyId = 0;
+            var entity = _createAccount(values);
+            entity.activationCode = Guid.NewGuid().ToString();
+            entity.accountStatus = CustomerStatus.PendingActivationWithoutPasswordChange;
 
             _context.Set<T>().Add(entity);
             _context.SaveChanges();
 
-            // 4. User notification
-            _myLogger.LogDebug($"+++User notification (mail)");
-            _mailHelperService.SendMail(
-                entity.email,
-                subject: "Confirm account creation",
-                templateUri: _env.ContentRootPath + "/Views/Emails/SignUpConfirmation.cshtml",
-                mailViewBag:
-                new Dictionary<string, string>
-                {
-                    {"FirstName", entity.prettyName},
-                    {
-                        "ActivationUrl",
-                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/customer/activate?username={entity.email}&activationCode={entity.activationCode}"
-                    },
-                    {"AppName", _config.GetValue<string>("Data:AppName")},
-                    {
-                        "LogoDefault",
-                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png"
-                    },
-                    {"PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
-                }
-            );
+            _sendActivationEmail(entity);
 
             return entity;
         }
@@ -663,6 +579,109 @@ namespace YsrisCoreLibrary.Controllers
         }
 
 
+        protected void _signin(Customer customer)
+        {
+            var claims = new List<Claim> { new Claim(ClaimTypes.Name, customer.email) };
+            if (!string.IsNullOrEmpty(customer.rolesString))
+                foreach (var cur in customer.rolesString.Split(',').Select(a => a.Trim()))
+                    claims.Add(new Claim(ClaimTypes.Role, cur));
+
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
+            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(customer));
+
+        }
+
+        protected T _createAccount(T values)
+        {
+            var test = _context.Set<T>().Where(a => a.email == values.email);
+            if (test.Any())
+                throw new Exception("Already assigned email");
+
+            var rolesList = new List<string>();
+            var customerType = Role.User;
+
+            if (values.customerType != null)
+            {
+                switch (values.customerType)
+                {
+                    case "Coach":
+                        rolesList.Add(Role.Coach);
+                        customerType = Role.Coach;
+                        break;
+                    case "User":
+                    default:
+                        rolesList.Add(Role.User);
+                        customerType = Role.User;
+                        break;
+                    case "Proprietaire":
+                        rolesList.Add(Role.Proprietaire);
+                        customerType = Role.Proprietaire;
+                        break;
+                    case "Locataire":
+                        rolesList.Add(Role.Locataire);
+                        customerType = Role.Locataire;
+                        break;
+                    case "Business":
+                        rolesList.Add(Role.Business);
+                        customerType = Role.Business;
+                        break;
+                }
+            }
+            else
+            {
+                rolesList.Add(Role.User);
+                customerType = Role.User;
+            }
+
+
+            var entity = new T
+            {
+                email = values.email,
+                firstName = values.firstName,
+                lastName = values.lastName,
+                customerType = customerType,
+                createdAt = DateTime.Now,
+                rolesString = string.Join(",", rolesList.Select(a => a.ToString())),
+                id = 0
+            };
+            if (values.passwordForTyping == null)
+                throw new Exception("Password is null");
+            entity.password = _encryptionHelper.GetHash(values.passwordForTyping.ToString()); //keep here for avoiding the model binding
+            entity.companyId = 0;
+
+
+
+            return entity;
+        }
+
+        protected void _sendActivationEmail(T entity)
+        {
+            // 4. User notification
+            _myLogger.LogDebug($"+++User notification (mail)");
+            _mailHelperService.SendMail(
+                entity.email,
+                subject: "Confirm account creation",
+                templateUri: _env.ContentRootPath + "/Views/Emails/SignUpConfirmation.cshtml",
+                mailViewBag:
+                new Dictionary<string, string>
+                {
+                    {"FirstName", entity.prettyName},
+                    {
+                        "ActivationUrl",
+                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/customer/activate?username={entity.email}&activationCode={entity.activationCode}"
+                    },
+                    {"AppName", _config.GetValue<string>("Data:AppName")},
+                    {
+                        "LogoDefault",
+                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png"
+                    },
+                    {"PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
+                }
+            );
+        }
+
         public class AccountCreationViewModel
         {
             public string UserType { get; set; }
@@ -671,13 +690,6 @@ namespace YsrisCoreLibrary.Controllers
             public string lastName { get; set; }
             public string passwordForTyping { get; set; }
 
-        }
-
-        public class ActivationViewModel
-        {
-            public string email { get; set; }
-            public string activationcode { get; set; }
-            public string password { get; set; }
         }
 
         public class RecoverViewModel
@@ -709,6 +721,5 @@ namespace YsrisCoreLibrary.Controllers
             public string email { get; set; }
             public bool boolSendEmail { get; set; }
         }
-
     }
 }

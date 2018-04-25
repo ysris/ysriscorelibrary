@@ -5,7 +5,7 @@
         };
     })
     .controller("ActivateCustomerInvitationController", function ($scope, $state, $rootScope, $stateParams, customerActivationService) {
-        $scope.entity = { email: $state.params.email, activationcode: $state.params.activationcode };
+        $scope.entity = { email: $state.params.email, activationcode: $state.params.activationCode };
 
         $scope.submit = function () {
             customerActivationService.inviteCustomer($scope.entity).then(function (resp) {
