@@ -114,7 +114,7 @@ namespace YsrisCoreLibrary.Services
 
         }
 
-        public IEnumerable<string> ListFiles(string directory, bool recursive = false, string searchPattern = "*.*")
+        public IEnumerable<string> ListFiles(string directory, bool recursive = true, string searchPattern = "*.*")
         {
             directory = basePath + directory.TrimStart('/');
             var set =
@@ -128,14 +128,23 @@ namespace YsrisCoreLibrary.Services
         public void MoveFile(string from, string to)
         {
             if (!Directory.Exists(basePath + Path.GetDirectoryName(to.TrimStart('/'))))
-                Directory.CreateDirectory(basePath + Path.GetDirectoryName(to.TrimStart('/')));
+                Directory.CreateDirectory(Path.Combine(basePath, Path.GetDirectoryName(to.TrimStart('/'))));
             File.Copy(basePath + from, basePath + to.TrimStart('/'), true);
             File.Delete(basePath + from);
         }
 
+        public void MoveFileAbsolutePath(string from, string to)
+        {
+            if (!Directory.Exists(Path.GetDirectoryName(to)))
+                Directory.CreateDirectory(Path.GetDirectoryName(to));
+            File.Copy(from, to, true);
+            File.Delete(from);
+        }
+
+
         public string GetFullPath(string cur)
         {
-            var filename = basePath + cur;
+            var filename = Path.Combine(basePath + cur.TrimStart('/').TrimEnd('\\'));
             return filename;
         }
     }
