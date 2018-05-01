@@ -248,7 +248,7 @@ namespace YsrisCoreLibrary.Controllers
                     {"FirstName", entity.firstName},
                     {
                         "ActivationUrl",
-                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/customer/activateinvitation?username={entity.email}&activationCode={entity.activationCode}"
+                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}:{HttpContext.Connection.LocalPort}/api/customer/activateinvitation?username={entity.email}&activationCode={entity.activationCode}"
                     }
                     }
                 );

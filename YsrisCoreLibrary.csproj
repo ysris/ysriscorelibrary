@@ -12,7 +12,6 @@
     <None Remove="wwwroot\bobos_components\angular-messages.js" />
     <None Remove="wwwroot\bobos_components\assets\images\robot.png" />
     <None Remove="wwwroot\bobos_components\components\echartsComponent.js" />
-    <None Remove="wwwroot\bobos_components\controllers\ActivateCustomerInvitationController.js" />
     <None Remove="wwwroot\bobos_components\controllers\conversationContactController.js" />
     <None Remove="wwwroot\bobos_components\controllers\conversationMessageController.js" />
     <None Remove="wwwroot\bobos_components\controllers\CustomersController.js" />
@@ -56,9 +55,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="wwwroot\bobos_components\components\echartsComponent.js" />
-    <Content Include="wwwroot\bobos_components\controllers\ActivateCustomerInvitationController.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="wwwroot\bobos_components\controllers\conversationContactController.js">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
