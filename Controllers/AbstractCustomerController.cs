@@ -34,7 +34,7 @@ namespace YsrisCoreLibrary.Controllers
         protected readonly MailHelperService _mailHelperService;
         protected readonly IHostingEnvironment _env;
         protected readonly ILogger<AbstractCustomerController<T>> _myLogger;
-        protected readonly SessionHelperService _sessionHelperInstance;
+        protected readonly SessionHelperService _session;
         protected readonly IStorageService _storageService;
         protected readonly IConfiguration _config;
         protected readonly EncryptionService _encryptionHelper;
@@ -57,7 +57,7 @@ namespace YsrisCoreLibrary.Controllers
             EncryptionService encryptionHelper,
             DbContext context)
         {
-            _sessionHelperInstance = sessionHelper;
+            _session = sessionHelper;
             _myLogger = logger;
             _env = env;
             _mailHelperService = mailHelperService;
@@ -290,10 +290,10 @@ namespace YsrisCoreLibrary.Controllers
         {
             _myLogger.LogInformation($"+ UploadAvatar file={file}");
 
-            var largePath = $"/avatars/large/{_sessionHelperInstance.User.id}.jpg";
+            var largePath = $"/avatars/large/{_session.User.id}.jpg";
             _storageService.SavePictureTo(file, largePath, 300);
 
-            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_session.User.id);
             entity.picture = largePath;
 
             _context.Set<T>().Update(entity);
@@ -311,13 +311,13 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
         public virtual T UpdateAsAdmin([FromBody] T values)
         {
-            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_session.User.id);
             entity.SetFromValues(values);
 
             _context.Set<T>().Update(entity);
             _context.SaveChanges();
 
-            _sessionHelperInstance.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
+            _session.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
 
             return entity;
         }
@@ -332,10 +332,10 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual T Update([FromBody] T values)
         {
-            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_session.User.id);
             entity.SetFromValues(values);
 
-            if (entity.id != _sessionHelperInstance.User.id)
+            if (entity.id != _session.User.id)
                 throw new Exception("Unauthorized");
 
             if (values.rawPasswordConfirm != null && values.passwordForTyping != null)
@@ -350,7 +350,7 @@ namespace YsrisCoreLibrary.Controllers
             _context.Set<T>().Update(entity);
             _context.SaveChanges();
 
-            _sessionHelperInstance.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
+            _session.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
 
             return entity;
         }
@@ -363,9 +363,9 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual T GetMe()
         {
-            if (_sessionHelperInstance.User == null)
+            if (_session.User == null)
                 return null;
-            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_session.User.id);
 
             if (entity != null)
                 entity.pictureClientAccessor = $"/api/customer/avatar/{entity.id}";
@@ -385,7 +385,7 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual object Get(int id)
         {
-            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_session.User.id);
             if (entity != null)
                 entity.pictureClientAccessor = $"/api/customer/avatar/{entity.id}";
             return entity;
@@ -399,9 +399,9 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual IActionResult GetAvatar()
         {
-            if (_sessionHelperInstance.User != null)
+            if (_session.User != null)
             {
-                var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+                var entity = _context.Set<T>().Find(_session.User.id);
                 var smallUri = entity.picture;
 
                 if (smallUri == null)
@@ -454,7 +454,7 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public void Delete()
         {
-            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_session.User.id);
             _context.Set<T>().Remove(entity);
             _context.SaveChanges();
         }
@@ -467,13 +467,13 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
         public void DeleteAsAdmin(int id)
         {
-            var entity = _context.Set<T>().Find(_sessionHelperInstance.User.id);
+            var entity = _context.Set<T>().Find(_session.User.id);
             _context.Set<T>().Remove(entity);
             _context.SaveChanges();
         }
 
 
-        /// Now, ovverride of activate method is mandatory to simplify modification
+        /// Now, ovverride of activate method is mandatory to simplify modification : email activation callback
         public virtual IActionResult Activate(string sucessActivationStatus = CustomerStatus.Activated)
         {
             var activatioNCode = Request.Query["activationCode"];
