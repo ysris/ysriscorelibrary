@@ -34,5 +34,6 @@ namespace YsrisCoreLibrary.Models
         string rawPasswordConfirm { get; set; }
         string passwordForTyping { get; set; }
         void SetFromValues(ICustomer values);
+        CustomerCompany company { get; set; }
     }
 }
