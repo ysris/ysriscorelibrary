@@ -65,58 +65,48 @@
             });
         }
 
-        $rootScope.toggleDebugDisplay = function () {
-            $rootScope.debugDisplay = window.localStorage.debugDisplay == 0 || window.localStorage.debugDisplay == undefined ? 1 : 0;
-            window.localStorage.debugDisplay = $rootScope.debugDisplay;
-        };
-
-
         //TODO : Refactor this : should be abstracted
-        var remove = function (item, collection) {
-            var index = collection.indexOf(item);
-            collection.splice(index, 1);
-        }
-
+        var remove = function (item, collection) { collection.splice(collection.indexOf(item), 1); }
         $scope.addEntity = function (entity, collection) { collection.push(angular.copy(entity)); };
         $scope.deleteEntity = function (entity, collection) { remove(entity, collection); };
 
-        // Menu utilities //
-
+        /**
+         * 
+         * @param {any} condition
+         */
         $scope.showPageFor = function (condition) {
-
-
             switch (condition) {
                 case "NotConnectedUser":
                     return $scope.ConnectedUserId == null || $scope.ConnectedUserId == 'null';
                 case "ConnectedUser":
                     return $scope.ConnectedUserId != null && $scope.ConnectedUserId != 'null';
+                case "ConnectedActivatedUser":
+                    return ($scope.ConnectedUserId != null && $scope.ConnectedUserId != 'null') && $rootScope.customer.accountStatus == 'Activated';
                 default:
-
                     if ($rootScope.customer == null)
                         return false;
-
-                    //for condition Locataire => check  if there is Locataire in the roles... and so on
                     var conditions = condition.split(",");
-                    for (var i in conditions) {
+                    for (var i in conditions)
                         if ($rootScope.customer.roles.indexOf(conditions[i].trim()) !== -1)
                             return true;
-                    }
                     return false;
             }
         };
 
-
+        /**
+         * 
+         * @param {any} notificationMsg
+         */
         $rootScope.addNotification = function (notificationMsg) {
-            //if ($rootScope.ConnectedUserNotifications == null)
-            //    $rootScope.ConnectedUserNotifications = [];
-            //$rootScope.ConnectedUserNotifications.push({ id: $rootScope.ConnectedUserNotifications.length + 1, msg: notificationMsg });
-            //window.localStorage.ConnectedUserNotifications = JSON.stringify($rootScope.ConnectedUserNotifications);
             var n = new PNotify({ title: notificationMsg, text: notificationMsg, type: 'success', styling: 'bootstrap3', delay: 2000, buttons: { closer: false, sticker: false } });
             n.get().click(function () {
                 n.remove();
             });
         };
 
+        /**
+         * 
+         */
         $rootScope.removeNotifications = function () {
             $rootScope.ConnectedUserNotifications = null;
             window.localStorage.ConnectedUserNotifications = null;
@@ -126,21 +116,14 @@
          * When something has something to complain about, it comes here
          */
         $rootScope.raiseErrorDelegate = function (e) {
-
-            //if (e.data.StatusCode == 404)
-            //$state.go("signin", { suppl: null });
-
-            console.log("rootScope.raiseErrorDelegate->e", e);
-            //" " + e.statusText + " " + e.data.ExceptionMessage + " " +
             $rootScope.addNotification(e.data.StatusCode + ' ' + e.data.error);
             $rootScope.IsBusy = false;
         };
 
-
-
-
-
-
+        /**
+         * 
+         * @param {any} params
+         */
         $rootScope.askConfirm = function (params) {
             SweetAlert.swal(
                 {
@@ -157,25 +140,22 @@
                 params.callBack);
         };
 
-
-
-
-
-
+        /**
+         * 
+         * @param {any} title
+         * @param {any} subtitle
+         */
         $rootScope.SetPageTitle = function (title, subtitle) {
             $rootScope.PageHeaderTitle = title;
             $rootScope.PageHeaderSubTitle = subtitle;
         };
 
+        /**
+         * 
+         * @param {any} choice
+         */
         $rootScope.SetPageMocked = function (choice) {
             $rootScope.IsMockedPage = choice;
 
         };
-
-
-
-
-
-
-
     });
