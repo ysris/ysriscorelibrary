@@ -8,11 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using YsrisCoreLibrary.Dal;
-using YsrisCoreLibrary.Helpers;
 using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Services;
-using YsrisCoreLibrary.Abstract;
 using ysriscorelibrary.Interfaces;
 using System.Threading.Tasks;
 using System.Security.Claims;
@@ -31,41 +28,57 @@ namespace YsrisCoreLibrary.Controllers
     /// </summary>
     public abstract class AbstractCustomerController<T> : Controller where T : class, ICustomer, new()
     {
-        protected readonly MailHelperService _mailHelperService;
-        protected readonly IHostingEnvironment _env;
-        protected readonly ILogger<AbstractCustomerController<T>> _myLogger;
-        protected readonly SessionHelperService _session;
-        protected readonly IStorageService _storageService;
-        protected readonly IConfiguration _config;
-        protected readonly EncryptionService _encryptionHelper;
+        #region Fields
         protected readonly DbContext _context;
+        protected readonly IConfiguration _config;
+        protected readonly MailHelperService _mail;
+        protected readonly IStorageService _storage;
+        protected readonly IHostingEnvironment _env;
+        protected readonly EncryptionService _encryption;
+        protected readonly SessionHelperService _session;
+        protected readonly ILogger<AbstractCustomerController<T>> _log;
+        #endregion
 
+        #region Constructors
         /// <summary>
         /// Default constructor
         /// </summary>
-        /// <param name="sessionHelper"></param>
-        /// <param name="logger"></param>
-        /// <param name="env"></param>
-        /// <param name="mailHelperService"></param>
         public AbstractCustomerController(
-            SessionHelperService sessionHelper,
-            ILogger<AbstractCustomerController<T>> logger,
-            IHostingEnvironment env,
-            MailHelperService mailHelperService,
-            IStorageService storageService,
+            DbContext context,
             IConfiguration config,
-            EncryptionService encryptionHelper,
-            DbContext context)
+            MailHelperService mail,
+            IHostingEnvironment env,
+            IStorageService storage,
+            EncryptionService encryption,
+            SessionHelperService sessionHelper,
+            ILogger<AbstractCustomerController<T>> log
+            )
         {
-            _session = sessionHelper;
-            _myLogger = logger;
+            _log = log;
             _env = env;
-            _mailHelperService = mailHelperService;
-            _storageService = storageService;
-            //_dal = dal;
+            _mail = mail;
             _config = config;
-            _encryptionHelper = encryptionHelper;
             _context = context;
+            _storage = storage;
+            _encryption = encryption;
+            _session = sessionHelper;
+        }
+        #endregion
+
+        #region Anonymous Actions API Methods
+        /// <summary>
+        /// account creation action
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        [AllowAnonymous]
+        [HttpPost]
+        public virtual async Task<IActionResult> Post([FromBody] T model)
+        {
+            _log.LogDebug($"CustomerController +Post");
+            var entity = await _createAccount(model);
+            _sendActivationEmail(entity);
+            return Ok(entity);
         }
 
         /// <summary>
@@ -73,17 +86,18 @@ namespace YsrisCoreLibrary.Controllers
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
+        [AllowAnonymous]
         [HttpPost("login")]
-        public virtual LoginCustomerEntity Login([FromBody] LoginViewModel model, IEnumerable<string> accountStatuses = null)
+        public virtual async Task<IActionResult> Login([FromBody] LoginViewModel model, IEnumerable<string> accountStatuses = null)
         {
             if (accountStatuses == null || !accountStatuses.Any())
                 accountStatuses = new List<string> { CustomerStatus.Activated };
 
             var customer =
-                _context.Set<Customer>()
+                _context.Set<T>()
                 .SingleOrDefault(a =>
                     a.email == model.username
-                    && a.password == _encryptionHelper.GetHash(model.password)
+                    && a.password == _encryption.GetHash(model.password)
                     && accountStatuses.Contains(a.accountStatus)
                     && a.deletionDate == null
                 );
@@ -91,18 +105,9 @@ namespace YsrisCoreLibrary.Controllers
             if (customer == null)
                 throw new Exception("Unknown User");
 
-            _signin(customer);
+            await _signin(customer);
 
-            return new LoginCustomerEntity { customer = customer };
-        }
-
-        /// <summary>
-        /// Standard cookie logout
-        /// </summary>
-        [HttpPost("logout")]
-        public virtual async void Logout()
-        {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Ok(new LoginCustomerEntity { customer = customer });
         }
 
         /// <summary>
@@ -111,21 +116,21 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="obj"></param>
         [AllowAnonymous]
         [HttpPost("recover")]
-        public virtual void Recover([FromBody]RecoverViewModel obj)
+        public virtual async Task<IActionResult> Recover([FromBody]RecoverViewModel model)
         {
-            if (obj.email == null)
+            if (model.email == null)
                 throw new Exception("incorrect parameters specified");
 
-            var entity = _context.Set<T>().Single(a => a.email == obj.email);
+            var entity = _context.Set<T>().Single(a => a.email == model.email);
 
             entity.activationCode = Guid.NewGuid().ToString();
             entity.recoverAskDate = DateTime.Now;
             entity.accountStatus = CustomerStatus.PendingActivationWithPasswordChange;
 
             _context.Set<T>().Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            _mailHelperService.SendMail(
+            _mail.SendMail(
                 entity.email,
                 subject: "Password recover",
                 templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordReset.cshtml",
@@ -136,6 +141,8 @@ namespace YsrisCoreLibrary.Controllers
                     { "RecoverUrl", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/passwordrecover2/{entity.email}/{entity.activationCode}" }
                 }
             );
+
+            return Ok();
         }
 
         /// <summary>
@@ -144,33 +151,36 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="obj"></param>
         [AllowAnonymous]
         [HttpPost("recover2")]
-        public virtual void Recover2([FromBody]RecoverViewModel obj)
+        public virtual async Task<IActionResult> Recover2([FromBody]RecoverViewModel model)
         {
-            var entity = _context.Set<T>().Single(a => a.email == obj.email);
+            var entity = _context.Set<T>().Single(a => a.email == model.email);
             if (entity == null || entity.activationCode == null || entity.recoverAskDate == null)
                 throw new Exception("BadRequest");
 
-            if (obj.activationCode == entity.activationCode && (DateTime.Now - (DateTime)entity.recoverAskDate).Minutes <= 10)
+            if (model.activationCode == entity.activationCode && (DateTime.Now - (DateTime)entity.recoverAskDate).Minutes <= 10)
             {
                 entity.activationCode = null;
                 entity.recoverAskDate = null;
-                entity.password = _encryptionHelper.GetHash(obj.password);
+                entity.password = _encryption.GetHash(model.password);
                 entity.accountStatus = CustomerStatus.Activated;
 
                 _context.Set<T>().Update(entity);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
-                _mailHelperService.SendMail(
+                _mail.SendMail(
                     entity.email,
                     subject: "Password recover",
                     templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordResetConfirmation.cshtml",
                     mailViewBag: new Dictionary<string, string> { { "UserFirstName", entity.firstName } }
                 );
             }
+
+            return Ok();
         }
 
         /// <summary>
         /// Invitation (customer account created by a site administrator) activation
+        /// Not async by choice
         /// </summary>
         /// <returns></returns>
         [AllowAnonymous]
@@ -182,25 +192,30 @@ namespace YsrisCoreLibrary.Controllers
             return Redirect($"/#!/activateinvitation/{username}/{activatioNCode}");
         }
 
+        /// <summary>
+        /// Activation invitation email validation call back
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("activateinvitation")]
-        public virtual IActionResult ActivateInvitation2([FromBody] RecoverViewModel obj)
+        public virtual async Task<IActionResult> ActivateInvitation2([FromBody] RecoverViewModel model)
         {
-            var entity = _context.Set<T>().Single(a => a.email == obj.email);
+            var entity = _context.Set<T>().Single(a => a.email == model.email);
             if (entity == null || entity.activationCode == null)
                 throw new Exception("BadRequest");
 
-            if (obj.activationCode == entity.activationCode)
+            if (model.activationCode == entity.activationCode)
             {
                 entity.activationCode = null;
                 entity.recoverAskDate = null;
-                entity.password = _encryptionHelper.GetHash(obj.password);
+                entity.password = _encryption.GetHash(model.password);
                 entity.accountStatus = CustomerStatus.Activated;
 
                 _context.Set<T>().Update(entity);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
-                _mailHelperService.SendMail(
+                _mail.SendMail(
                     entity.email,
                     subject: "Password recover",
                     templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordResetConfirmation.cshtml",
@@ -211,270 +226,13 @@ namespace YsrisCoreLibrary.Controllers
             return Ok(new { });
         }
 
-        [HttpPost("invite")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")] //todo : the default policy is probably incorrect
-        public virtual T Invite([FromBody] InviteCustomerViewModel obj)
-        {
-            _myLogger.LogDebug($"CustomerController +Post");
-
-            var test = _context.Set<T>().Where(a => a.email == obj.email);
-            if (test.Any())
-                throw new Exception("Already assigned email");
-
-            var entity = new T()
-            {
-                email = obj.email,
-                activationCode = Guid.NewGuid().ToString(),
-                customerType = Role.User,
-                createdAt = DateTime.Now,
-                accountStatus = CustomerStatus.PendingActivationWithPasswordChange,
-                rolesString = string.Join(",", new List<string>() { Role.User }),
-            };
-
-            _context.Set<T>().Add(entity);
-            _context.SaveChanges();
-
-            // 4. User notification
-            if (obj.boolSendEmail)
-            {
-                _myLogger.LogDebug($"+++User notification (mail)");
-                _mailHelperService.SendMail(
-                    entity.email,
-                    subject: $"You have been invited to join {HttpContext.Request.Host}",
-                    templateUri: _env.ContentRootPath + "/Views/Emails/CustomerInvitation.cshtml",
-                    mailViewBag:
-                    new Dictionary<string, string>
-                    {
-                    {"FirstName", entity.firstName},
-                    {
-                        "ActivationUrl",
-                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}:{HttpContext.Connection.LocalPort}/api/customer/activateinvitation?username={entity.email}&activationCode={entity.activationCode}"
-                    }
-                    }
-                );
-            }
-
-            return entity;
-        }
-
         /// <summary>
-        /// account creation action
+        /// 
         /// </summary>
-        /// <param name="values"></param>
+        /// <param name="sucessActivationStatus"></param>
         /// <returns></returns>
-        [HttpPost]
-        [AllowAnonymous]
-        public virtual T Post([FromBody] T values)
-        {
-            _myLogger.LogDebug($"CustomerController +Post");
-
-            var entity = _createAccount(values);
-            entity.activationCode = Guid.NewGuid().ToString();
-            entity.accountStatus = CustomerStatus.PendingActivationWithoutPasswordChange;
-
-            _context.Set<T>().Add(entity);
-            _context.SaveChanges();
-
-            _sendActivationEmail(entity);
-
-            return entity;
-        }
-
-        /// <summary>
-        /// Upload avatar of connected user
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("avatar")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual object UploadAvatar(IFormFile file)
-        {
-            _myLogger.LogInformation($"+ UploadAvatar file={file}");
-
-            var largePath = $"/avatars/large/{_session.User.id}.jpg";
-            _storageService.SavePictureTo(file, largePath, 300);
-
-            var entity = _context.Set<T>().Find(_session.User.id);
-            entity.picture = largePath;
-
-            _context.Set<T>().Update(entity);
-            _context.SaveChanges();
-
-            return entity;
-        }
-
-        /// <summary>
-        /// account update action
-        /// </summary>
-        /// <param name="values"></param>
-        /// <returns></returns>
-        [HttpPost("updateasadmin")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public virtual T UpdateAsAdmin([FromBody] T values)
-        {
-            var entity = _context.Set<T>().Find(_session.User.id);
-            entity.SetFromValues(values);
-
-            _context.Set<T>().Update(entity);
-            _context.SaveChanges();
-
-            _session.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
-
-            return entity;
-        }
-
-
-        /// <summary>
-        /// account update action
-        /// </summary>
-        /// <param name="values"></param>
-        /// <returns></returns>
-        [HttpPost("update")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual T Update([FromBody] T values)
-        {
-            var entity = _context.Set<T>().Find(_session.User.id);
-            entity.SetFromValues(values);
-
-            if (entity.id != _session.User.id)
-                throw new Exception("Unauthorized");
-
-            if (values.rawPasswordConfirm != null && values.passwordForTyping != null)
-                if (!string.IsNullOrEmpty(values.rawPasswordConfirm.ToString()) &&
-                    !string.IsNullOrEmpty(values.passwordForTyping.ToString()))
-                {
-                    if (values.rawPasswordConfirm.ToString() != values.passwordForTyping.ToString())
-                        throw new Exception("Password confirmation mismatch");
-                    entity.password = _encryptionHelper.GetHash(values.passwordForTyping.ToString());
-                }
-
-            _context.Set<T>().Update(entity);
-            _context.SaveChanges();
-
-            _session.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
-
-            return entity;
-        }
-
-        /// <summary>
-        /// Get connected user account action
-        /// </summary>
-        /// <returns>Customer</returns>
-        [HttpGet("me")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual T GetMe()
-        {
-            if (_session.User == null)
-                return null;
-            var entity = _context.Set<T>().Find(_session.User.id);
-
-            if (entity != null)
-                entity.pictureClientAccessor = $"/api/customer/avatar/{entity.id}";
-
-            return entity;
-        }
-
-        /// <summary>
-        /// Get user account action
-        /// </summary>
-        /// <remarks>
-        /// Maybe user filtration should be needed to override for this action...
-        /// </remarks>
-        /// <param name="id"></param>
-        /// <returns>Customer</returns>
-        [HttpGet("{id}")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual object Get(int id)
-        {
-            var entity = _context.Set<T>().Find(_session.User.id);
-            if (entity != null)
-                entity.pictureClientAccessor = $"/api/customer/avatar/{entity.id}";
-            return entity;
-        }
-
-        /// <summary>
-        /// Get connected user avatar file content action
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet("avatar")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual IActionResult GetAvatar()
-        {
-            if (_session.User != null)
-            {
-                var entity = _context.Set<T>().Find(_session.User.id);
-                var smallUri = entity.picture;
-
-                if (smallUri == null)
-                {
-                    var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
-                    return File(System.IO.File.ReadAllBytes(path), "image/png");
-                }
-                var result = _storageService.GetFileContent(smallUri)?.Result?.ToArray();
-                if (result == null)
-                    return null;
-                return File(result, "image/jpeg");
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Get any user avatar file content action
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpGet("avatar/{id}")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual IActionResult GetAvatar(int id)
-        {
-            var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
-
-            var entity = _context.Set<T>().Find(id);
-
-            if (entity.picture == null)
-                return File(System.IO.File.ReadAllBytes(path), "image/png");
-
-            try
-            {
-                var result = _storageService.GetFileContent(entity.picture)?.Result?.ToArray();
-                if (result == null)
-                    return File(System.IO.File.ReadAllBytes(path), "image/png");
-                return File(result, "image/jpeg");
-            }
-            catch
-            {
-                return File(System.IO.File.ReadAllBytes(path), "image/png");
-            }
-        }
-
-        /// <summary>
-        /// Delete user account
-        /// </summary>
-        /// <returns></returns>
-        [HttpDelete]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public void Delete()
-        {
-            var entity = _context.Set<T>().Find(_session.User.id);
-            _context.Set<T>().Remove(entity);
-            _context.SaveChanges();
-        }
-
-        /// <summary>
-        /// Delete user account
-        /// </summary>
-        /// <returns></returns>
-        [HttpDelete("{id}")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public void DeleteAsAdmin(int id)
-        {
-            var entity = _context.Set<T>().Find(_session.User.id);
-            _context.Set<T>().Remove(entity);
-            _context.SaveChanges();
-        }
-
-
-        /// Now, ovverride of activate method is mandatory to simplify modification : email activation callback
-        public virtual IActionResult Activate(string sucessActivationStatus = CustomerStatus.Activated)
+        [HttpGet("activate")]
+        public virtual async Task<IActionResult> Activate(string sucessActivationStatus = CustomerStatus.Activated)
         {
             var activatioNCode = Request.Query["activationCode"];
             var username = Request.Query["username"];
@@ -490,9 +248,9 @@ namespace YsrisCoreLibrary.Controllers
                         entity.accountStatus = sucessActivationStatus;
 
                         _context.Set<T>().Update(entity);
-                        _context.SaveChanges();
+                        await _context.SaveChangesAsync();
 
-                        _myLogger.LogDebug(
+                        _log.LogDebug(
                             $"++ Updatied entity AccountStatus from {CustomerStatus.PendingActivationWithoutPasswordChange} to {entity.accountStatus}");
                         return Redirect("/#!/signin/activationsucceeded");
                     }
@@ -502,45 +260,13 @@ namespace YsrisCoreLibrary.Controllers
             }
         }
 
-        [HttpGet("empty")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual Customer GetEmpty()
-        {
-            var entity = new Customer { };
-            return entity;
-        }
 
-        [HttpGet("forbidden")]
-        public IActionResult Forbidden() => Unauthorized();
-
-        [HttpPost("activateasadmin")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public T ActivateAsAdmin([FromBody] T values)
-        {
-            var entity = _context.Set<T>().Find(values.id);
-            entity.accountStatus = CustomerStatus.Activated;
-
-            _context.Set<T>().Update(entity);
-            _context.SaveChanges();
-
-            return entity;
-
-        }
-
-        [HttpPost("disableasadmin")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public Customer DisableAsAdmin([FromBody] dynamic values)
-        {
-            var entity = _context.Set<T>().Find(values.id);
-            entity.accountStatus = CustomerStatus.Disabled;
-
-            _context.Set<T>().Update(entity);
-            _context.SaveChanges();
-
-            return entity;
-        }
-
-
+        /// <summary>
+        /// Generate JWT Token logic
+        /// NOT Async by choice
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("GenerateToken")]
         public IActionResult GenerateToken([FromBody] GenerateTokenLoginViewModel model)
@@ -548,7 +274,7 @@ namespace YsrisCoreLibrary.Controllers
             if (ModelState.IsValid)
             {
 
-                var user = _context.Set<T>().Single(a => a.email == model.Email && a.password == _encryptionHelper.GetHash(model.Password));
+                var user = _context.Set<T>().Single(a => a.email == model.Email && a.password == _encryption.GetHash(model.Password));
 
                 if (user != null)
                 {
@@ -577,9 +303,311 @@ namespace YsrisCoreLibrary.Controllers
 
             return BadRequest("Could not create token");
         }
+        #endregion
 
+        #region Connected standard Customer Actions API Methods
+        /// <summary>
+        /// Standard cookie logout
+        /// </summary>
+        [HttpPost("logout")]
+        public virtual async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Ok();
+        }
 
-        protected void _signin(Customer customer)
+        /// <summary>
+        /// Get connected user account action
+        /// </summary>
+        /// <returns>Customer</returns>
+        [HttpGet("me")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
+        public virtual async Task<T> GetMe()
+        {
+            if (_session.User == null)
+                return null;
+            var entity = await _context.Set<T>().FindAsync(_session.User.id);
+
+            if (entity != null)
+                entity.pictureClientAccessor = $"/api/customer/avatar/{entity.id}";
+
+            return entity;
+        }
+
+        /// <summary>
+        /// Get connected user avatar file content action
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("avatar")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
+        public virtual async Task<IActionResult> GetAvatar()
+        {
+            if (_session.User != null)
+            {
+                var entity = await _context.Set<T>().FindAsync(_session.User.id);
+                var smallUri = entity.picture;
+
+                if (smallUri == null)
+                {
+                    var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
+                    return File(System.IO.File.ReadAllBytes(path), "image/png");
+                }
+                var result = _storage.GetFileContent(smallUri)?.Result?.ToArray();
+                if (result == null)
+                    return null;
+                return File(result, "image/jpeg");
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Get any user avatar file content action
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("avatar/{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
+        public virtual async Task<IActionResult> GetAvatar(int id)
+        {
+            var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
+
+            var entity = await _context.Set<T>().FindAsync(id);
+
+            if (entity.picture == null)
+                return File(System.IO.File.ReadAllBytes(path), "image/png");
+
+            try
+            {
+                var result = _storage.GetFileContent(entity.picture)?.Result?.ToArray();
+                if (result == null)
+                    return File(System.IO.File.ReadAllBytes(path), "image/png");
+                return File(result, "image/jpeg");
+            }
+            catch
+            {
+                return File(System.IO.File.ReadAllBytes(path), "image/png");
+            }
+        }
+
+        /// <summary>
+        /// account update action
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        [HttpPost("update")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
+        public virtual async Task<T> Update([FromBody] T model)
+        {
+            var entity = await _context.Set<T>().FindAsync(_session.User.id);
+            entity.SetFromValues(model);
+
+            if (entity.id != _session.User.id)
+                throw new Exception("Unauthorized");
+
+            if (model.rawPasswordConfirm != null && model.passwordForTyping != null)
+                if (!string.IsNullOrEmpty(model.rawPasswordConfirm.ToString()) &&
+                    !string.IsNullOrEmpty(model.passwordForTyping.ToString()))
+                {
+                    if (model.rawPasswordConfirm.ToString() != model.passwordForTyping.ToString())
+                        throw new Exception("Password confirmation mismatch");
+                    entity.password = _encryption.GetHash(model.passwordForTyping.ToString());
+                }
+
+            _context.Set<T>().Update(entity);
+            await _context.SaveChangesAsync();
+
+            _session.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
+
+            return entity;
+        }
+
+        /// <summary>
+        /// Upload avatar of connected user
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("avatar")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
+        public virtual async Task<T> UploadAvatar(IFormFile file)
+        {
+            _log.LogInformation($"+ UploadAvatar file={file}");
+
+            var largePath = $"/avatars/large/{_session.User.id}.jpg";
+            _storage.SavePictureTo(file, largePath, 300);
+
+            var entity = await _context.Set<T>().FindAsync(_session.User.id);
+            entity.picture = largePath;
+
+            _context.Set<T>().Update(entity);
+            await _context.SaveChangesAsync();
+
+            return entity;
+        }
+
+        /// <summary>
+        /// Delete user account
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
+        public virtual async void Delete()
+        {
+            var entity = _context.Set<T>().Find(_session.User.id);
+            _context.Set<T>().Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+        #endregion
+
+        #region Administrator Actions API Methods
+        [HttpPost("invite")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")] //todo : the default policy is probably incorrect
+        public virtual T Invite([FromBody] InviteCustomerViewModel model)
+        {
+            _log.LogDebug($"CustomerController +Post");
+
+            var test = _context.Set<T>().Where(a => a.email == model.email);
+            if (test.Any())
+                throw new Exception("Already assigned email");
+
+            var entity = new T()
+            {
+                email = model.email,
+                activationCode = Guid.NewGuid().ToString(),
+                customerType = Role.User,
+                createdAt = DateTime.Now,
+                accountStatus = CustomerStatus.PendingActivationWithPasswordChange,
+                rolesString = string.Join(",", new List<string>() { Role.User }),
+            };
+
+            _context.Set<T>().Add(entity);
+            _context.SaveChanges();
+
+            // 4. User notification
+            if (model.boolSendEmail)
+            {
+                _log.LogDebug($"+++User notification (mail)");
+                _mail.SendMail(
+                    entity.email,
+                    subject: $"You have been invited to join {HttpContext.Request.Host}",
+                    templateUri: _env.ContentRootPath + "/Views/Emails/CustomerInvitation.cshtml",
+                    mailViewBag:
+                    new Dictionary<string, string>
+                    {
+                    {"FirstName", entity.firstName},
+                    {
+                        "ActivationUrl",
+                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}:{HttpContext.Connection.LocalPort}/api/customer/activateinvitation?username={entity.email}&activationCode={entity.activationCode}"
+                    }
+                    }
+                );
+            }
+
+            return entity;
+        }
+
+        /// <summary>
+        /// account update action
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        [HttpPost("updateasadmin")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
+        public virtual T UpdateAsAdmin([FromBody] T model)
+        {
+            var entity = _context.Set<T>().Find(_session.User.id);
+            entity.SetFromValues(model);
+
+            _context.Set<T>().Update(entity);
+            _context.SaveChanges();
+
+            _session.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
+
+            return entity;
+        }
+
+        /// <summary>
+        /// Delete user account
+        /// </summary>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
+        public void DeleteAsAdmin(int id)
+        {
+            var entity = _context.Set<T>().Find(_session.User.id);
+            _context.Set<T>().Remove(entity);
+            _context.SaveChanges();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        [HttpPost("activateasadmin")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
+        public T ActivateAsAdmin([FromBody] T model)
+        {
+            var entity = _context.Set<T>().Find(model.id);
+            entity.accountStatus = CustomerStatus.Activated;
+
+            _context.Set<T>().Update(entity);
+            _context.SaveChanges();
+
+            return entity;
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        [HttpPost("disableasadmin")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
+        public T DisableAsAdmin([FromBody] T model)
+        {
+            var entity = _context.Set<T>().Find(model.id);
+            entity.accountStatus = CustomerStatus.Disabled;
+
+            _context.Set<T>().Update(entity);
+            _context.SaveChanges();
+
+            return model;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
+        public virtual async Task<IEnumerable<T>> List()
+        {
+            return await _context.Set<T>().ToListAsync();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("projection")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
+        public virtual async Task<IActionResult> Projection()
+        {
+            var set = await _context.Set<T>().ToListAsync();
+            return Ok(new
+            {
+                entitylist = set,
+                entityCount = set.Count()
+            });
+        }
+        #endregion
+
+        #region Protected Logic Methods
+        /// <summary>
+        /// Signin logic extraction to simplify logic redefinition or external call
+        /// </summary>
+        /// <param name="customer"></param>
+        protected virtual async Task<T> _signin(T customer)
         {
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, customer.email) };
             if (!string.IsNullOrEmpty(customer.rolesString))
@@ -587,24 +615,27 @@ namespace YsrisCoreLibrary.Controllers
                     claims.Add(new Claim(ClaimTypes.Role, cur));
 
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
-            HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
             HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(customer));
 
+            return customer;
         }
 
-        protected T _createAccount(T values)
+        /// <summary>
+        /// Create account extraction to simplify logic redefinition or external call
+        /// </summary>
+        protected virtual async Task<T> _createAccount(T model)
         {
-            var test = _context.Set<T>().Where(a => a.email == values.email);
+            var test = _context.Set<T>().Where(a => a.email == model.email);
             if (test.Any())
                 throw new Exception("Already assigned email");
 
             var rolesList = new List<string>();
             var customerType = Role.User;
 
-            if (values.customerType != null)
+            if (model.customerType != null)
             {
-                switch (values.customerType)
+                switch (model.customerType)
                 {
                     case "Coach":
                         rolesList.Add(Role.Coach);
@@ -635,32 +666,38 @@ namespace YsrisCoreLibrary.Controllers
                 customerType = Role.User;
             }
 
-
             var entity = new T
             {
-                email = values.email,
-                firstName = values.firstName,
-                lastName = values.lastName,
+                email = model.email,
+                firstName = model.firstName,
+                lastName = model.lastName,
                 customerType = customerType,
                 createdAt = DateTime.Now,
                 rolesString = string.Join(",", rolesList.Select(a => a.ToString())),
                 id = 0
             };
-            if (values.passwordForTyping == null)
+            if (model.passwordForTyping == null)
                 throw new Exception("Password is null");
-            entity.password = _encryptionHelper.GetHash(values.passwordForTyping.ToString()); //keep here for avoiding the model binding
+            entity.password = _encryption.GetHash(model.passwordForTyping.ToString()); //keep here for avoiding the model binding
             entity.companyId = 0;
+            entity.activationCode = Guid.NewGuid().ToString();
+            entity.accountStatus = CustomerStatus.PendingActivationWithoutPasswordChange;
 
-
+            _context.Set<T>().Add(entity);
+            await _context.SaveChangesAsync();
 
             return entity;
         }
 
-        protected void _sendActivationEmail(T entity)
+        /// <summary>
+        /// send activation email extraction to simplify redefinition or external call
+        /// </summary>
+        /// <param name="entity"></param>
+        protected virtual void _sendActivationEmail(T entity)
         {
             // 4. User notification
-            _myLogger.LogDebug($"+++User notification (mail)");
-            _mailHelperService.SendMail(
+            _log.LogDebug($"+++User notification (mail)");
+            _mail.SendMail(
                 entity.email,
                 subject: "Confirm account creation",
                 templateUri: _env.ContentRootPath + "/Views/Emails/SignUpConfirmation.cshtml",
@@ -681,7 +718,9 @@ namespace YsrisCoreLibrary.Controllers
                 }
             );
         }
+        #endregion
 
+        //TODO : THIS IS BAD AND YOU SHOULD FEEL BAD ABOUT IT
         public class AccountCreationViewModel
         {
             public string UserType { get; set; }
@@ -691,31 +730,26 @@ namespace YsrisCoreLibrary.Controllers
             public string passwordForTyping { get; set; }
 
         }
-
         public class RecoverViewModel
         {
             public string email { get; set; }
             public string activationCode { get; set; }
             public string password { get; set; }
         }
-
         public class LoginViewModel
         {
             public string username { get; set; }
             public string password { get; set; }
         }
-
         public class GenerateTokenLoginViewModel
         {
             public string Email { get; set; }
             public string Password { get; set; }
         }
-
         public class LoginCustomerEntity
         {
-            public Customer customer { get; set; }
+            public T customer { get; set; }
         }
-
         public class InviteCustomerViewModel
         {
             public string email { get; set; }
