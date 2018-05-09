@@ -15,7 +15,7 @@ namespace YsrisCoreLibrary.Controllers
     /// <typeparam name="T"></typeparam>
     public class AbstractController<T> : Controller where T : class, IAbstractEntity, new()
     {
-        protected DbContext _context;
+        protected readonly DbContext _context;
 
         /// <summary>
         /// Default constructor
@@ -26,17 +26,17 @@ namespace YsrisCoreLibrary.Controllers
             _context = context;
         }
 
-        /// <summary>
-        /// Default List
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual IQueryable<T> Get()
-        {
-            var set = _context.Set<T>();
-            return set;
-        }
+        ///// <summary>
+        ///// Default List
+        ///// </summary>
+        ///// <returns></returns>
+        //[HttpGet]
+        //[Authorize(AuthenticationSchemes = "Bearer, Cookies")]
+        //public virtual IQueryable<T> Get()
+        //{
+        //    var set = _context.Set<T>();
+        //    return set;
+        //}
 
         /// <summary>
         /// Get paginated T enumeration
@@ -47,7 +47,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns></returns>
         [HttpGet("getfiltered")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "All")]
-        public virtual IActionResult Get(int start = 0, int number = 100, object tableStateObj = null)
+        public virtual IActionResult Get(int start = 0, int number = 100, string tableStateObj = null)
         {
             var fullset = _context.Set<T>().AsQueryable();
             var set = fullset.Skip(start).Take(number).AsQueryable();
@@ -79,7 +79,7 @@ namespace YsrisCoreLibrary.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var entity = await _context.Set<T>().FindAsync(id);
+            var entity = await _getEntity(id);
 
             if (entity == null)
                 return NotFound();
@@ -135,6 +135,24 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         /// <summary>
+        /// Create an entity
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        [HttpPatch]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
+        public virtual async Task<IActionResult> Patch([FromBody] T entity)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            _context.Set<T>().Add(entity);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("Get", new { id = entity.id }, entity);
+        }
+
+        /// <summary>
         /// Delete an entity
         /// </summary>
         /// <param name="id"></param>
@@ -164,6 +182,12 @@ namespace YsrisCoreLibrary.Controllers
         protected virtual bool EntityExists(int id)
         {
             return _context.Set<T>().Find(id) != null;
+        }
+
+        protected async virtual Task<T> _getEntity(int id)
+        {
+            var entity = await _context.Set<T>().FindAsync(id);
+            return entity;
         }
     }
 }
