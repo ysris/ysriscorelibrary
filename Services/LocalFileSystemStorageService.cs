@@ -12,6 +12,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using ysriscorelibrary.Interfaces;
 using System;
 using System.Linq;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace YsrisCoreLibrary.Services
 {
@@ -146,6 +147,13 @@ namespace YsrisCoreLibrary.Services
         {
             var filename = Path.Combine(basePath + cur.TrimStart('/').TrimEnd('\\'));
             return filename;
+        }
+
+        public string GetContentType(string filePath)
+        {
+            string contentType;
+            new FileExtensionContentTypeProvider().TryGetContentType(filePath, out contentType);
+            return contentType;
         }
     }
 }
