@@ -21,7 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
-namespace YsrisCoreLibrary.Controllers
+namespace YsrisCoreLibrary.Controllersvc
 {
     /// <summary>
     /// Default customer management
@@ -103,11 +103,11 @@ namespace YsrisCoreLibrary.Controllers
                 );
 
             if (customer == null)
-                throw new Exception("Unknown User");
+                return Forbid();
 
             await _signin(customer);
 
-            return Ok(new LoginCustomerEntity { customer = customer });
+            return Ok(new { customer = customer });
         }
 
         /// <summary>
@@ -746,10 +746,7 @@ namespace YsrisCoreLibrary.Controllers
             public string Email { get; set; }
             public string Password { get; set; }
         }
-        public class LoginCustomerEntity
-        {
-            public T customer { get; set; }
-        }
+
         public class InviteCustomerViewModel
         {
             public string email { get; set; }
