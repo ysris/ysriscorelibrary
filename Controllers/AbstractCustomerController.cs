@@ -21,7 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
-namespace YsrisCoreLibrary.Controllersvc
+namespace YsrisCoreLibrary.Controllers
 {
     /// <summary>
     /// Default customer management
@@ -102,12 +102,12 @@ namespace YsrisCoreLibrary.Controllersvc
                     && a.deletionDate == null
                 );
 
-            if (customer == null)
-                return Forbid();
+            if (customer == null)                
+                throw new Exception("Unauthorized");
 
             await _signin(customer);
 
-            return Ok(new { customer = customer });
+            return Ok(customer);
         }
 
         /// <summary>
@@ -179,51 +179,31 @@ namespace YsrisCoreLibrary.Controllersvc
         }
 
         /// <summary>
-        /// Invitation (customer account created by a site administrator) activation
-        /// Not async by choice
+        /// Activation invitation email validation processing
         /// </summary>
-        /// <returns></returns>
-        [AllowAnonymous]
-        [HttpGet("activateinvitation")]
-        public virtual IActionResult ActivateInvitation()
-        {
-            var username = Request.Query["username"];
-            var activatioNCode = Request.Query["activationCode"];
-            return Redirect($"/#!/activateinvitation/{username}/{activatioNCode}");
-        }
-
-        /// <summary>
-        /// Activation invitation email validation call back
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        /// <param name="mode">the viewmode</param>        
+        /// <param name="sucessActivationStatus">Activation status to set after a correction activation (email+activationcode combination correct)</param>        
+        /// <returns>The HTTP status only</returns>
         [AllowAnonymous]
         [HttpPost("activateinvitation")]
-        public virtual async Task<IActionResult> ActivateInvitation2([FromBody] RecoverViewModel model)
+        public virtual async Task<IActionResult> ActivateInvitation([FromBody] RecoverViewModel model, string sucessActivationStatus = CustomerStatus.Activated)
         {
-            var entity = _context.Set<T>().Single(a => a.email == model.email);
-            if (entity == null || entity.activationCode == null)
-                throw new Exception("BadRequest");
+            _log.LogInformation($"+ ActivateInvitation for {model.email}");
 
-            if (model.activationCode == entity.activationCode)
-            {
-                entity.activationCode = null;
-                entity.recoverAskDate = null;
-                entity.password = _encryption.GetHash(model.password);
-                entity.accountStatus = CustomerStatus.Activated;
+            var entity = await _context.Set<T>().SingleOrDefaultAsync(a => a.email == model.email);
+            if (entity == null || entity.activationCode == null || model.activationCode != entity.activationCode)
+                return StatusCode(StatusCodes.Status400BadRequest);
 
-                _context.Set<T>().Update(entity);
-                await _context.SaveChangesAsync();
+            entity.activationCode = null;
+            entity.recoverAskDate = null;
+            entity.password = _encryption.GetHash(model.password);
+            entity.accountStatus = sucessActivationStatus;
 
-                _mail.SendMail(
-                    entity.email,
-                    subject: "Password recover",
-                    templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordResetConfirmation.cshtml",
-                    mailViewBag: new Dictionary<string, string> { { "UserFirstName", entity.firstName } }
-                );
-            }
+            _context.Set<T>().Update(entity);
+            await _context.SaveChangesAsync();
 
-            return Ok(new { });
+            _log.LogInformation($"- ActivateInvitation for {model.email}");
+            return Ok();
         }
 
         /// <summary>
@@ -238,7 +218,6 @@ namespace YsrisCoreLibrary.Controllersvc
             var username = Request.Query["username"];
 
             var entity = _context.Set<T>().Single(a => a.email == username);
-
             switch (entity.accountStatus)
             {
                 case CustomerStatus.PendingActivationWithoutPasswordChange:
@@ -255,6 +234,8 @@ namespace YsrisCoreLibrary.Controllersvc
                         return Redirect("/#!/signin/activationsucceeded");
                     }
                     return Content("Activation error");
+                case CustomerStatus.PendingActivationWithPasswordChange:
+                    throw new Exception("There is nothing to do here...");
                 default:
                     throw new NotImplementedException();
             }
@@ -354,10 +335,10 @@ namespace YsrisCoreLibrary.Controllersvc
                 }
                 var result = _storage.GetFileContent(smallUri)?.Result?.ToArray();
                 if (result == null)
-                    return null;
+                    return File(System.IO.File.ReadAllBytes(Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png")), "image/png");
                 return File(result, "image/jpeg");
             }
-            return null;
+            return File(System.IO.File.ReadAllBytes(Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png")), "image/png");
         }
 
         /// <summary>
@@ -492,11 +473,11 @@ namespace YsrisCoreLibrary.Controllersvc
                     mailViewBag:
                     new Dictionary<string, string>
                     {
-                    {"FirstName", entity.firstName},
-                    {
-                        "ActivationUrl",
-                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}:{HttpContext.Connection.LocalPort}/api/customer/activateinvitation?username={entity.email}&activationCode={entity.activationCode}"
-                    }
+                        { "FirstName", entity.prettyName },
+                        { "ActivationUrl",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/activateinvitation/{entity.email}/{entity.activationCode}" },
+                        { "AppName", _config.GetValue<string>("Data:AppName") },
+                        { "LogoDefault",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png" },
+                        { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor") }
                     }
                 );
             }
@@ -580,9 +561,10 @@ namespace YsrisCoreLibrary.Controllersvc
         /// <returns></returns>
         [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public virtual async Task<IEnumerable<T>> List()
+        public virtual async Task<IActionResult> List()
         {
-            return await _context.Set<T>().ToListAsync();
+            var set = await _context.Set<T>().ToListAsync();
+            return Ok(set);
         }
 
         /// <summary>
@@ -746,7 +728,6 @@ namespace YsrisCoreLibrary.Controllersvc
             public string Email { get; set; }
             public string Password { get; set; }
         }
-
         public class InviteCustomerViewModel
         {
             public string email { get; set; }

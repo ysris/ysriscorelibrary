@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -32,7 +33,7 @@ namespace YsrisCoreLibrary.Controllers
         /// Default way of getting contacts of a customer (by using distinct values of already started discussions)
         /// </summary>
         /// <returns></returns>
-        public override IActionResult Get(int start = 0, int number = 100, string tableStateObj = null)
+        public override async Task<IActionResult> Get(int start = 0, int number = 100, string tableStateObj = null)
         {
             var set = _context.Set<ConversationMessage>();
             var contactIds =
@@ -41,8 +42,7 @@ namespace YsrisCoreLibrary.Controllers
                 select a.authorId == _session.User.id ? a.destId : a.authorId
                 ;
 
-            var customers =
-                _context.Set<Customer>().Where(a => contactIds.Contains(a.id));
+            var customers = await _context.Set<Customer>().Where(a => contactIds.Contains(a.id)).ToListAsync();
 
             return Ok(customers);
         }

@@ -45,12 +45,12 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="number">number of items to take</param>
         /// <param name="tableState"></param>
         /// <returns></returns>
-        [HttpGet("getfiltered")]
+        [HttpGet]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "All")]
-        public virtual IActionResult Get(int start = 0, int number = 100, string tableStateObj = null)
+        public virtual async Task<IActionResult> Get(int start = 0, int number = 100, string tableStateObj = null)
         {
             var fullset = _context.Set<T>().AsQueryable();
-            var set = fullset.Skip(start).Take(number).AsQueryable();
+            var set = await fullset.Skip(start).Take(number).ToListAsync();
             var numberOfPages = Math.Ceiling(fullset.Count() / number * 1f);
             return Ok(new { data = set, numberOfPages, });
         }
