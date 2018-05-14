@@ -203,6 +203,42 @@
         };
 
 
+
+
+        
+        
+
+
+        $scope.grantAdminRole = function (obj) {
+            $rootScope.askConfirm({
+                title: "Put this account as admin ?",
+                callBack: function (isConfirm) {
+                    if (isConfirm) {
+                        customerService.grantAdminRole(obj).then(function (resp) {
+                            refresh();
+                            $rootScope.addNotification("Account granted as admin");
+                        }, $rootScope.raiseErrorDelegate);
+                    }
+                }
+            });
+        };
+
+        $scope.revokeAdminRole = function (obj) {
+            $rootScope.askConfirm({
+                title: "Revoke this account as admin ?",
+                callBack: function (isConfirm) {
+                    if (isConfirm) {
+                        customerService.revokeAdminRole(obj).then(function (resp) {
+                            refresh();
+                            $rootScope.addNotification("Account revoked from admin");
+                        }, $rootScope.raiseErrorDelegate);
+                    }
+                }
+            });
+        };
+
+        
+
         refresh();
     })
     ;

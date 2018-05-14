@@ -102,7 +102,7 @@ namespace YsrisCoreLibrary.Controllers
                     && a.deletionDate == null
                 );
 
-            if (customer == null)                
+            if (customer == null)
                 throw new Exception("Unauthorized");
 
             await _signin(customer);
@@ -443,7 +443,7 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")] //todo : the default policy is probably incorrect
         public virtual T Invite([FromBody] InviteCustomerViewModel model)
         {
-            _log.LogDebug($"CustomerController +Post");
+            _log.LogInformation($"AbstractCustomerController +Invite");
 
             var test = _context.Set<T>().Where(a => a.email == model.email);
             if (test.Any())
@@ -481,7 +481,7 @@ namespace YsrisCoreLibrary.Controllers
                     }
                 );
             }
-
+            _log.LogInformation($"AbstractCustomerController -Invite");
             return entity;
         }
 
@@ -554,6 +554,46 @@ namespace YsrisCoreLibrary.Controllers
 
             return model;
         }
+
+
+        [HttpPost("grantuserroleasadmin")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
+        public async Task<IActionResult> GrantUserRole([FromBody] UserRoleAttributionViewModel model)
+        {
+            _log.LogInformation($"AbstractCustomerController +GrantUserRole");
+            var entity = _context.Set<T>().Find(model.entity.id);
+            if (!entity.roles.Contains(model.role))
+            {
+                var bfr = entity.roles;
+                bfr.Add(model.role);
+                entity.rolesString = string.Join(',', bfr);
+            }
+
+            _context.Set<T>().Update(entity);
+            await _context.SaveChangesAsync();
+
+            _log.LogInformation($"AbstractCustomerController -GrantUserRole");
+            return Ok(model);
+        }
+
+        [HttpPost("revokeuserroleasadmin")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
+        public async Task<IActionResult> RevokeUserRole([FromBody] UserRoleAttributionViewModel model)
+        {
+            var entity = _context.Set<T>().Find(model.entity.id);
+            if (entity.roles.Contains(model.role))
+            {
+                var bfr = entity.roles;
+                bfr.Remove(model.role);
+                entity.rolesString = string.Join(',', bfr);
+            }
+
+            _context.Set<T>().Update(entity);
+            await _context.SaveChangesAsync();
+
+            return Ok(model);
+        }
+
 
         /// <summary>
         /// 
@@ -732,6 +772,11 @@ namespace YsrisCoreLibrary.Controllers
         {
             public string email { get; set; }
             public bool boolSendEmail { get; set; }
+        }
+        public class UserRoleAttributionViewModel
+        {
+            public T entity { get; set; }
+            public string role { get; set; }
         }
     }
 }
