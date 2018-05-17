@@ -12,7 +12,6 @@
             $rootScope.IsBusy = false;
         }, function errorCallback(e) {
             $rootScope.addNotification("Recover error");
-            $state.go("home");
             $rootScope.IsBusy = false;
         });
     };

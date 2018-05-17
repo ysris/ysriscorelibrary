@@ -9,7 +9,7 @@
 angular.module('frontendAngularClientApp')
     .directive('busyIndicator', function () {
         return {
-            templateUrl: '/bobos_components/views/templates/busy-indicator.html',
+            templateUrl: 'bobos_components/views/templates/busy-indicator.html',
             restrict: 'E'
         };
     });

@@ -8,11 +8,10 @@
         $rootScope.IsBusy = true;
         customerService.recover($scope.email).then(function (response) {
             $rootScope.addNotification("Password recovery sent, please check your email");
-            $state.go("home");
+            $state.go("signin2");
             $rootScope.IsBusy = false;
         }, function errorCallback(e) {
             $rootScope.addNotification("Recover error");
-            $state.go("home");
             $rootScope.IsBusy = false;
         });
     };

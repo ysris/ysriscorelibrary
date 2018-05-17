@@ -137,8 +137,11 @@ namespace YsrisCoreLibrary.Controllers
                 mailViewBag:
                 new Dictionary<string, string>
                 {
-                    { "UserFirstName", entity.firstName },
-                    { "RecoverUrl", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/passwordrecover2/{entity.email}/{entity.activationCode}" }
+                    { "FirstName", entity.prettyName },
+                    { "RecoverUrl", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/passwordrecover2/{entity.email}/{entity.activationCode}" },
+                    { "AppName", _config.GetValue<string>("Data:AppName")},
+                    { "LogoDefault", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png"},
+                    { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
                 }
             );
 
@@ -169,9 +172,14 @@ namespace YsrisCoreLibrary.Controllers
 
                 _mail.SendMail(
                     entity.email,
-                    subject: "Password recover",
+                    subject: "Password recover successful",
                     templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordResetConfirmation.cshtml",
-                    mailViewBag: new Dictionary<string, string> { { "UserFirstName", entity.firstName } }
+                    mailViewBag: new Dictionary<string, string> {
+                        { "FirstName", entity.prettyName },
+                        { "AppName", _config.GetValue<string>("Data:AppName")},
+                        { "LogoDefault", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png"},
+                        { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
+                    }
                 );
             }
 
@@ -555,10 +563,14 @@ namespace YsrisCoreLibrary.Controllers
             return model;
         }
 
-
-        [HttpPost("grantuserroleasadmin")]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("grant")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public async Task<IActionResult> GrantUserRole([FromBody] UserRoleAttributionViewModel model)
+        public virtual async Task<IActionResult> GrantUserRole([FromBody] UserRoleAttributionViewModel model)
         {
             _log.LogInformation($"AbstractCustomerController +GrantUserRole");
             var entity = _context.Set<T>().Find(model.entity.id);
@@ -566,7 +578,7 @@ namespace YsrisCoreLibrary.Controllers
             {
                 var bfr = entity.roles;
                 bfr.Add(model.role);
-                entity.rolesString = string.Join(',', bfr);
+                entity.rolesString = string.Join(", ", bfr);
             }
 
             _context.Set<T>().Update(entity);
@@ -576,11 +588,20 @@ namespace YsrisCoreLibrary.Controllers
             return Ok(model);
         }
 
-        [HttpPost("revokeuserroleasadmin")]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost("revoke")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public async Task<IActionResult> RevokeUserRole([FromBody] UserRoleAttributionViewModel model)
+        public virtual async Task<IActionResult> RevokeUserRole([FromBody] UserRoleAttributionViewModel model)
         {
             var entity = _context.Set<T>().Find(model.entity.id);
+
+            if (entity.id == _session.User.id)
+                throw new Exception("Cannot revoke Admin role for the current connected user");
+
             if (entity.roles.Contains(model.role))
             {
                 var bfr = entity.roles;

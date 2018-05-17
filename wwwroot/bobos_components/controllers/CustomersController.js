@@ -32,7 +32,6 @@
             }
             , update: function (entity) { return $http.post("/api/customer/update", entity); }
             , updateasadmin: function (entity) { return $http.post("/api/customer/updateasadmin", entity); }
-
             , uploadAvatar: function (file) { return Upload.upload({ url: "/api/customer/avatar/", data: { 'file': file } }) }
             , GetProjection: function () { return $http.get("/api/customer/projection"); }
             , delete: function (id) {
@@ -41,10 +40,12 @@
                 return $http.delete("/api/customer/" + id);
             }
             , inviteCustomer: function (entity) { return $http.post("/api/customer/invite", entity); }
+            , grantAdminRole: function (entity) { return $http.post("/api/customer/grant", { entity: entity, role: "Administrator" }); }
+            , revokeAdminRole: function (entity) { return $http.post("/api/customer/revoke", { entity: entity, role: "Administrator" }); }
         };
     })
     .component('customerComponent', {
-        templateUrl: '/bobos_components/views/defaultComponent.html',
+        templateUrl: 'bobos_components/views/defaultComponent.html',
         bindings: { resolve: '<', close: '&', dismiss: '&' },
         controller: function ($rootScope, customerService, $state, customerService) {
             var $ctrl = this;
@@ -75,7 +76,7 @@
         }
     })
     .component('inviteCustomerComponent', {
-        templateUrl: '/bobos_components/views/inviteCustomerComponent.html',
+        templateUrl: 'bobos_components/views/inviteCustomerComponent.html',
         bindings: { resolve: '<', close: '&', dismiss: '&' },
         controller: function ($rootScope, customerService, $state, customerService) {
             var $ctrl = this;
@@ -107,7 +108,9 @@
     .controller("CustomersController", function ($scope, $state, $rootScope, customerService, $uibModal) {
         $scope.entitylist = null;
 
-        var refresh = function () {
+        /**
+         */
+        $scope.refresh = function () {
             $rootScope.SetPageTitle("Customers", "");
             $rootScope.SetPageMocked(false);
             $rootScope.IsBusy = true;
@@ -117,13 +120,17 @@
             }, $rootScope.raiseErrorDelegate);
         };
 
+        /**
+         * 
+         * @param {any} obj
+         */
         $scope.activateAcccount = function (obj) {
             $rootScope.askConfirm({
                 title: "Activate this account ?",
                 callBack: function (isConfirm) {
                     if (isConfirm) {
                         customerService.activate(obj).then(function (resp) {
-                            refresh();
+                            $scope.refresh();
                             $rootScope.addNotification("Account activated");
                         }, $rootScope.raiseErrorDelegate);
                     }
@@ -131,13 +138,17 @@
             });
         };
 
+        /**
+         * 
+         * @param {any} obj
+         */
         $scope.disableAccount = function (obj) {
             $rootScope.askConfirm({
                 title: "Disable this account ?",
                 callBack: function (isConfirm) {
                     if (isConfirm) {
                         customerService.disable(obj).then(function (resp) {
-                            refresh();
+                            $scope.refresh();
                             $rootScope.addNotification("Account disabled");
                         }, $rootScope.raiseErrorDelegate);
                     }
@@ -145,13 +156,17 @@
             });
         };
 
+        /**
+         * 
+         * @param {any} obj
+         */
         $scope.deleteAccount = function (obj) {
             $rootScope.askConfirm({
                 title: "Delete this account ?",
                 callBack: function (isConfirm) {
                     if (isConfirm) {
                         customerService.delete(obj.id).then(function (resp) {
-                            refresh();
+                            $scope.refresh();
                             $rootScope.addNotification("Account deleted");
                         }, $rootScope.raiseErrorDelegate);
                     }
@@ -159,6 +174,8 @@
             });
         };
 
+        /**
+         */
         $scope.add = function () {
             var modalInstance = $uibModal.open({
                 component: "customerComponent",
@@ -167,78 +184,85 @@
                 // }
             });
             modalInstance.result.then(function (selectedItem) {
-                refresh();
+                $scope.refresh();
             }, function () {
                 // alert(2);
             });
 
         };
 
+        /**
+         * 
+         * @param {any} entity
+         */
         $scope.edit = function (entity) {
             var modalInstance = $uibModal.open({
                 component: "customerComponent",
                 resolve: { entity: function () { return entity; } }
             });
             modalInstance.result.then(function (selectedItem) {
-                refresh();
+                $scope.refresh();
             }, function () {
                 // alert(2);
             });
 
         };
 
+        /**
+         * 
+         */
         $scope.invite = function () {
             var modalInstance = $uibModal.open({
                 component: "inviteCustomerComponent",
-                // resolve: {
-                // items: function () {return $scope.items;}
-                // }
+                // resolve: { items: function () {return $scope.items;} }
             });
             modalInstance.result.then(function (selectedItem) {
-                refresh();
+                $scope.refresh();
             }, function () {
-                // alert(2);
+                // error fallback
             });
 
         };
 
-
-
-
-        
-        
-
-
-        $scope.grantAdminRole = function (obj) {
-            $rootScope.askConfirm({
-                title: "Put this account as admin ?",
-                callBack: function (isConfirm) {
-                    if (isConfirm) {
-                        customerService.grantAdminRole(obj).then(function (resp) {
-                            refresh();
-                            $rootScope.addNotification("Account granted as admin");
-                        }, $rootScope.raiseErrorDelegate);
-                    }
-                }
-            });
+        /**
+         * Grant admin role to a customer
+         * @param {any} obj
+         * @return void
+         */
+        $scope.grantAdminRole = function (entity) {
+            if (window.confirm("Put this account as admin ?")) {
+                customerService.grantAdminRole(entity).then(function (resp) {
+                    $scope.refresh();
+                    $rootScope.addNotification("Account granted as admin");
+                }, $rootScope.raiseErrorDelegate);
+            }
         };
 
-        $scope.revokeAdminRole = function (obj) {
-            $rootScope.askConfirm({
-                title: "Revoke this account as admin ?",
-                callBack: function (isConfirm) {
-                    if (isConfirm) {
-                        customerService.revokeAdminRole(obj).then(function (resp) {
-                            refresh();
-                            $rootScope.addNotification("Account revoked from admin");
-                        }, $rootScope.raiseErrorDelegate);
-                    }
-                }
-            });
+        /**
+         * Revoke admin role from a customer
+         * @param {any} obj
+         * @return void
+         */
+        $scope.revokeAdminRole = function (entity) {
+            if (window.confirm("Revoke this account as admin ?")) {
+                customerService.revokeAdminRole(entity).then(function (resp) {
+                    $scope.refresh();
+                    $rootScope.addNotification("Account revoked from admin");
+                }, $rootScope.raiseErrorDelegate);
+            }
         };
 
-        
 
-        refresh();
+        /**
+         * Returns if the user is an admin of the app
+         * @param {any} entity
+         * @return bool
+         */
+        $scope.hasAdminRole = function (entity) {
+            return entity.roles.indexOf("Administrator") != -1;
+        }
+
+
+        $scope.refresh();
     })
     ;

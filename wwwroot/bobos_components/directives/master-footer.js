@@ -9,7 +9,7 @@
 angular.module('frontendAngularClientApp')
     .directive('masterFooter', function () {
         return {
-            templateUrl: '/bobos_components/views/templates/master-footer.html',
+            templateUrl: 'bobos_components/views/templates/master-footer.html',
             restrict: 'E'
         };
     });
