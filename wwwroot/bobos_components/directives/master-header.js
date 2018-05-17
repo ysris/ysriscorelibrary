@@ -9,7 +9,7 @@
 angular.module('frontendAngularClientApp')
     .directive('masterHeader', function () {
         return {
-            templateUrl: '/views/master-header.html',
+            templateUrl: 'views/master-header.html',
             restrict: 'E'
         };
     });
