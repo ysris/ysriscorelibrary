@@ -1,14 +1,14 @@
 ﻿angular.module("frontendAngularClientApp")
     .factory("customerActivationService", function ($http, Upload) {
         return {
-            inviteCustomer: function (entity) { return $http.post("/api/customer/activateinvitation", entity); }
+            activate: function (entity) { return $http.post("/api/customer/activateinvitation", entity); }
         };
     })
     .controller("ActivateCustomerInvitationController", function ($scope, $state, $rootScope, $stateParams, customerActivationService) {
         $scope.entity = { email: $state.params.email, activationcode: $state.params.activationcode };
 
         $scope.submit = function () {
-            customerActivationService.inviteCustomer($scope.entity).then(function (resp) {
+            customerActivationService.activate($scope.entity).then(function (resp) {
                 $rootScope.addNotification('Activated');
                 $state.go("signin2");
             });
@@ -67,39 +67,8 @@
             };
 
             $ctrl.submit = function () {
-                console.log("entity", $ctrl.entity);
                 customerService.updateasadmin($ctrl.entity).then(function (resp) {
                     $rootScope.addNotification("Customer edited");
-                    $ctrl.close({ $value: $ctrl.entity });
-                }, $rootScope.raiseErrorDelegate);
-            };
-        }
-    })
-    .component('inviteCustomerComponent', {
-        templateUrl: 'bobos_components/views/inviteCustomerComponent.html',
-        bindings: { resolve: '<', close: '&', dismiss: '&' },
-        controller: function ($rootScope, customerService, $state, customerService) {
-            var $ctrl = this;
-            $ctrl.entity = { email: undefined, boolSendEmail: true };
-
-            $ctrl.modalTitle = "Invite a Customer";
-
-            $ctrl.$onInit = function () {
-                //$ctrl.entity = $ctrl.resolve.entity;
-
-                //if ($ctrl.entity == null)
-                //    customerService.GetEmptyEntity().then(function (resp) {
-                //        $ctrl.entity = resp.data;
-                //    })
-            };
-
-            $ctrl.cancel = function () {
-                $ctrl.dismiss({ $value: 'cancel' });
-            };
-
-            $ctrl.submit = function () {
-                customerService.inviteCustomer($ctrl.entity).then(function (resp) {
-                    $rootScope.addNotification("Customer invited");
                     $ctrl.close({ $value: $ctrl.entity });
                 }, $rootScope.raiseErrorDelegate);
             };

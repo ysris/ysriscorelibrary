@@ -453,21 +453,16 @@ namespace YsrisCoreLibrary.Controllers
         {
             _log.LogInformation($"AbstractCustomerController +Invite");
 
-            var test = _context.Set<T>().Where(a => a.email == model.email);
-            if (test.Any())
+            if (_context.Set<T>().Where(a => a.email == model.entity.email).Any())
                 throw new Exception("Already assigned email");
 
-            var entity = new T()
-            {
-                email = model.email,
-                activationCode = Guid.NewGuid().ToString(),
-                customerType = Role.User,
-                createdAt = DateTime.Now,
-                accountStatus = CustomerStatus.PendingActivationWithPasswordChange,
-                rolesString = string.Join(",", new List<string>() { Role.User }),
-            };
+            model.entity.activationCode = Guid.NewGuid().ToString();
+            model.entity.customerType = Role.User;
+            model.entity.createdAt = DateTime.Now;
+            model.entity.accountStatus = CustomerStatus.PendingActivationWithPasswordChange;
+            model.entity.rolesString = string.Join(",", new List<string>() { Role.User });
 
-            _context.Set<T>().Add(entity);
+            _context.Set<T>().Add(model.entity);
             _context.SaveChanges();
 
             // 4. User notification
@@ -475,14 +470,14 @@ namespace YsrisCoreLibrary.Controllers
             {
                 _log.LogDebug($"+++User notification (mail)");
                 _mail.SendMail(
-                    entity.email,
+                    model.entity.email,
                     subject: $"You have been invited to join {HttpContext.Request.Host}",
                     templateUri: _env.ContentRootPath + "/Views/Emails/CustomerInvitation.cshtml",
                     mailViewBag:
                     new Dictionary<string, string>
                     {
-                        { "FirstName", entity.prettyName },
-                        { "ActivationUrl",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/activateinvitation/{entity.email}/{entity.activationCode}" },
+                        { "FirstName", model.entity.prettyName },
+                        { "ActivationUrl",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/activateinvitation/{model.entity.email}/{model.entity.activationCode}" },
                         { "AppName", _config.GetValue<string>("Data:AppName") },
                         { "LogoDefault",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png" },
                         { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor") }
@@ -490,7 +485,7 @@ namespace YsrisCoreLibrary.Controllers
                 );
             }
             _log.LogInformation($"AbstractCustomerController -Invite");
-            return entity;
+            return model.entity;
         }
 
         /// <summary>
@@ -791,7 +786,7 @@ namespace YsrisCoreLibrary.Controllers
         }
         public class InviteCustomerViewModel
         {
-            public string email { get; set; }
+            public T entity { get; set; }
             public bool boolSendEmail { get; set; }
         }
         public class UserRoleAttributionViewModel
