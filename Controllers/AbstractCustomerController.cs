@@ -249,7 +249,6 @@ namespace YsrisCoreLibrary.Controllers
             }
         }
 
-
         /// <summary>
         /// Generate JWT Token logic
         /// NOT Async by choice
@@ -758,7 +757,8 @@ namespace YsrisCoreLibrary.Controllers
         }
         #endregion
 
-        //TODO : THIS IS BAD AND YOU SHOULD FEEL BAD ABOUT IT
+        // TODO : THIS IS BAD AND YOU SHOULD FEEL BAD ABOUT IT //
+
         public class AccountCreationViewModel
         {
             public string UserType { get; set; }

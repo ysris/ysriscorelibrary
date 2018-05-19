@@ -1,22 +1,8 @@
 ﻿angular.module("frontendAngularClientApp")
-    .factory("customerActivationService", function ($http, Upload) {
-        return {
-            activate: function (entity) { return $http.post("/api/customer/activateinvitation", entity); }
-        };
-    })
-    .controller("ActivateCustomerInvitationController", function ($scope, $state, $rootScope, $stateParams, customerActivationService) {
-        $scope.entity = { email: $state.params.email, activationcode: $state.params.activationcode };
-
-        $scope.submit = function () {
-            customerActivationService.activate($scope.entity).then(function (resp) {
-                $rootScope.addNotification('Activated');
-                $state.go("signin2");
-            });
-        }
-    })
     .factory("customerService", function ($http, Upload) {
         return {
-            activate: function (entity) { return $http.post("/api/customer/activateasadmin", entity); }
+            activateinvitation: function (entity) { return $http.post("/api/customer/activateinvitation", entity); }
+            , activate: function (entity) { return $http.post("/api/customer/activateasadmin", entity); }
             , disable: function (entity) { return $http.post("/api/customer/disableasadmin", entity); }
             , GetEmptyEntity: function () { return $http.get("/api/customer/empty"); }
             , List: function () { return $http.get("/api/customer"); }
@@ -44,40 +30,22 @@
             , revokeAdminRole: function (entity) { return $http.post("/api/customer/revoke", { entity: entity, role: "Administrator" }); }
         };
     })
-    .component('customerComponent', {
-        templateUrl: 'bobos_components/views/defaultComponent.html',
-        bindings: { resolve: '<', close: '&', dismiss: '&' },
-        controller: function ($rootScope, customerService, $state, customerService) {
-            var $ctrl = this;
-            $ctrl.entity = null;
+   
+    .controller("ActivateCustomerInvitationController", function ($scope, $state, $rootScope, $stateParams, customerService) {
+        $scope.entity = { email: $state.params.email, activationcode: $state.params.activationcode };
 
-            $ctrl.modalTitle = "Customer";
-
-            $ctrl.$onInit = function () {
-                $ctrl.entity = $ctrl.resolve.entity;
-
-                if ($ctrl.entity == null)
-                    customerService.GetEmptyEntity().then(function (resp) {
-                        $ctrl.entity = resp.data;
-                    })
-            };
-
-            $ctrl.cancel = function () {
-                $ctrl.dismiss({ $value: 'cancel' });
-            };
-
-            $ctrl.submit = function () {
-                customerService.updateasadmin($ctrl.entity).then(function (resp) {
-                    $rootScope.addNotification("Customer edited");
-                    $ctrl.close({ $value: $ctrl.entity });
-                }, $rootScope.raiseErrorDelegate);
-            };
+        $scope.submit = function () {
+            customerService.activateinvitation($scope.entity).then(function (resp) {
+                $rootScope.addNotification('Activated');
+                $state.go("signin2");
+            });
         }
     })
     .controller("CustomersController", function ($scope, $state, $rootScope, customerService, $uibModal) {
         $scope.entitylist = null;
 
         /**
+         * Refresh accounts list
          */
         $scope.refresh = function () {
             $rootScope.SetPageTitle("Customers", "");
@@ -90,15 +58,15 @@
         };
 
         /**
-         * 
-         * @param {any} obj
+         * Activate an account
+         * @param {any} entity
          */
-        $scope.activateAcccount = function (obj) {
+        $scope.activateAcccount = function (entity) {
             $rootScope.askConfirm({
                 title: "Activate this account ?",
                 callBack: function (isConfirm) {
                     if (isConfirm) {
-                        customerService.activate(obj).then(function (resp) {
+                        customerService.activate(entity).then(function (resp) {
                             $scope.refresh();
                             $rootScope.addNotification("Account activated");
                         }, $rootScope.raiseErrorDelegate);
@@ -108,15 +76,15 @@
         };
 
         /**
-         * 
+         * Disable an account
          * @param {any} obj
          */
-        $scope.disableAccount = function (obj) {
+        $scope.disableAccount = function (entity) {
             $rootScope.askConfirm({
                 title: "Disable this account ?",
                 callBack: function (isConfirm) {
                     if (isConfirm) {
-                        customerService.disable(obj).then(function (resp) {
+                        customerService.disable(entity).then(function (resp) {
                             $scope.refresh();
                             $rootScope.addNotification("Account disabled");
                         }, $rootScope.raiseErrorDelegate);
@@ -126,15 +94,15 @@
         };
 
         /**
-         * 
+         * Delete an account
          * @param {any} obj
          */
-        $scope.deleteAccount = function (obj) {
+        $scope.deleteAccount = function (entity) {
             $rootScope.askConfirm({
                 title: "Delete this account ?",
                 callBack: function (isConfirm) {
                     if (isConfirm) {
-                        customerService.delete(obj.id).then(function (resp) {
+                        customerService.delete(entity.id).then(function (resp) {
                             $scope.refresh();
                             $rootScope.addNotification("Account deleted");
                         }, $rootScope.raiseErrorDelegate);
@@ -144,6 +112,7 @@
         };
 
         /**
+         * Display the modal for customer creation
          */
         $scope.add = function () {
             var modalInstance = $uibModal.open({
@@ -161,7 +130,7 @@
         };
 
         /**
-         * 
+         * Display the modal for customer edition
          * @param {any} entity
          */
         $scope.edit = function (entity) {
@@ -178,7 +147,7 @@
         };
 
         /**
-         * 
+         * Invite a customer
          */
         $scope.invite = function () {
             var modalInstance = $uibModal.open({

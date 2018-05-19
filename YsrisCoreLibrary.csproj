@@ -11,6 +11,7 @@
     <None Remove="wwwroot\bobos_components\angular-locale_custom.js" />
     <None Remove="wwwroot\bobos_components\angular-messages.js" />
     <None Remove="wwwroot\bobos_components\assets\images\robot.png" />
+    <None Remove="wwwroot\bobos_components\components\customerComponent.js" />
     <None Remove="wwwroot\bobos_components\components\echartsComponent.js" />
     <None Remove="wwwroot\bobos_components\controllers\conversationContactController.js" />
     <None Remove="wwwroot\bobos_components\controllers\conversationMessageController.js" />
@@ -52,6 +53,9 @@
     <Content Include="wwwroot\bobos_components\angular-locale_custom.js" />
     <Content Include="wwwroot\bobos_components\angular-messages.js" />
     <Content Include="wwwroot\bobos_components\assets\images\robot.png">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="wwwroot\bobos_components\components\customerComponent.js">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="wwwroot\bobos_components\components\echartsComponent.js" />
