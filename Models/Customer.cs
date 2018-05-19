@@ -23,7 +23,7 @@ namespace YsrisCoreLibrary.Models
 
         public void SetFromValues(ICustomer values)
         {
-            if (values.id != null) id = values.id;
+            //if (values.id != null) id = values.id;
             if (values.picture != null) picture = values.picture;
             if (values.firstName != null) firstName = values.firstName;
             if (values.lastName != null) lastName = values.lastName;
