@@ -27,5 +27,19 @@ namespace YsrisCoreLibrary.Services
             var response = await _httpClient.PostAsync(_webhookUrl, new StringContent(serializedPayload, Encoding.UTF8, "application/json"));
             return response;
         }
+
+        public async Task<HttpResponseMessage> SendSuccessInformationMessage(string title)
+        {
+            return await SendMessageAsync(new
+            {
+                title,
+                color = "#38BC00",
+                //pretext= "One ",
+                //author_name = "Karpeo Bot",
+                //author_link = "http://karpeo.ysris.ch",
+                //author_icon = "https://karpeo.ysris.ch/assets/images/logo-default.png",
+                //title_link = "http://karpeo.ysris.ch/doc/___",
+            });
+        }
     }
 }
