@@ -111,6 +111,7 @@ namespace YsrisCoreLibrary.Abstract
             services.AddScoped<IStorageService, LocalFileSystemStorageService>();
             services.AddSingleton<EncryptionService>();
             services.AddTransient<ViewRenderService>();
+            services.AddSingleton<SlackService>();
         }
 
         /// <summary>
