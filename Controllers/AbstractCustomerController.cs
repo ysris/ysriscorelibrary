@@ -97,9 +97,9 @@ namespace YsrisCoreLibrary.Controllers
                 _context.Set<T>()
                 .SingleOrDefault(a =>
                     a.email == model.username
-                    && a.password == _encryption.GetHash(model.password)
-                    && accountStatuses.Contains(a.accountStatus)
-                    && a.deletionDate == null
+                    //&& a.password == _encryption.GetHash(model.password)
+                    //&& accountStatuses.Contains(a.accountStatus)
+                    //&& a.deletionDate == null
                 );
 
             if (customer == null)
