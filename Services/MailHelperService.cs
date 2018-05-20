@@ -50,9 +50,7 @@ namespace YsrisCoreLibrary.Services
             SmtpServer.ServerCertificateValidationCallback = CustomCertificateValidationCallback;
             SmtpServer.Connect(smtpServerDns, Convert.ToInt32(_conf.GetValue<string>("Data:SmtpPort")), Convert.ToBoolean(_conf.GetValue<string>("Data:SmtpEnableSsl")) ? SecureSocketOptions.Auto : SecureSocketOptions.None);
             if (!string.IsNullOrEmpty(_conf.GetValue<string>("Data:SmtpLogin")))
-            {
                 SmtpServer.Authenticate(_conf.GetValue<string>("Data:SmtpLogin"), _conf.GetValue<string>("Data:SmtpPassword"));
-            }
 
             //EnableSsl = true;
             //UseDefaultCredentials = true
@@ -72,7 +70,7 @@ namespace YsrisCoreLibrary.Services
 
         public void SendMail(string to, string templateUri, string subject, Dictionary<string, string> mailViewBag)
         {
-            string from = _conf.GetValue<string>("Data:SmtpLogin");
+            string from = _conf.GetValue<string>("Data:SmtpFrom");
             var htmlContent = File.ReadAllText(templateUri);
 
             foreach (var a in mailViewBag)
