@@ -50,8 +50,8 @@ namespace YsrisCoreLibrary.Services
 
         private string Encrypt(string data, string publicKey)
         {
-            var cspParams = new CspParameters { ProviderType = 1 };
-            var rsaProvider = new RSACryptoServiceProvider(cspParams);
+            //var cspParams = new CspParameters { ProviderType = 1 };
+            var rsaProvider = new RSACryptoServiceProvider();
             rsaProvider.ImportCspBlob(Convert.FromBase64String(publicKey));
             var plainBytes = Encoding.UTF8.GetBytes(data);
             var encryptedBytes = rsaProvider.Encrypt(plainBytes, false);
