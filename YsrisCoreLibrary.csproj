@@ -119,7 +119,4 @@
     <PackageReference Include="WindowsAzure.Storage" Version="9.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="1.1.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Interfaces\" />
-  </ItemGroup>
 </Project>
