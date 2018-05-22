@@ -97,9 +97,9 @@ namespace YsrisCoreLibrary.Controllers
                 _context.Set<T>()
                 .SingleOrDefault(a =>
                     a.email == model.username
-                    //&& a.password == _encryption.GetHash(model.password)
-                    //&& accountStatuses.Contains(a.accountStatus)
-                    //&& a.deletionDate == null
+                    && a.password == _encryption.GetHash(model.password)
+                    && accountStatuses.Contains(a.accountStatus)
+                    && a.deletionDate == null
                 );
 
             if (customer == null)
@@ -133,7 +133,7 @@ namespace YsrisCoreLibrary.Controllers
             _mail.SendMail(
                 entity.email,
                 subject: "Password recover",
-                templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordReset.cshtml",
+                templateUri: _env.ContentRootPath + "/Views/Emails/UserPasswordReset.cshtml",
                 mailViewBag:
                 new Dictionary<string, string>
                 {
@@ -173,7 +173,7 @@ namespace YsrisCoreLibrary.Controllers
                 _mail.SendMail(
                     entity.email,
                     subject: "Password recover successful",
-                    templateUri: _env.ContentRootPath + "\\Views\\Emails\\UserPasswordResetConfirmation.cshtml",
+                    templateUri: _env.ContentRootPath + "/Views/Emails/UserPasswordResetConfirmation.cshtml",
                     mailViewBag: new Dictionary<string, string> {
                         { "FirstName", entity.prettyName },
                         { "AppName", _config.GetValue<string>("Data:AppName")},
@@ -496,13 +496,11 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
         public virtual T UpdateAsAdmin([FromBody] T model)
         {
-            var entity = _context.Set<T>().Find(_session.User.id);
+            var entity = _context.Set<T>().Find(model.id);
             entity.SetFromValues(model);
 
             _context.Set<T>().Update(entity);
             _context.SaveChanges();
-
-            _session.HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(entity));
 
             return entity;
         }
