@@ -21,6 +21,7 @@ using System.Security.Claims;
 using System.Text;
 using ysriscorelibrary.Interfaces;
 using YsrisCoreLibrary.Dal;
+using YsrisCoreLibrary.Interfaces;
 using YsrisCoreLibrary.Middlewares;
 using YsrisCoreLibrary.Services;
 
@@ -120,7 +121,7 @@ namespace YsrisCoreLibrary.Abstract
         /// <param name="app"></param>
         /// <param name="env"></param>
         /// <param name="loggerFactory"></param>
-        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public virtual void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, IDatabaseSyncDal databaseSyncDal)
         {
             app.UseAuthentication();
 
