@@ -21,7 +21,7 @@ namespace YsrisCoreLibrary.Models
             SetFromValues(values);
         }
 
-        public void SetFromValues(ICustomer values)
+        public virtual void SetFromValues(ICustomer values)
         {
             //if (values.id != null) id = values.id;
             if (values.picture != null) picture = values.picture;
