@@ -30,15 +30,24 @@ namespace YsrisCoreLibrary.Services
 
         public async Task<HttpResponseMessage> SendSuccessInformationMessage(string title)
         {
+
+
             return await SendMessageAsync(new
             {
-                title,
-                color = "#38BC00",
-                //pretext= "One ",
-                //author_name = "Karpeo Bot",
-                //author_link = "http://karpeo.ysris.ch",
-                //author_icon = "https://karpeo.ysris.ch/assets/images/logo-default.png",
-                //title_link = "http://karpeo.ysris.ch/doc/___",
+                attachments =
+                    new List<object>
+                    {
+                        new
+                        {
+                            title,
+                            color = "#38BC00",
+                            //pretext= "One ",
+                            author_name = _configuration.GetValue<string>("Data:AppName"),
+                            //author_link = "http://karpeo.ysris.ch",
+                            //author_icon = "https://karpeo.ysris.ch/assets/images/logo-default.png",
+                            //title_link = "http://karpeo.ysris.ch/doc/___",
+                        }
+                    }
             });
         }
     }
