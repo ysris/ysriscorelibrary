@@ -142,6 +142,15 @@ namespace YsrisCoreLibrary.Abstract
                 await context.HttpContext.Response.WriteAsync(JsonConvert.SerializeObject(new { context.HttpContext.Response.StatusCode }));
             });
 
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                OnPrepareResponse = context =>
+                {
+                    context.Context.Response.Headers.Add("Cache-Control", "no-cache, no-store");
+                    context.Context.Response.Headers.Add("Expires", "-1");
+                }
+            });
+
             app.UseSwagger();
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
             app.UseDefaultFiles();
