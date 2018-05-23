@@ -9,9 +9,9 @@ namespace YsrisCoreLibrary.Interfaces
     public interface IDatabaseSyncDal
     {
         Task SyncAll();
-        void ImportYoozXml();
-        void CallYoozUpdater();
-        void SynchronizeWinBizCustomer();
-        void SynchronizeYoozCustomer();
+        //void ImportYoozXml();
+        //void CallYoozUpdater();
+        //void SynchronizeWinBizCustomer();
+        //void SynchronizeYoozCustomer();
     }
 }
