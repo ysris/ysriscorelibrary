@@ -6,12 +6,13 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using ysriscorelibrary.Interfaces;
 using YsrisCoreLibrary.Models;
 
 namespace YsrisCoreLibrary.Models
 {
     [DataContract]
-    public class CustomerCompany
+    public class CustomerCompany : IAbstractEntity
     {
         /// <summary>
         /// Primary key, AUTO_INCREMENT
@@ -54,5 +55,12 @@ namespace YsrisCoreLibrary.Models
         public string adrCity { get; set; }
         [DataMember]
         public string adrCountry { get; set; }
+
+        [DataMember]
+        public string picture { get; set; }
+
+        [NotMapped]
+        [DataMember]
+        public string prettyName => name;
     }
 }

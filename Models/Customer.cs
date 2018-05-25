@@ -117,7 +117,6 @@ namespace YsrisCoreLibrary.Models
         public int companyId { get; set; }
 
         [DataMember]
-        [NotMapped] //todo maybe change this
         public CustomerCompany company { get; set; }
 
         [DataMember]

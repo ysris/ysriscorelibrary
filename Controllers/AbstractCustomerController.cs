@@ -90,24 +90,8 @@ namespace YsrisCoreLibrary.Controllers
         [HttpPost("login")]
         public virtual async Task<IActionResult> Login([FromBody] LoginViewModel model, IEnumerable<string> accountStatuses = null)
         {
-            if (accountStatuses == null || !accountStatuses.Any())
-                accountStatuses = new List<string> { CustomerStatus.Activated };
-
-            var customer =
-                _context.Set<T>()
-                .SingleOrDefault(a =>
-                    a.email == model.username
-                    && a.password == _encryption.GetHash(model.password)
-                    && accountStatuses.Contains(a.accountStatus)
-                    && a.deletionDate == null
-                );
-
-            if (customer == null)
-                throw new Exception("Unauthorized");
-
-            await _signin(customer);
-
-            return Ok(customer);
+            var entity = await _signin(model, accountStatuses);
+            return Ok(entity);
         }
 
         /// <summary>
@@ -330,22 +314,20 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> GetAvatar()
         {
-            if (_session.User != null)
-            {
-                var entity = await _context.Set<T>().FindAsync(_session.User.id);
-                var smallUri = entity.picture;
+            if (_session.User == null)
+                return File(System.IO.File.ReadAllBytes(Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png")), "image/png");
+            var entity = await _context.Set<T>().FindAsync(_session.User.id);
+            var smallUri = entity.picture;
 
-                if (smallUri == null)
-                {
-                    var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
-                    return File(System.IO.File.ReadAllBytes(path), "image/png");
-                }
-                var result = _storage.GetFileContent(smallUri)?.Result?.ToArray();
-                if (result == null)
-                    return File(System.IO.File.ReadAllBytes(Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png")), "image/png");
-                return File(result, "image/jpeg");
+            if (smallUri == null)
+            {
+                var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
+                return File(System.IO.File.ReadAllBytes(path), "image/png");
             }
-            return File(System.IO.File.ReadAllBytes(Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png")), "image/png");
+            var result = _storage.GetFileContent(smallUri)?.Result?.ToArray();
+            if (result == null)
+                return File(System.IO.File.ReadAllBytes(Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png")), "image/png");
+            return File(result, "image/jpeg");
         }
 
         /// <summary>
@@ -642,8 +624,23 @@ namespace YsrisCoreLibrary.Controllers
         /// Signin logic extraction to simplify logic redefinition or external call
         /// </summary>
         /// <param name="customer"></param>
-        protected virtual async Task<T> _signin(T customer)
+        protected virtual async Task<T> _signin(LoginViewModel model, IEnumerable<string> accountStatuses)
         {
+            if (accountStatuses == null || !accountStatuses.Any())
+                accountStatuses = new List<string> { CustomerStatus.Activated };
+
+            var customer =
+                _context.Set<T>()
+                .SingleOrDefault(a =>
+                    a.email == model.username
+                    && a.password == _encryption.GetHash(model.password)
+                    && accountStatuses.Contains(a.accountStatus)
+                    && a.deletionDate == null
+                );
+
+            if (customer == null)
+                throw new Exception("Unauthorized");
+
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, customer.email) };
             if (!string.IsNullOrEmpty(customer.rolesString))
                 foreach (var cur in customer.rolesString.Split(',').Select(a => a.Trim()))
@@ -655,6 +652,7 @@ namespace YsrisCoreLibrary.Controllers
 
             return customer;
         }
+
 
         /// <summary>
         /// Create account extraction to simplify logic redefinition or external call
