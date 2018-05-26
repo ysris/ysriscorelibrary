@@ -23,6 +23,7 @@ using ysriscorelibrary.Interfaces;
 using YsrisCoreLibrary.Dal;
 using YsrisCoreLibrary.Interfaces;
 using YsrisCoreLibrary.Middlewares;
+using YsrisCoreLibrary.Models;
 using YsrisCoreLibrary.Services;
 
 namespace YsrisCoreLibrary.Abstract
@@ -107,7 +108,7 @@ namespace YsrisCoreLibrary.Abstract
                 .AddHangfire(x => x.UseMemoryStorage());
             
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped<SessionHelperService>();
+            services.AddScoped<SessionHelperService<ICustomer>>();
             services.AddSingleton<MailHelperService>();
             services.AddScoped<IStorageService, LocalFileSystemStorageService>();
             services.AddSingleton<EncryptionService>();
