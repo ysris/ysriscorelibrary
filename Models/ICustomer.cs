@@ -12,7 +12,6 @@ namespace YsrisCoreLibrary.Models
         string adrLine1 { get; set; }
         string adrLine2 { get; set; }
         string adrPostalCode { get; set; }
-        int companyId { get; set; }
         DateTime? createdAt { get; set; }
         string customerType { get; set; }
         DateTime? deletionDate { get; set; }
@@ -34,6 +33,5 @@ namespace YsrisCoreLibrary.Models
         string rawPasswordConfirm { get; set; }
         string passwordForTyping { get; set; }
         void SetFromValues(ICustomer values);
-        CustomerCompany company { get; set; }
     }
 }
