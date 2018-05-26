@@ -12,6 +12,7 @@ namespace YsrisCoreLibrary.Models
     [DataContract]
     public class Customer : IAbstractEntity, ICustomer
     {
+        #region Constructors and initializers
         public Customer()
         {
         }
@@ -37,15 +38,11 @@ namespace YsrisCoreLibrary.Models
             if (values.adrCity != null) adrCity = values.adrCity;
             if (values.adrCountry != null) adrCountry = values.adrCountry;
             if (values.isMailingSuscribed != null) isMailingSuscribed = (bool)values.isMailingSuscribed;
-
-
             if (values.companyName != null) companyName = values.companyName;
             if (values.phoneNumber != null) phoneNumber = values.phoneNumber;
             if (values.freetext != null) freetext = values.freetext;
-
-
-
         }
+        #endregion
 
         /// <summary>
         /// Primary key, AUTO_INCREMENT
@@ -108,16 +105,7 @@ namespace YsrisCoreLibrary.Models
         /// </summary>
         [DataMember]
         [JsonIgnore]
-        public string password { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        [DataMember]
-        public int companyId { get; set; }
-
-        [DataMember]
-        public CustomerCompany company { get; set; }
+        public string password { get; set; }        
 
         [DataMember]
         public string activationCode { get; set; }
