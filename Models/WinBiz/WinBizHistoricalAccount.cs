@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace YsrisCoreLibrary.Models.WinBiz
 {
-    public class WinBizAccount
+    public class WinBizHistoricalAccount
     {
         public int classe { get; set; }
         public string numero { get; set; }

@@ -13,6 +13,7 @@ using ysriscorelibrary.Interfaces;
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.StaticFiles;
+using YsrisCoreLibrary.Models;
 
 namespace YsrisCoreLibrary.Services
 {
@@ -23,7 +24,7 @@ namespace YsrisCoreLibrary.Services
 
         private string basePath => _env.ContentRootPath + "/uploads/";
 
-        public LocalFileSystemStorageService(SessionHelperService sessionHelper, ILogger<MailHelperService> logger, IHostingEnvironment env)
+        public LocalFileSystemStorageService(SessionHelperService<ICustomer> sessionHelper, ILogger<MailHelperService> logger, IHostingEnvironment env)
         {
             MyLogger = logger;
             _env = env;

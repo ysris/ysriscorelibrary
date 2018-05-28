@@ -22,6 +22,14 @@
                 $rootScope.customer = userEntity;
             };
 
+        $rootScope.updateConnectedUser =
+            function () {
+                customerService.get().then(function (resp) {
+                    $rootScope.setConnectedUser(resp.data);
+                    $rootScope.updateLocalSession();
+                }, $rootScope.raiseErrorDelegate);
+            };
+
         /**
          * Logout
          * @returns {} 

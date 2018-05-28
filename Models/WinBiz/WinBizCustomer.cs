@@ -24,5 +24,6 @@ namespace YsrisCoreLibrary.Models.WinBiz
         public int dos_numero { get; set; }
         [DataMember]
         public string dos_name { get; set; }
+
     }
 }
