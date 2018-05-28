@@ -11,7 +11,7 @@ using YsrisCoreLibrary.Models;
 
 namespace YsrisCoreLibrary.Services
 {
-    public class SessionHelperService
+    public class SessionHelperService<T> where T : class, ICustomer
     {
         private readonly IHttpContextAccessor _accessor;
         private readonly DbContext _context;
@@ -24,24 +24,17 @@ namespace YsrisCoreLibrary.Services
 
         public HttpContext HttpContext => _accessor.HttpContext;
 
-        public ICustomer User
+        public T User
         {
             get
             {
-                try
+                var str = _accessor.HttpContext.Session.GetString("UserEntity");
+                if (str != null)
+                    return JsonConvert.DeserializeObject<T>(str);
+                else
                 {
-                    var str = _accessor.HttpContext.Session.GetString("UserEntity");
-                    if (str != null)
-                        return JsonConvert.DeserializeObject<Customer>(str);
-                    else
-                    {
-                        var email = HttpContext.User.Claims.First().Value;
-                        return _context.Set<Customer>().Single(a => a.email == email);
-                    }
-                }
-                catch
-                {
-                    return null;
+                    var email = HttpContext.User.Claims.First().Value;
+                    return _context.Set<T>().Single(a => a.email == email);
                 }
             }
         }
