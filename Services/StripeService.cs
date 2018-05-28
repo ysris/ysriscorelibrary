@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YsrisCoreLibrary.Models;
+using YsrisCoreLibrary.Models.Stripe;
 
 namespace YsrisCoreLibrary.Services
 {
@@ -27,10 +28,23 @@ namespace YsrisCoreLibrary.Services
             _stripePlanService = new StripePlanService();
         }
 
-        public async Task<IEnumerable<StripeSubscription>> GetSubscriptions(string stripeCustomerId)
+        public async Task<IEnumerable<CustomerCompanyStripeSubscription>> GetSubscriptions(string stripeCustomerId)
         {
-            var stripeSubscriptions = _subscriptionService.ListAsync(new StripeSubscriptionListOptions { CustomerId = stripeCustomerId });
-            return await stripeSubscriptions;
+            var stripeSubscriptions = await _subscriptionService.ListAsync(new StripeSubscriptionListOptions { CustomerId = stripeCustomerId });
+            return stripeSubscriptions.Select(a => new CustomerCompanyStripeSubscription
+            {
+                customerId = a.CustomerId,
+                created = (DateTime)a.Created,
+                period = new Tuple<DateTime?, DateTime?>(a.CurrentPeriodStart, a.CurrentPeriodEnd),
+                subscriptions = a.Items.Data,
+                billing = a.Billing,
+                plan = a.StripePlan,
+                quantity = (int)a.Quantity,
+                start = a.Start,
+                status = a.Status,
+                trialPeriod = new Tuple<DateTime?, DateTime?>(a.TrialEnd, a.TrialStart),
+                stripeSubId = a.Id
+            });
         }
 
         public async Task<IEnumerable<StripePlan>> ListPlans()
@@ -38,11 +52,19 @@ namespace YsrisCoreLibrary.Services
             return await _stripePlanService.ListAsync();
         }
 
+        public async Task BuyLicences(string stripeCustomerId, int licenceCountToBuy)
+        {
+            var stripeSubscription = (await _subscriptionService.ListAsync(new StripeSubscriptionListOptions { CustomerId = stripeCustomerId })).Single();
+            await _subscriptionService.UpdateAsync(
+                stripeSubscription.Id,
+                new StripeSubscriptionUpdateOptions { Quantity = stripeSubscription.Quantity + licenceCountToBuy }
+            );
+        }
 
-        public async Task<bool> IsCustomerSuscribedOnStripe(Customer entity)
+        public async Task<StripeCustomer> GetStripeCustomer(Customer entity)
         {
             var set = await _stripeCustomerService.ListAsync();
-            return set.Any(a => a.Email == entity.email);
+            return set.SingleOrDefault(a => a.Email == entity.email);
         }
 
         public async Task<StripeCustomer> CreateStripeCustomer(Customer user, string planId, string sourceToken)
