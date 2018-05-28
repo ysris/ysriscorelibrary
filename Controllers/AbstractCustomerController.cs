@@ -35,7 +35,7 @@ namespace YsrisCoreLibrary.Controllers
         protected readonly IStorageService _storage;
         protected readonly IHostingEnvironment _env;
         protected readonly EncryptionService _encryption;
-        protected readonly SessionHelperService _session;
+        protected SessionHelperService<T> _session;
         protected readonly ILogger<AbstractCustomerController<T>> _log;
         #endregion
 
@@ -50,7 +50,7 @@ namespace YsrisCoreLibrary.Controllers
             IHostingEnvironment env,
             IStorageService storage,
             EncryptionService encryption,
-            SessionHelperService sessionHelper,
+            SessionHelperService<T> sessionHelper,
             ILogger<AbstractCustomerController<T>> log
             )
         {
@@ -432,41 +432,7 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")] //todo : the default policy is probably incorrect
         public virtual T Invite([FromBody] InviteCustomerViewModel model)
         {
-            _log.LogInformation($"AbstractCustomerController +Invite");
-
-            if (_context.Set<T>().Where(a => a.email == model.entity.email).Any())
-                throw new Exception("Already assigned email");
-
-            model.entity.activationCode = Guid.NewGuid().ToString();
-            model.entity.customerType = Role.User;
-            model.entity.createdAt = DateTime.Now;
-            model.entity.accountStatus = CustomerStatus.PendingActivationWithPasswordChange;
-            model.entity.rolesString = string.Join(",", new List<string>() { Role.User });
-
-            _context.Set<T>().Add(model.entity);
-            _context.SaveChanges();
-
-            // 4. User notification
-            if (model.boolSendEmail)
-            {
-                _log.LogDebug($"+++User notification (mail)");
-                _mail.SendMail(
-                    model.entity.email,
-                    subject: $"You have been invited to join {HttpContext.Request.Host}",
-                    templateUri: _env.ContentRootPath + "/Views/Emails/CustomerInvitation.cshtml",
-                    mailViewBag:
-                    new Dictionary<string, string>
-                    {
-                        { "FirstName", model.entity.prettyName },
-                        { "ActivationUrl",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/activateinvitation/{model.entity.email}/{model.entity.activationCode}" },
-                        { "AppName", _config.GetValue<string>("Data:AppName") },
-                        { "LogoDefault",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png" },
-                        { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor") }
-                    }
-                );
-            }
-            _log.LogInformation($"AbstractCustomerController -Invite");
-            return model.entity;
+            return _invite(model);
         }
 
         /// <summary>
@@ -712,7 +678,6 @@ namespace YsrisCoreLibrary.Controllers
             if (model.passwordForTyping == null)
                 throw new Exception("Password is null");
             entity.password = _encryption.GetHash(model.passwordForTyping.ToString()); //keep here for avoiding the model binding
-            entity.companyId = 0;
             entity.activationCode = Guid.NewGuid().ToString();
             entity.accountStatus = CustomerStatus.PendingActivationWithoutPasswordChange;
 
@@ -750,6 +715,45 @@ namespace YsrisCoreLibrary.Controllers
                     {"PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
                 }
             );
+        }
+
+        protected virtual T _invite(InviteCustomerViewModel model)
+        {
+            _log.LogInformation($"AbstractCustomerController +_invite");
+
+            if (_context.Set<T>().Where(a => a.email == model.entity.email).Any())
+                throw new Exception("Already assigned email");
+
+            model.entity.activationCode = Guid.NewGuid().ToString();
+            model.entity.customerType = Role.User;
+            model.entity.createdAt = DateTime.Now;
+            model.entity.accountStatus = CustomerStatus.PendingActivationWithPasswordChange;
+            model.entity.rolesString = string.Join(",", new List<string>() { Role.User });
+
+            _context.Set<T>().Add(model.entity);
+            _context.SaveChanges();
+
+            // 4. User notification
+            if (model.boolSendEmail)
+            {
+                _log.LogDebug($"++User notification (mail)");
+                _mail.SendMail(
+                    model.entity.email,
+                    subject: $"You have been invited to join {HttpContext.Request.Host}",
+                    templateUri: _env.ContentRootPath + "/Views/Emails/CustomerInvitation.cshtml",
+                    mailViewBag:
+                    new Dictionary<string, string>
+                    {
+                        { "FirstName", model.entity.prettyName },
+                        { "ActivationUrl",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/activateinvitation/{model.entity.email}/{model.entity.activationCode}" },
+                        { "AppName", _config.GetValue<string>("Data:AppName") },
+                        { "LogoDefault",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png" },
+                        { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor") }
+                    }
+                );
+            }
+            _log.LogInformation($"AbstractCustomerController -_invite");
+            return model.entity;
         }
         #endregion
 

@@ -13,7 +13,7 @@ namespace YsrisCoreLibrary.Controllers
     /// </summary>
     public abstract class AbstractConversationContactController : AbstractController<Customer>
     {
-        protected SessionHelperService _session;
+        protected SessionHelperService<Customer> _session;
         protected ILogger<AbstractConversationContactController> _logger;
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace YsrisCoreLibrary.Controllers
         /// </summary>
         public AbstractConversationContactController(
             DbContext context,
-            SessionHelperService session,
+            SessionHelperService<Customer> session,
             ILogger<AbstractConversationContactController> logger
         ) : base(context)
         {

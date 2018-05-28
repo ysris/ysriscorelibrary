@@ -14,7 +14,7 @@ namespace YsrisCoreLibrary.Controllers
 {
     public abstract class AbstractConversationMessageController : AbstractController<ConversationMessage>
     {
-        protected SessionHelperService _session;
+        protected SessionHelperService<Customer> _session;
         protected ILogger _logger;
 
         public AbstractConversationMessageController(DbContext context) : base(context)
