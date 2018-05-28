@@ -8,7 +8,8 @@ namespace YsrisCoreLibrary.Interfaces
 {
     public interface IDatabaseSyncDal
     {
-        Task SyncAll();
+        Task SyncAllHourly();
+        Task SyncAllDaily();
         //void ImportYoozXml();
         //void CallYoozUpdater();
         //void SynchronizeWinBizCustomer();
