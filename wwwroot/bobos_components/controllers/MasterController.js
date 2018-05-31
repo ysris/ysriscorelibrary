@@ -82,8 +82,10 @@
          * 
          * @param {any} notificationMsg
          */
-        $rootScope.addNotification = function (notificationMsg) {
-            var n = new PNotify({ title: notificationMsg, text: notificationMsg, type: 'success', styling: 'bootstrap3', delay: 2000, buttons: { closer: false, sticker: false } });
+        $rootScope.addNotification = function (notificationMsg, notifcationType) {
+            if (notifcationType == null || notifcationType == undefined)
+                notifcationType = 'success';
+            var n = new PNotify({ title: notificationMsg, text: notificationMsg, type: notifcationType, styling: 'bootstrap3', delay: 2000, buttons: { closer: false, sticker: false } });
             n.get().click(function () {
                 n.remove();
             });
@@ -101,7 +103,7 @@
          * When something has something to complain about, it comes here
          */
         $rootScope.raiseErrorDelegate = function (e) {
-            $rootScope.addNotification(e.data.StatusCode + ' ' + e.data.error);
+            $rootScope.addNotification(e.data.StatusCode + ' ' + e.data.error, 'error');
             $rootScope.IsBusy = false;
         };
 
