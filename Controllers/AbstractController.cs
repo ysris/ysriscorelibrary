@@ -146,7 +146,7 @@ namespace YsrisCoreLibrary.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            _context.Set<T>().Add(entity);
+            _context.Set<T>().Update(entity);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("Get", new { id = entity.id }, entity);
