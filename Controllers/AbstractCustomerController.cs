@@ -314,19 +314,23 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> GetAvatar()
         {
-            if (_session.User == null)
-                return File(System.IO.File.ReadAllBytes(Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png")), "image/png");
-            var entity = await _context.Set<T>().FindAsync(_session.User.id);
-            var smallUri = entity.picture;
+            var placeholderContent = System.IO.File.ReadAllBytes(Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png"));
 
-            if (smallUri == null)
-            {
-                var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
-                return File(System.IO.File.ReadAllBytes(path), "image/png");
-            }
-            var result = _storage.GetFileContent(smallUri)?.Result?.ToArray();
+            if (_session.User == null)
+                return File(placeholderContent, "image/png");
+
+            var entity = await _context.Set<T>().FindAsync(_session.User.id);
+
+
+
+            if (entity.picture == null)
+                return File(placeholderContent, "image/png");
+            if (!System.IO.File.Exists(_storage.GetFullPath(entity.firstName)))
+                return File(placeholderContent, "image/png");
+
+            var result = _storage.GetFileContent(entity.picture)?.Result?.ToArray();
             if (result == null)
-                return File(System.IO.File.ReadAllBytes(Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png")), "image/png");
+                return File(placeholderContent, "image/png");
             return File(result, "image/jpeg");
         }
 
