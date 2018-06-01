@@ -32,6 +32,7 @@ namespace YsrisCoreLibrary.Models.WinBiz
 
         public decimal resultEvolution { get; internal set; }
 
+        [NotMapped]
         public IEnumerable<WinBizHistoricalAccount> treasuryEvolution { get; internal set; }
     }
 }
