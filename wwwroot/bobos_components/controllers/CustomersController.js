@@ -5,6 +5,7 @@
             , activate: function (entity) { return $http.post("/api/customer/activateasadmin", entity); }
             , disable: function (entity) { return $http.post("/api/customer/disableasadmin", entity); }
             , GetEmptyEntity: function () { return $http.get("/api/customer/empty"); }
+            , ping: function () { return $http.get("/api/customer/ping"); }
             , List: function () { return $http.get("/api/customer"); }
             , createAccount: function (entity) { return $http.post("/api/customer", entity); }
             , logIn: function (username, password) { return $http.post("/api/customer/Login", { username: username, password: password }); }
