@@ -60,21 +60,29 @@
          * @param {any} condition
          */
         $scope.showPageFor = function (condition) {
-            switch (condition) {
-                case "NotConnectedUser":
-                    return $scope.ConnectedUserId == null || $scope.ConnectedUserId == 'null';
-                case "ConnectedUser":
-                    return $scope.ConnectedUserId != null && $scope.ConnectedUserId != 'null';
-                case "ConnectedActivatedUser":
-                    return ($scope.ConnectedUserId != null && $scope.ConnectedUserId != 'null') && $rootScope.customer.accountStatus == 'Activated';
-                default:
-                    if ($rootScope.customer == null)
+            if (angular.isArray(condition)) {
+                for (var i = 0; i < condition.length; i++)
+                    if ($scope.showPageFor(condition[i]))
+                        return true;
+                return false;
+            }
+            else {
+                switch (condition) {
+                    case "NotConnectedUser":
+                        return $scope.ConnectedUserId == null || $scope.ConnectedUserId == 'null';
+                    case "ConnectedUser":
+                        return $scope.ConnectedUserId != null && $scope.ConnectedUserId != 'null';
+                    case "ConnectedActivatedUser":
+                        return ($scope.ConnectedUserId != null && $scope.ConnectedUserId != 'null') && $rootScope.customer.accountStatus == 'Activated';
+                    default:
+                        if ($rootScope.customer == null)
+                            return false;
+                        var conditions = condition.split(",");
+                        for (var i in conditions)
+                            if ($rootScope.customer.roles.indexOf(conditions[i].trim()) !== -1)
+                                return true;
                         return false;
-                    var conditions = condition.split(",");
-                    for (var i in conditions)
-                        if ($rootScope.customer.roles.indexOf(conditions[i].trim()) !== -1)
-                            return true;
-                    return false;
+                }
             }
         };
 
