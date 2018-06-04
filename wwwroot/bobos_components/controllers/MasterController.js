@@ -103,6 +103,7 @@
          * When something has something to complain about, it comes here
          */
         $rootScope.raiseErrorDelegate = function (e) {
+            console.log("ERROR", e);
             $rootScope.addNotification(e.data.error, 'error');
             $rootScope.IsBusy = false;
         };
