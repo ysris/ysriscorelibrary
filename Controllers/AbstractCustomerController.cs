@@ -278,6 +278,16 @@ namespace YsrisCoreLibrary.Controllers
         #endregion
 
         #region Connected standard Customer Actions API Methods
+
+
+        [HttpGet("ping")]
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
+        public virtual async Task<IActionResult> Ping()
+        {
+            return Ok(new { });
+        }
+
+
         /// <summary>
         /// Standard cookie logout
         /// </summary>
@@ -347,7 +357,7 @@ namespace YsrisCoreLibrary.Controllers
 
             var entity = await _context.Set<T>().FindAsync(id);
 
-            if (entity.picture == null)
+            if (entity?.picture == null)
                 return File(System.IO.File.ReadAllBytes(path), "image/png");
 
             try
