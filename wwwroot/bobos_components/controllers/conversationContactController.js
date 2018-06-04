@@ -1,7 +1,14 @@
 ﻿angular.module("frontendAngularClientApp")
     .factory("conversationContactService", function ($http, Upload, $rootScope) {
-        var querystring = "";
-        return { list: function (customerDestId) { return $http.get("/api/conversationcontact/" + querystring); }, };
+        return {
+            list: function (customerDestId) { return $http.get("/api/conversationcontact/"); },
+            markasread: function (id) {
+
+                if (id == null || id == undefined)
+                    return $http.get("/api/conversationmessage/markasread");
+                return $http.get("/api/conversationmessage/markasread/" + id);
+            }
+        };
     })
     .controller("conversationContactsController", function ($scope, $state, $stateParams, $rootScope, conversationContactService, $http) {
         $scope.entitylist = null;
@@ -12,29 +19,43 @@
         $scope.$on('$destroy', function () { eventHook(); });
 
         $scope.refresh = function () {
+
             $rootScope.IsBusy = true;
+
+            //TODO : Remove double imbricated ajax call
+
             conversationContactService.list().then(function (result) {
                 $scope.entitylist = result.data;
-
                 if ($scope.entitylist.length == 1)
                     $scope.selectedContact = $scope.entitylist[0];
 
-                /* Full notifications count */
-                $rootScope.refreshFullNotificationCount = function () {
-                    $http.get("/api/realtime/fullnotificationcount").then(function (resp) {
-                        $rootScope.fullNotificationsCount = resp.data.fullNotificationsCount;
-                    });
-                };
-                $rootScope.refreshFullNotificationCount();
+                if ($scope.entitylist.length == 1) {
+                    conversationContactService.markasread().then(function (result) {
+                        console.log("Marked all as read");
+                        $rootScope.refreshFullNotificationCount();
+                        $rootScope.IsBusy = false;
+                    }, $rootScope.raiseErrorDelegate);
+                }
+
                 $rootScope.IsBusy = false;
             }, $rootScope.raiseErrorDelegate);
         };
 
         $scope.setSelected = function (item) {
-            $scope.selectedContact = item;
-            $scope.refresh();
+
+            $rootScope.IsBusy = true;
+            conversationContactService.markasread(item.id).then(function (result) {
+                $scope.selectedContact = item;
+                $scope.refresh();
+                $rootScope.IsBusy = false;
+            });
+
+
         };
 
+
+
+
         $scope.refresh();
-    })
-    ;
+
+    });
