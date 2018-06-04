@@ -110,8 +110,8 @@ namespace YsrisCoreLibrary.Models
         [DataMember]
         public string activationCode { get; set; }
 
-        [DataMember]
-        public string customerType { get; set; }
+        //[DataMember]
+        //public string customerType { get; set; }
 
         [DataMember]
         public string accountStatus { get; set; }

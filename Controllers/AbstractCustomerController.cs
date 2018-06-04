@@ -295,7 +295,7 @@ namespace YsrisCoreLibrary.Controllers
         public virtual async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Ok();
+            return Ok(new { });
         }
 
         /// <summary>
@@ -643,54 +643,19 @@ namespace YsrisCoreLibrary.Controllers
             if (test.Any())
                 throw new Exception("Already assigned email");
 
-            var rolesList = new List<string>();
-            var customerType = Role.User;
-
-            if (model.customerType != null)
-            {
-                switch (model.customerType)
-                {
-                    case "Coach":
-                        rolesList.Add(Role.Coach);
-                        customerType = Role.Coach;
-                        break;
-                    case "User":
-                    default:
-                        rolesList.Add(Role.User);
-                        customerType = Role.User;
-                        break;
-                    case "Proprietaire":
-                        rolesList.Add(Role.Proprietaire);
-                        customerType = Role.Proprietaire;
-                        break;
-                    case "Locataire":
-                        rolesList.Add(Role.Locataire);
-                        customerType = Role.Locataire;
-                        break;
-                    case "Business":
-                        rolesList.Add(Role.Business);
-                        customerType = Role.Business;
-                        break;
-                }
-            }
-            else
-            {
-                rolesList.Add(Role.User);
-                customerType = Role.User;
-            }
-
             var entity = new T
             {
                 email = model.email,
                 firstName = model.firstName,
                 lastName = model.lastName,
-                customerType = customerType,
                 createdAt = DateTime.Now,
-                rolesString = string.Join(",", rolesList.Select(a => a.ToString())),
+                rolesString = string.Join(",", new List<string>() { Role.User }.Select(a => a.ToString())),
                 id = 0
             };
+
             if (model.passwordForTyping == null)
                 throw new Exception("Password is null");
+
             entity.password = _encryption.GetHash(model.passwordForTyping.ToString()); //keep here for avoiding the model binding
             entity.activationCode = Guid.NewGuid().ToString();
             entity.accountStatus = CustomerStatus.PendingActivationWithoutPasswordChange;
@@ -739,7 +704,6 @@ namespace YsrisCoreLibrary.Controllers
                 throw new Exception("Already assigned email");
 
             model.entity.activationCode = Guid.NewGuid().ToString();
-            model.entity.customerType = Role.User;
             model.entity.createdAt = DateTime.Now;
             model.entity.accountStatus = CustomerStatus.PendingActivationWithPasswordChange;
             model.entity.rolesString = string.Join(",", new List<string>() { Role.User });

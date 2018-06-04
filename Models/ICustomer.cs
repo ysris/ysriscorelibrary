@@ -13,7 +13,7 @@ namespace YsrisCoreLibrary.Models
         string adrLine2 { get; set; }
         string adrPostalCode { get; set; }
         DateTime? createdAt { get; set; }
-        string customerType { get; set; }
+        //string customerType { get; set; }
         DateTime? deletionDate { get; set; }
         string email { get; set; }
         string firstName { get; set; }
