@@ -184,6 +184,11 @@ namespace YsrisCoreLibrary.Controllers
             return _context.Set<T>().Find(id) != null;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         protected async virtual Task<T> _getEntity(int id)
         {
             var entity = await _context.Set<T>().FindAsync(id);
