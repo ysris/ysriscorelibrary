@@ -129,7 +129,7 @@ namespace YsrisCoreLibrary.Controllers
                 }
             );
 
-            return Ok();
+            return Ok(new { });
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace YsrisCoreLibrary.Controllers
                 );
             }
 
-            return Ok();
+            return Ok(new { });
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace YsrisCoreLibrary.Controllers
             await _context.SaveChangesAsync();
 
             _log.LogInformation($"- ActivateInvitation for {model.email}");
-            return Ok();
+            return Ok(new { });
         }
 
         /// <summary>
@@ -278,15 +278,12 @@ namespace YsrisCoreLibrary.Controllers
         #endregion
 
         #region Connected standard Customer Actions API Methods
-
-
         [HttpGet("ping")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> Ping()
         {
             return Ok(new { });
         }
-
 
         /// <summary>
         /// Standard cookie logout
@@ -330,8 +327,6 @@ namespace YsrisCoreLibrary.Controllers
                 return File(placeholderContent, "image/png");
 
             var entity = await _context.Set<T>().FindAsync(_session.User.id);
-
-
 
             if (entity.picture == null)
                 return File(placeholderContent, "image/png");
@@ -569,7 +564,6 @@ namespace YsrisCoreLibrary.Controllers
             return Ok(model);
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -633,7 +627,6 @@ namespace YsrisCoreLibrary.Controllers
             return customer;
         }
 
-
         /// <summary>
         /// Create account extraction to simplify logic redefinition or external call
         /// </summary>
@@ -672,7 +665,6 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="entity"></param>
         protected virtual void _sendActivationEmail(T entity)
         {
-            // 4. User notification
             _log.LogDebug($"+++User notification (mail)");
             _mail.SendMail(
                 entity.email,
@@ -681,21 +673,20 @@ namespace YsrisCoreLibrary.Controllers
                 mailViewBag:
                 new Dictionary<string, string>
                 {
-                    {"FirstName", entity.prettyName},
-                    {
-                        "ActivationUrl",
-                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/customer/activate?username={entity.email}&activationCode={entity.activationCode}"
-                    },
-                    {"AppName", _config.GetValue<string>("Data:AppName")},
-                    {
-                        "LogoDefault",
-                        $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png"
-                    },
-                    {"PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
+                    { "FirstName", entity.prettyName },
+                    { "ActivationUrl",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/api/customer/activate?username={entity.email}&activationCode={entity.activationCode}" },
+                    { "AppName", _config.GetValue<string>("Data:AppName") },
+                    { "LogoDefault", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png" },
+                    { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
                 }
             );
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         protected virtual T _invite(InviteCustomerViewModel model)
         {
             _log.LogInformation($"AbstractCustomerController +_invite");
@@ -767,6 +758,7 @@ namespace YsrisCoreLibrary.Controllers
             public T entity { get; set; }
             public bool boolSendEmail { get; set; }
         }
+
         public class UserRoleAttributionViewModel
         {
             public T entity { get; set; }
