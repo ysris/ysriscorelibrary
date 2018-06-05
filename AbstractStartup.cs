@@ -96,17 +96,26 @@ namespace YsrisCoreLibrary.Abstract
                     {
                         Version = "v1",
                         Title = $"{Configuration.GetValue<string>("Data:AppName")} API",
-                        Description = "Default API access",
-                        TermsOfService = "None",
-                        Contact = new Contact { Name = "Yoann Magli - Ysris", Email = "yoann@ysris.ch", Url = "https://www.ysris.ch" },
-                        License = new License { Name = "Ysris Stack", Url = "https://ysris.ch/license" }
+                        //Description = "Default API access",
+                        //TermsOfService = "None",
+                        Contact = new Contact
+                        {
+                            Name = "Hinster",
+                            Email = Configuration.GetValue<string>("Data:Legal:RepresentativeEmail"),
+                            Url = "https://www.hinsterapp.com"
+                        },
+                        License = new License
+                        {
+                            Name = "Ysris Stack",
+                            Url = "https://ysris.ch/license"
+                        }
                     });
                     c.IncludeXmlComments(Path.Combine(_env.ContentRootPath, "CodeDoc.xml")); // Set the comments path for the Swagger JSON and UI.
                 })
                 .AddDistributedMemoryCache() // Adds a default in-memory implementation of IDistributedCache
                 .AddSession()
                 .AddHangfire(x => x.UseMemoryStorage());
-            
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<SessionHelperService<ICustomer>>();
             services.AddSingleton<MailHelperService>();
