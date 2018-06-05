@@ -1,32 +1,33 @@
-﻿<div class="signinpage row">
-    <div class="col-lg-6 col-lg-offset-3">
+﻿<div class="row">
+    <div class="col-lg-4 col-lg-offset-4" ng-style="{'margin-top':windowHeight / 2 - 300 + 'px'}">
         <form class="login-form" novalidate ng-submit="signIn()">
             <div class="panel panel-body row">
                 <div class="row">
-                    <div class="col-lg-2 col-lg-offset-5">
+                    <div class="col-lg-2 col-lg-offset-5 col-xs-4 col-xs-offset-4">
                         <img src="assets/images/logo-default.png" class="img img-responsive" />
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-12 text-center mt-10">
-                        <h5 class="content-group">{{ 'LOGIN_TO_YOUR_ACCOUNT' | translate }}
+                        <h5 class="content-group">
+                            {{ 'LOGIN_TO_YOUR_ACCOUNT' | translate }}
                         </h5>
                     </div>
                     <div class="col-lg-6 col-lg-offset-3 form-group has-feedback has-feedback-left">
-                        <input type="text" name="username" class="form-control" placeholder="Username" ng-model="login">
+                        <input type="email" name="username" class="form-control" placeholder="{{ 'USERNAME' | translate }}" ng-model="login">
                         <div class="form-control-feedback">
                             <i class="icon-user text-muted ml-15"></i>
                         </div>
                     </div>
                     <div class="col-lg-6 col-lg-offset-3 form-group has-feedback has-feedback-left">
-                        <input type="password" name="password" class="form-control" placeholder="Password" ng-model="password">
+                        <input type="password" name="password" class="form-control" placeholder="{{ 'PASSWORD' | translate }}" ng-model="password">
                         <div class="form-control-feedback">
                             <i class="icon-lock2 text-muted ml-15"></i>
                         </div>
                     </div>
                     <div class="col-lg-6 col-lg-offset-3 form-group">
-                        <button type="submit" class="btn btn-block bg-customer-primary">Sign in
-                            <i class="icon-circle-right2 position-right"></i>
+                        <button type="submit" class="btn btn-block bg-customer-primary">
+                            {{ 'SIGNIN' | translate }}
                         </button>
                     </div>
 
@@ -34,7 +35,7 @@
                         <div class="text-right">
                             <span class="help-block text-center no-margin">
                                 <a ui-sref="passwordrecover()">
-                                    <small>Forgot password ?</small>
+                                    <small>{{ 'FORGOT_PASSWORD' | translate }}</small>
                                 </a>
                             </span>
                         </div>
@@ -52,11 +53,11 @@
                         </ul>
                     </div>-->
                     <div class="col-lg-6 col-lg-offset-3 content-divider text-muted form-group">
-                        <span>No account ?</span>
+                        <span>{{ 'NO_ACCOUNT' | translate }}</span>
                     </div>
                     <div class="col-lg-6 col-lg-offset-3">
 
-                        <a ui-sref="inscription" class="btn btn-default btn-block content-group">Suscribe now</a>
+                        <a ui-sref="inscription" class="btn btn-default btn-block content-group">{{ 'SUSCRIBE_NOW' | translate }}</a>
                     </div>
                 </div>
             </div>
