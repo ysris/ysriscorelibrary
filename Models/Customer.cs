@@ -33,7 +33,6 @@ namespace YsrisCoreLibrary.Models
             if (values.password != null) password = values.password;
             if (values.activationCode != null) activationCode = values.activationCode;
             if (values.adrLine1 != null) adrLine1 = values.adrLine1;
-            if (values.adrLine2 != null) adrLine2 = values.adrLine2;
             if (values.adrPostalCode != null) adrPostalCode = values.adrPostalCode;
             if (values.adrCity != null) adrCity = values.adrCity;
             if (values.adrCountry != null) adrCountry = values.adrCountry;
@@ -122,8 +121,6 @@ namespace YsrisCoreLibrary.Models
 
         [DataMember]
         public string adrLine1 { get; set; }
-        [DataMember]
-        public string adrLine2 { get; set; }
         [DataMember]
         public string adrPostalCode { get; set; }
         [DataMember]
