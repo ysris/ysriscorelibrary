@@ -606,7 +606,7 @@ namespace YsrisCoreLibrary.Controllers
             var customer =
                 _context.Set<T>()
                 .SingleOrDefault(a =>
-                    a.email == model.username
+                    a.email.ToLower().Trim() == model.username.ToLower().Trim()
                     && a.password == _encryption.GetHash(model.password)
                     && accountStatuses.Contains(a.accountStatus)
                     && a.deletionDate == null
