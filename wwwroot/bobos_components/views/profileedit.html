@@ -17,150 +17,144 @@
     }
 </style>
 
-<div class="row" style="margin:25px; padding-left:260px;">
-    <div class="col-lg-8 col-lg-offset-2">
-        <div class="content mt-20">
-            <div class="row">
-                <div class="col-lg-3">
-                    <div class="panel panel-flat">
-                        <div class="panel-body bg-customer-primary border-radius-top text-center" style="background-image: url(bobos_components/assets/images/backgrounds/bg.png); background-size: contain;">
-                            <div class="content-group-sm">
-                                <h5 class="text-semibold no-margin-bottom">
-                                    {{Entity.prettyName}}
-                                </h5>
-                                <span class="label label-default position-right" ng-repeat="cur in Entity.roles">
-                                    {{cur}}
-                                </span>
-                            </div>
+<div class="row mt-20" style="margin:25px; padding-left:260px;">
+    <div class="col-xs-12 col-md-3 col-lg-2 col-lg-offset-1">
+        <div class="panel panel-flat">
+            <div class="panel-body bg-customer-primary border-radius-top text-center" style="background-image: url(bobos_components/assets/images/backgrounds/bg.png); background-size: contain;">
+                <div class="content-group-sm">
+                    <h5 class="text-semibold no-margin-bottom">
+                        {{Entity.prettyName}}
+                    </h5>
+       
+                </div>
 
-                            <div class="thumb thumb-rounded thumb-slide">
-                                <img ng-src="{{ProfilePicPreview}}">
-                                <div class="caption">
-                                    <span>
-                                        <label class="btn btn-info btn-file">
-                                            <i class="icon-upload"></i> <input type="file" ngf-select ng-model="newFile" id="file" name="file" ng-change="setImg()" hidden>
-                                        </label>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="panel-heading">
-                            <h6 class="panel-title">Navigation<a class="heading-elements-toggle"><i class="icon-more"></i></a></h6>
-                        </div>
-                        <div class="no-border-top no-border-radius-top">
-                            <a class="list-group-item" ng-class="subNavigation=='profileedit' ? 'active' : ''" ng-click="subNavigate('profileedit')"><i class="icon-user"></i> Edit Profile</a>
-                            <a class="list-group-item" ng-class="subNavigation=='updatepassword' ? 'active' : ''" ng-click="subNavigate('updatepassword')"><i class="icon-key"></i> Update password</a>
-                            <a class="list-group-item" ng-class="subNavigation=='removeaccount' ? 'active' : ''" ng-click="subNavigate('removeaccount')"><i class="icon-user-minus"></i> Remove account</a>
-                        </div>
+                <div class="thumb thumb-rounded thumb-slide">
+                    <img ng-src="{{ProfilePicPreview}}" class="img img-responsive">
+                    <div class="caption">
+                        <span>
+                            <label class="btn btn-info btn-file">
+                                <i class="icon-upload"></i> <input type="file" ngf-select ng-model="newFile" id="file" name="file" ng-change="setImg()" hidden>
+                            </label>
+                        </span>
                     </div>
                 </div>
-                <div class="col-lg-9">
-                    <div class="panel panel-flat" ng-show="subNavigation == 'profileedit'" style="position:relative;">
-                        <!--<div class="panel-heading">
-                        </div>-->
-                        <form class="form-horizontal" name="profileEditForm" novalidate ng-submit="submitProfileEdit()">
-                            <div class="panel-body">
-                                <h6 class="text-semibold content-group">Personal details</h6>
+            </div>
+            <div class="panel-heading">
+                <h6 class="panel-title">Navigation<a class="heading-elements-toggle"><i class="icon-more"></i></a></h6>
+            </div>
+            <div class="no-border-top no-border-radius-top">
+                <a class="list-group-item" ng-class="subNavigation=='profileedit' ? 'active' : ''" ng-click="subNavigate('profileedit')"><i class="icon-user"></i> Edit Profile</a>
+                <a class="list-group-item" ng-class="subNavigation=='updatepassword' ? 'active' : ''" ng-click="subNavigate('updatepassword')"><i class="icon-key"></i> Update password</a>
+                <a class="list-group-item" ng-class="subNavigation=='removeaccount' ? 'active' : ''" ng-click="subNavigate('removeaccount')"><i class="icon-user-minus"></i> Remove account</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-9 col-lg-8">
+        <div class="panel panel-flat" ng-show="subNavigation == 'profileedit'" style="position:relative;">
+            <!--<div class="panel-heading">
+            </div>-->
+            <form class="form-horizontal" name="profileEditForm" novalidate ng-submit="submitProfileEdit()">
+                <div class="panel-body">
+                    <h6 class="text-semibold content-group">Personal details</h6>
+                    <span class="label label-default position-right" ng-repeat="cur in Entity.roles">
+                        {{cur}}
+                    </span>
+                    <legend class="text-semibold">Profil</legend>
 
-                                <legend class="text-semibold">Profil</legend>
-
-                                <div class="form-group">
-                                    <label class="control-label col-lg-2">Nom</label>
-                                    <div class="col-lg-10">
-                                        <input type="text" name="lastName" class="form-control" placeholder="Nom" ng-model="Entity.lastName" required>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label col-lg-2">Prenom</label>
-                                    <div class="col-lg-10">
-                                        <input type="text" name="firstName" class="form-control" placeholder="Prénom" ng-model="Entity.firstName" required>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="control-label col-lg-2">Email</label>
-                                    <div class="col-lg-10">
-                                        <input type="text" name="Email" class="form-control" placeholder="Email" ng-model="Entity.email" required>
-                                    </div>
-                                </div>
-
-                                <legend class="text-semibold">Adresse actuelle</legend>
-
-
-                                <div class="form-group">
-                                    <label class="control-label col-lg-2">Adresse ligne 1</label>
-                                    <div class="col-lg-10">
-                                        <input type="text" name="adrLine1" class="form-control" placeholder="Adresse ligne 1" ng-model="Entity.customerMainAdress.adrLine1" required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-lg-2">Adresse ligne 2</label>
-                                    <div class="col-lg-10">
-                                        <input type="text" name="adrLine2" class="form-control" placeholder="Adresse ligne 2" ng-model="Entity.customerMainAdress.adrLine2">
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-lg-2">CP</label>
-                                    <div class="col-lg-10">
-                                        <input type="text" name="adrPostalCode" class="form-control" placeholder="CP" ng-model="Entity.customerMainAdress.adrPostalCode" required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-lg-2">Ville</label>
-                                    <div class="col-lg-10">
-                                        <input type="text" name="adrCity" class="form-control" placeholder="Ville" ng-model="Entity.customerMainAdress.adrCity" required>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-lg-2">Pays</label>
-                                    <div class="col-lg-10">
-                                        <input type="text" name="adrCountry" class="form-control" placeholder="Pays" ng-model="Entity.customerMainAdress.adrCountry" required>
-                                    </div>
-                                    <div class="col-lg-1 col-xs-2">
-                                        <div ng-messages="profileEditForm.adrCountry.$error" ng-messages-include="messages.html"></div>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <button type="submit" class="btn btn-primary">Enregistrer<i class="icon-arrow-right14 position-right"></i></button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="panel panel-flat" ng-show="subNavigation == 'managelicences'" style="position:relative;">
-
-                    </div>
-
-                    <div class="panel panel-flat" ng-show="subNavigation == 'updatepassword'" style="position:relative;">
-                        <div class="panel-heading">
-                            <h5 class="panel-title">Password update</h5>
-                        </div>
-                        <div class="panel-body">
-                            <div class="form-group">
-                                <div class="col-lg-4">
-                                    <input type="password" name="passwordForTyping" class="form-control" placeholder="Mot de passe" ng-model="Entity.passwordForTyping" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-lg-4">
-                                    <input type="password" name="rawPasswordConfirm" class="form-control" placeholder="Confirmation mot de passe" ng-model="Entity.rawPasswordConfirm" required compare-to="Entity.passwordForTyping">
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <button type="submit" class="btn btn-primary">Enregistrer<i class="icon-arrow-right14 position-right"></i></button>
-                            </div>
+                    <div class="form-group">
+                        <label class="control-label col-lg-2">Nom</label>
+                        <div class="col-lg-10">
+                            <input type="text" name="lastName" class="form-control" placeholder="Nom" ng-model="Entity.lastName" required>
                         </div>
                     </div>
-                    <div class="panel panel-flat" ng-show="subNavigation == 'removeaccount'" style="position:relative;">
-                        <div class="panel-heading">
-                            <h5 class="panel-title">Account suppression</h5>
-                        </div>
-                        <div class="panel-body">
-                            <div class="text-right">
-                                <button type="button" class="btn btn-danger" ng-click="deleteAccount()">Delete my account<i class="fa fa-exclamation position-right"></i></button>
-                            </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-lg-2">Prenom</label>
+                        <div class="col-lg-10">
+                            <input type="text" name="firstName" class="form-control" placeholder="Prénom" ng-model="Entity.firstName" required>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label class="control-label col-lg-2">Email</label>
+                        <div class="col-lg-10">
+                            <input type="text" name="Email" class="form-control" placeholder="Email" ng-model="Entity.email" required>
+                        </div>
+                    </div>
+
+                    <legend class="text-semibold">Adresse actuelle</legend>
+
+
+                    <div class="form-group">
+                        <label class="control-label col-lg-2">Adresse ligne 1</label>
+                        <div class="col-lg-10">
+                            <input type="text" name="adrLine1" class="form-control" placeholder="Adresse ligne 1" ng-model="Entity.customerMainAdress.adrLine1" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-lg-2">Adresse ligne 2</label>
+                        <div class="col-lg-10">
+                            <input type="text" name="adrLine2" class="form-control" placeholder="Adresse ligne 2" ng-model="Entity.customerMainAdress.adrLine2">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-lg-2">CP</label>
+                        <div class="col-lg-10">
+                            <input type="text" name="adrPostalCode" class="form-control" placeholder="CP" ng-model="Entity.customerMainAdress.adrPostalCode" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-lg-2">Ville</label>
+                        <div class="col-lg-10">
+                            <input type="text" name="adrCity" class="form-control" placeholder="Ville" ng-model="Entity.customerMainAdress.adrCity" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-lg-2">Pays</label>
+                        <div class="col-lg-10">
+                            <input type="text" name="adrCountry" class="form-control" placeholder="Pays" ng-model="Entity.customerMainAdress.adrCountry" required>
+                        </div>
+                        <div class="col-lg-1 col-xs-2">
+                            <div ng-messages="profileEditForm.adrCountry.$error" ng-messages-include="messages.html"></div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <button type="submit" class="btn btn-primary">Enregistrer<i class="icon-arrow-right14 position-right"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="panel panel-flat" ng-show="subNavigation == 'managelicences'" style="position:relative;">
+
+        </div>
+
+        <div class="panel panel-flat" ng-show="subNavigation == 'updatepassword'" style="position:relative;">
+            <div class="panel-heading">
+                <h5 class="panel-title">Password update</h5>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-lg-4">
+                        <input type="password" name="passwordForTyping" class="form-control" placeholder="Mot de passe" ng-model="Entity.passwordForTyping" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-lg-4">
+                        <input type="password" name="rawPasswordConfirm" class="form-control" placeholder="Confirmation mot de passe" ng-model="Entity.rawPasswordConfirm" required compare-to="Entity.passwordForTyping">
+                    </div>
+                </div>
+                <div class="text-right">
+                    <button type="submit" class="btn btn-primary">Enregistrer<i class="icon-arrow-right14 position-right"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-flat" ng-show="subNavigation == 'removeaccount'" style="position:relative;">
+            <div class="panel-heading">
+                <h5 class="panel-title">Account suppression</h5>
+            </div>
+            <div class="panel-body">
+                <div class="text-right">
+                    <button type="button" class="btn btn-danger" ng-click="deleteAccount()">Delete my account<i class="fa fa-exclamation position-right"></i></button>
                 </div>
             </div>
         </div>
