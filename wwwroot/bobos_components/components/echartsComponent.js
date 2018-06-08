@@ -16,7 +16,7 @@ angular.module('frontendAngularClientApp').component('eCharts', {
                 return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
             };
 
-            id = guid();
+            var id = guid();
             $element.html('<div id="' + id + '" style="height:400px; ' + this.style + ' "></div>');
 
             //passer un parameter pour dire si on doit refresh every x seconds
