@@ -97,6 +97,9 @@
             n.get().click(function () {
                 n.remove();
             });
+
+            $rootScope.ConnectedUserNotifications.push(notificationMsg);
+
         };
 
         /**
