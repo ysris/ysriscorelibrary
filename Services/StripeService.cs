@@ -54,10 +54,10 @@ namespace YsrisCoreLibrary.Services
 
         public async Task BuyLicences(string stripeCustomerId, int licenceCountToBuy)
         {
-            var stripeSubscription = (await _subscriptionService.ListAsync(new StripeSubscriptionListOptions { CustomerId = stripeCustomerId })).Single();
+            var stripeSubscription = (await _subscriptionService.ListAsync(new StripeSubscriptionListOptions { CustomerId = stripeCustomerId }));
             await _subscriptionService.UpdateAsync(
-                stripeSubscription.Id,
-                new StripeSubscriptionUpdateOptions { Quantity = stripeSubscription.Quantity + licenceCountToBuy }
+                stripeSubscription.Single().Id,
+                new StripeSubscriptionUpdateOptions { Quantity = stripeSubscription.Single().Quantity + licenceCountToBuy }
             );
         }
 
