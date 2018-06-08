@@ -15,6 +15,11 @@ namespace YsrisCoreLibrary.Models.Financial
     /// </summary>
     public class PortfolioMapping : IAbstractEntity
     {
+        public void SetFromValues(IAbstractEntity values)
+        {
+            throw new NotImplementedException();
+        }
+
         [Key]
         [DataMember]
         public int id { get; set; }

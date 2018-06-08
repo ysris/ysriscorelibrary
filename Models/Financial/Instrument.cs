@@ -157,5 +157,10 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         [NotMapped]
         public decimal? deltaPct => close != null && open != null ? Math.Round(100 * (((decimal)close / (decimal)open) - 1), 2) : null as decimal?;
+
+        public void SetFromValues(IAbstractEntity values)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

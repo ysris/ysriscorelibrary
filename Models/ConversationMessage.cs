@@ -31,6 +31,10 @@ namespace YsrisCoreLibrary.Models
             if (values.message != null) message = values.message;
         }
 
+        public void SetFromValues(IAbstractEntity values)
+        {
+        }
+
 
         /// <summary>
         /// Primary key, AUTO_INCREMENT

@@ -10,6 +10,10 @@ namespace YsrisCoreLibrary.Models.Financial
     [DataContract]
     public class PortfolioPosition : IAbstractEntity
     {
+        public void SetFromValues(IAbstractEntity values)
+        {
+            throw new NotImplementedException();
+        }
 
         [Key]
         [DataMember]

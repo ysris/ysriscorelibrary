@@ -25,5 +25,10 @@ namespace YsrisCoreLibrary.Model
         [DataMember]
         [NotMapped]
         public List<object> entityModel { get; set; }
+
+        public void SetFromValues(IAbstractEntity values)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

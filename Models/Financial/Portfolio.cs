@@ -13,6 +13,10 @@ namespace YsrisCoreLibrary.Models.Financial
     public class Portfolio : IAbstractEntity
     {
 
+        public void SetFromValues(IAbstractEntity values)
+        {
+            throw new NotImplementedException();
+        }
 
         [NotMapped]
         [DataMember]

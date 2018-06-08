@@ -19,28 +19,36 @@ namespace YsrisCoreLibrary.Models
 
         public Customer(Customer values)
         {
-            SetFromValues(values);
+            SetFromValues((IAbstractEntity)values);
         }
 
-        public virtual void SetFromValues(ICustomer values)
+        public void SetFromValues(ICustomer values)
         {
-            //if (values.id != null) id = values.id;
-            if (values.picture != null) picture = values.picture;
-            if (values.firstName != null) firstName = values.firstName;
-            if (values.lastName != null) lastName = values.lastName;
-            if (values.deletionDate != null) deletionDate = values.deletionDate;
-            if (values.email != null) email = values.email;
-            if (values.password != null) password = values.password;
-            if (values.activationCode != null) activationCode = values.activationCode;
-            if (values.adrLine1 != null) adrLine1 = values.adrLine1;
-            if (values.adrPostalCode != null) adrPostalCode = values.adrPostalCode;
-            if (values.adrCity != null) adrCity = values.adrCity;
-            if (values.adrCountry != null) adrCountry = values.adrCountry;
-            if (values.isMailingSuscribed != null) isMailingSuscribed = (bool)values.isMailingSuscribed;
-            if (values.companyName != null) companyName = values.companyName;
-            if (values.phoneNumber != null) phoneNumber = values.phoneNumber;
-            if (values.freetext != null) freetext = values.freetext;
+            SetFromValues((IAbstractEntity)values);
         }
+
+        public virtual void SetFromValues(IAbstractEntity values)
+        {
+            
+            //if (values.id != null) id = values.id;
+            if (((ICustomer)values).picture != null) picture = ((ICustomer)values).picture;
+            if (((ICustomer)values).firstName != null) firstName = ((ICustomer)values).firstName;
+            if (((ICustomer)values).lastName != null) lastName = ((ICustomer)values).lastName;
+            if (((ICustomer)values).deletionDate != null) deletionDate = ((ICustomer)values).deletionDate;
+            if (((ICustomer)values).email != null) email = ((ICustomer)values).email;
+            if (((ICustomer)values).password != null) password = ((ICustomer)values).password;
+            if (((ICustomer)values).activationCode != null) activationCode = ((ICustomer)values).activationCode;
+            if (((ICustomer)values).adrLine1 != null) adrLine1 = ((ICustomer)values).adrLine1;
+            if (((ICustomer)values).adrPostalCode != null) adrPostalCode = ((ICustomer)values).adrPostalCode;
+            if (((ICustomer)values).adrCity != null) adrCity = ((ICustomer)values).adrCity;
+            if (((ICustomer)values).adrCountry != null) adrCountry = ((ICustomer)values).adrCountry;
+            if (((ICustomer)values).isMailingSuscribed != null) isMailingSuscribed = (bool)((ICustomer)values).isMailingSuscribed;
+            if (((ICustomer)values).companyName != null) companyName = ((ICustomer)values).companyName;
+            if (((ICustomer)values).phoneNumber != null) phoneNumber = ((ICustomer)values).phoneNumber;
+            if (((ICustomer)values).freetext != null) freetext = ((ICustomer)values).freetext;
+        }
+
+        
         #endregion
 
         /// <summary>
@@ -49,6 +57,9 @@ namespace YsrisCoreLibrary.Models
         [DataMember]
         [Key]
         public int id { get; set; }
+
+
+
 
         /// <summary>
         /// 
@@ -140,6 +151,12 @@ namespace YsrisCoreLibrary.Models
         [DataMember]
         public string freetext { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        [DataMember]
+        public int? companyId { get; set; }
+
 
         [DataMember]
         [NotMapped]
@@ -164,5 +181,6 @@ namespace YsrisCoreLibrary.Models
             !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName))
                 ? $"{(firstName ?? string.Empty).FirstOrDefault()} {(lastName ?? string.Empty).FirstOrDefault()}"
                 : email;
+        
     }
 }
