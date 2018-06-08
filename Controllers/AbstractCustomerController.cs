@@ -468,7 +468,9 @@ namespace YsrisCoreLibrary.Controllers
         public void DeleteAsAdmin(int id)
         {
             var entity = _context.Set<T>().Find(_session.User.id);
+
             _context.Set<T>().Remove(entity);
+
             _context.SaveChanges();
         }
 
@@ -679,7 +681,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Invite a customer backend
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>

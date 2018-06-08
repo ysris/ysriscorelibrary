@@ -16,11 +16,9 @@
     <None Remove="wwwroot\bobos_components\controllers\conversationContactController.js" />
     <None Remove="wwwroot\bobos_components\controllers\conversationMessageController.js" />
     <None Remove="wwwroot\bobos_components\controllers\CustomersController.js" />
-    <None Remove="wwwroot\bobos_components\controllers\HomeController.js" />
     <None Remove="wwwroot\bobos_components\controllers\InscriptionController.js" />
     <None Remove="wwwroot\bobos_components\controllers\MasterController.js" />
     <None Remove="wwwroot\bobos_components\controllers\PaletteController.js" />
-    <None Remove="wwwroot\bobos_components\controllers\PasswordRecover2Controller.js" />
     <None Remove="wwwroot\bobos_components\controllers\PasswordRecoverController.js" />
     <None Remove="wwwroot\bobos_components\controllers\ProfileController.js" />
     <None Remove="wwwroot\bobos_components\controllers\ProfileEditController.js" />
@@ -63,11 +61,9 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="wwwroot\bobos_components\controllers\CustomersController.js" />
-    <Content Include="wwwroot\bobos_components\controllers\HomeController.js" />
     <Content Include="wwwroot\bobos_components\controllers\InscriptionController.js" />
     <Content Include="wwwroot\bobos_components\controllers\MasterController.js" />
     <Content Include="wwwroot\bobos_components\controllers\PaletteController.js" />
-    <Content Include="wwwroot\bobos_components\controllers\PasswordRecover2Controller.js" />
     <Content Include="wwwroot\bobos_components\controllers\PasswordRecoverController.js" />
     <Content Include="wwwroot\bobos_components\controllers\ProfileController.js" />
     <Content Include="wwwroot\bobos_components\controllers\ProfileEditController.js" />
