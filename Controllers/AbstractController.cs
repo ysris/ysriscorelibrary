@@ -164,14 +164,14 @@ namespace YsrisCoreLibrary.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var client = await _context.Set<T>().FindAsync(id);
-            if (client == null)
+            var entity = await _context.Set<T>().FindAsync(id);
+            if (entity == null)
                 return NotFound();
 
-            _context.Set<T>().Remove(client);
+            _context.Set<T>().Remove(entity);
             await _context.SaveChangesAsync();
 
-            return Ok(client);
+            return Ok(entity);
         }
 
         /// <summary>
