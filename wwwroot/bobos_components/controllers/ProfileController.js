@@ -1,5 +1,4 @@
-﻿"use strict";
-angular.module("frontendAngularClientApp")
+﻿angular.module("frontendAngularClientApp")
     .controller("ProfileController", function ($scope, $state, $rootScope, customerService, $stateParams) {
         $rootScope.PageHeaderTitle = null;
         $rootScope.PageHeaderSubTitle = null;
