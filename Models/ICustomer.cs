@@ -9,7 +9,7 @@ namespace YsrisCoreLibrary.Models
         string activationCode { get; set; }
         string adrCity { get; set; }
         string adrCountry { get; set; }
-        string adrLine1 { get; set; }        
+        string adrLine1 { get; set; }
         string adrPostalCode { get; set; }
         DateTime? createdAt { get; set; }
         //string customerType { get; set; }
@@ -32,5 +32,6 @@ namespace YsrisCoreLibrary.Models
         string rawPasswordConfirm { get; set; }
         string passwordForTyping { get; set; }
         void SetFromValues(ICustomer values);
+        int? companyId { get; set; }
     }
 }
