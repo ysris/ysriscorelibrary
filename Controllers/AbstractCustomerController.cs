@@ -199,7 +199,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Activate a customer account
         /// </summary>
         /// <param name="sucessActivationStatus"></param>
         /// <returns></returns>
@@ -243,37 +243,35 @@ namespace YsrisCoreLibrary.Controllers
         [HttpPost("GenerateToken")]
         public IActionResult GenerateToken([FromBody] GenerateTokenLoginViewModel model)
         {
-            if (ModelState.IsValid)
-            {
+            if (!ModelState.IsValid)
+                return BadRequest("Could not create token");
 
-                var user = _context.Set<T>().Single(a => a.email == model.Email && a.password == _encryption.GetHash(model.Password));
+            var user = _context.Set<T>().Single(a => a.email == model.Email && a.password == _encryption.GetHash(model.Password));
 
-                if (user != null)
+            if (user == null)
+                return Unauthorized();
+
+            var claims =
+                new List<Claim>
                 {
-                    var claims = new List<Claim>
-                    {
-                      new Claim(JwtRegisteredClaimNames.Sub, user.email),
-                      new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    };
+                    new Claim(JwtRegisteredClaimNames.Sub, user.email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
 
-                    if (!string.IsNullOrEmpty(user.rolesString))
-                        foreach (var cur in user.rolesString.Split(',').Select(a => a.Trim()))
-                            claims.Add(new Claim(ClaimTypes.Role, cur));
+            if (!string.IsNullOrEmpty(user.rolesString))
+                foreach (var cur in user.rolesString.Split(',').Select(a => a.Trim()))
+                    claims.Add(new Claim(ClaimTypes.Role, cur));
 
-                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
-                    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-                    var token = new JwtSecurityToken(_config["Tokens:Issuer"],
-                      _config["Tokens:Issuer"],
-                      claims,
-                      expires: DateTime.Now.AddMinutes(30),
-                      signingCredentials: creds);
+            var token = new JwtSecurityToken(_config["Tokens:Issuer"],
+              _config["Tokens:Issuer"],
+              claims,
+              expires: DateTime.Now.AddMinutes(30),
+              signingCredentials: creds);
 
-                    return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
-                }
-            }
-
-            return BadRequest("Could not create token");
+            return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
         #endregion
 
@@ -330,7 +328,7 @@ namespace YsrisCoreLibrary.Controllers
 
             if (entity.picture == null)
                 return File(placeholderContent, "image/png");
-            if (!System.IO.File.Exists(_storage.GetFullPath(entity.firstName)))
+            if (!System.IO.File.Exists(_storage.GetFullPath(entity.picture)))
                 return File(placeholderContent, "image/png");
 
             var result = _storage.GetFileContent(entity.picture)?.Result?.ToArray();
@@ -349,7 +347,6 @@ namespace YsrisCoreLibrary.Controllers
         public virtual async Task<IActionResult> GetAvatar(int id)
         {
             var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
-
             var entity = await _context.Set<T>().FindAsync(id);
 
             if (entity?.picture == null)
@@ -476,7 +473,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Activate a customer account as admin
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
@@ -491,11 +488,10 @@ namespace YsrisCoreLibrary.Controllers
             _context.SaveChanges();
 
             return entity;
-
         }
 
         /// <summary>
-        /// 
+        /// Disable a custoemr account as admin
         /// </summary>
         /// <param name="values"></param>
         /// <returns></returns>
@@ -513,7 +509,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Grant user role as admin
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -538,7 +534,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Revoke user role as admin
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
@@ -565,7 +561,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         /// <summary>
-        /// 
+        /// List customers as admin
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -577,7 +573,7 @@ namespace YsrisCoreLibrary.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Project customers as admin
         /// </summary>
         /// <returns></returns>
         [HttpGet("projection")]
