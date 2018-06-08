@@ -34,8 +34,8 @@
                 $rootScope.IsBusy = true;
                 customerService.uploadAvatar($scope.newFile).then(
                     function (resp) {
-                        $scope.Entity = resp.data;
-                        $rootScope.setConnectedUser($scope.Entity);
+                        //$scope.Entity = resp.data;
+                        //$rootScope.setConnectedUser($scope.Entity);
 
                         var newUrl = window.URL || window.webkitURL;
                         if (newUrl) {
