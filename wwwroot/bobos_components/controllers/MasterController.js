@@ -111,11 +111,16 @@
         }
 
         /**
-         * When something has something to complain about, it comes here
+         * When a module has something to complain about, it comes here
          */
         $rootScope.raiseErrorDelegate = function (e) {
-            console.log("ERROR", e);
-            $rootScope.addNotification(e.data.error, 'error');
+            console.log("ERROR", e);      
+            if (e.data.error != null) {
+                $rootScope.addNotification(e.data.error, 'error');
+            }
+            if (e.statusText != null) {
+                $rootScope.addNotification(e.statusText, 'error');
+            }
             $rootScope.IsBusy = false;
         };
 
