@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using ysriscorelibrary.Interfaces;
 using System;
 using YsrisCoreLibrary.Models;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace YsrisCoreLibrary.Controllers
 {
@@ -49,10 +51,8 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "All")]
         public virtual async Task<IActionResult> Get(int start = 0, int number = 100, string tableStateObj = null)
         {
-            var fullset = _context.Set<T>().AsQueryable();
-            var set = await fullset.Skip(start).Take(number).ToListAsync();
-            var numberOfPages = Math.Ceiling(fullset.Count() / number * 1f);
-            return Ok(new { data = set, numberOfPages, });
+            var data = await _get(start, number);
+            return Ok(new { data = data.Item1, numberOfPages = data.Item2 });
         }
 
         /// <summary>
@@ -189,10 +189,21 @@ namespace YsrisCoreLibrary.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        protected async virtual Task<T> _getEntity(int id)
+        protected virtual async Task<T> _getEntity(int id)
         {
             var entity = await _context.Set<T>().FindAsync(id);
             return entity;
         }
+
+        protected virtual async Task<Tuple<IEnumerable<T>, int>> _get(int start, int number)
+        {
+            var fullset = _context.Set<T>().AsQueryable();
+            var set = await fullset.Skip(start).Take(number).ToListAsync();
+            var numberOfPages = Convert.ToInt32(Math.Ceiling(fullset.Count() / number * 1f));
+            return new Tuple<IEnumerable<T>, int>(set, numberOfPages);
+        }
+
+
+
     }
 }
