@@ -72,9 +72,9 @@ namespace YsrisCoreLibrary.Services
                 cashFlow = accounts.Between("1000", "1030").Sum(a => a.solde),
                 customerCurrencyCode = accounts.Select(a => a.pla_monnai).Distinct().Single(),
 
-                activityEvolution = accounts.Between("3940", "4000").Sum(a => a.solde),
+                activityEvolution = accounts.Between("1000", "1030").Sum(a => a.solde),
                 resultEvolution = accounts.Between("8902", "9000").Sum(a => a.solde),
-                treasuryEvolution = accounts.Any(new List<string> { "1000", "1010", "1020", "1021", "1022", "1023", "1024", "1025" }),
+                //treasuryEvolution = accounts.Between("1000", "1030"),
             };
 
             return entity;
