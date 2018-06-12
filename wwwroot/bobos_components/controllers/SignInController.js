@@ -3,12 +3,11 @@
         $scope.login = "";
         $scope.password = "";
 
-        var refresh = function () {
+        $scope.refresh = function () {
             $rootScope.SetPageTitle("", "");
             if ($stateParams.suppl == "activationsucceeded")
                 new PNotify({ title: "Account activation succeeded", text: "You can now signin", type: "success", styling: "bootstrap3", delay: 2000 });
         };
-
 
         /**
         * Override this method from an extend of this controller to control the way the app should react after a successful login
@@ -25,8 +24,8 @@
         $scope.signIn = function () {
             $rootScope.IsBusy = true;
             customerService.logIn($scope.login, $scope.password).then(function (response) {
-
                 if (response.data.error != null) {
+                    $rootScope.IsBusy = false;
                     $rootScope.raiseErrorDelegate(response);
                     return;
                 }
@@ -37,15 +36,11 @@
                 $scope.redirectBackDelegate(response);
 
                 $rootScope.IsBusy = false;
-
-
-
             }, function errorCallback(e) {
                 new PNotify({ title: "Login error", text: e.data.error, type: "error", styling: "bootstrap3", delay: 2000 });
-                $state.go("home");
                 $rootScope.IsBusy = false;
             });
         };
 
-        refresh();
+        $scope.refresh();
     });
