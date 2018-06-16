@@ -275,12 +275,19 @@ namespace YsrisCoreLibrary.Controllers
         }
         #endregion
 
+        [HttpGet("pinganonymous")]
+        [AllowAnonymous]
+        public virtual async Task<IActionResult> PingAnonymous()
+        {
+            return Ok(new { Msg = "Ping Anonymous Ok" });
+        }
+
         #region Connected standard Customer Actions API Methods
         [HttpGet("ping")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
         public virtual async Task<IActionResult> Ping()
         {
-            return Ok(new { });
+            return Ok(new { Msg = "Ping Authentified Ok" });
         }
 
         /// <summary>
@@ -618,8 +625,15 @@ namespace YsrisCoreLibrary.Controllers
                 foreach (var cur in customer.rolesString.Split(',').Select(a => a.Trim()))
                     claims.Add(new Claim(ClaimTypes.Role, cur));
 
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic"));
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            await 
+                HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic")),
+                    new AuthenticationProperties {
+                         IsPersistent = true,
+                         ExpiresUtc = DateTime.UtcNow.AddHours(1)
+                    }
+                );
             HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(customer));
 
             return customer;
