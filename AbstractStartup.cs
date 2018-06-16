@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using ysriscorelibrary.Interfaces;
 using YsrisCoreLibrary.Dal;
 using YsrisCoreLibrary.Interfaces;
@@ -72,7 +73,14 @@ namespace YsrisCoreLibrary.Abstract
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"]))
                     };
                 })
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme); // Needed by the cookie auth
+                .AddCookie(options =>
+                {
+                    options.Events.OnRedirectToLogin = (context) =>
+                    {
+                        context.Response.StatusCode = 401;
+                        return Task.CompletedTask;
+                    };
+                });
             services
                 .AddAuthorization(options =>
                 {
@@ -165,7 +173,11 @@ namespace YsrisCoreLibrary.Abstract
             app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseSession(); // IMPORTANT: This session thing MUST go before UseMvc()
+
+            // IMPORTANT: This session thing MUST go before UseMvc()
+            // See InvalidOperationException in https://docs.microsoft.com/fr-fr/aspnet/core/fundamentals/app-state?view=aspnetcore-2.1&tabs=aspnetcore2x
+            app.UseSession();
+
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseMvc(routes => { routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}"); });
         }
