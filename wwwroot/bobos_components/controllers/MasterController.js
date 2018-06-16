@@ -114,15 +114,34 @@
          * When a module has something to complain about, it comes here
          */
         $rootScope.raiseErrorDelegate = function (e) {
-            console.log("ERROR", e);      
+            console.log("ERROR", e);
             if (e.data.error != null) {
                 $rootScope.addNotification(e.data.error, 'error');
             }
             if (e.statusText != null) {
                 $rootScope.addNotification(e.statusText, 'error');
             }
+
+            if (e.statusText == "Unauthorized")
+                $rootScope.killSessionLoca();
+
             $rootScope.IsBusy = false;
         };
+
+        $rootScope.killSessionLoca = function () {
+
+            window.localStorage.id = null;
+            $rootScope.ConnectedUserId = window.localStorage.id;
+            $rootScope.customerType = null;
+            window.localStorage.customerType = null;
+            $rootScope.customerType = window.localStorage.customerType;
+            $rootScope.customer = null;
+            window.localStorage.customer = null;
+
+
+            $state.go("signin2");
+
+        }
 
         /**
          * 
