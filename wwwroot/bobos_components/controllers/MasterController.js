@@ -115,10 +115,10 @@
          */
         $rootScope.raiseErrorDelegate = function (e) {
             console.log("ERROR", e);
-            if (e.data.error != null) {
+            if (e.data.error != null && e.data.error != undefined && e.data.error != "") {
                 $rootScope.addNotification(e.data.error, 'error');
             }
-            if (e.statusText != null) {
+            if (e.statusText != null && e.data.error != undefined && e.data.error != "") {
                 $rootScope.addNotification(e.statusText, 'error');
             }
 
