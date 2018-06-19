@@ -123,11 +123,9 @@
             }
 
             if (e.statusText == "Unauthorized")
-                $rootScope.killSessionLoca();
+                $rootScope.killSessionLoca(); 
 
-            if (e.data.statusCode == "401")
-                $rootScope.killSessionLoca();
-            if (e.data.StatusCode == "401")
+            if (e.data.statusCode == "401" || e.data.StatusCode == "401" || e.status == 401)
                 $rootScope.killSessionLoca();
 
             $rootScope.IsBusy = false;
