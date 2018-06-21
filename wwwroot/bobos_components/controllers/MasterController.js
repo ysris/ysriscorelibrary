@@ -115,18 +115,16 @@
          */
         $rootScope.raiseErrorDelegate = function (e) {
             console.log("ERROR", e);
-            if (e.data.error != null && e.data.error != undefined && e.data.error != "") {
-                $rootScope.addNotification(e.data.error, 'error');
+
+            if (e.statusText == "Unauthorized" || e.data.statusCode == "401" || e.data.StatusCode == "401" || e.status == 401 || e.status == 400) {
+                $rootScope.killSessionLoca();
             }
-            if (e.statusText != null && e.data.error != undefined && e.data.error != "") {
+            else if (e.statusText != null && e.data.error != undefined && e.data.error != "") {
                 $rootScope.addNotification(e.statusText, 'error');
             }
-
-            if (e.statusText == "Unauthorized")
-                $rootScope.killSessionLoca(); 
-
-            if (e.data.statusCode == "401" || e.data.StatusCode == "401" || e.status == 401)
-                $rootScope.killSessionLoca();
+            else if (e.data.error != null && e.data.error != undefined && e.data.error != "") {
+                $rootScope.addNotification(e.data.error, 'error');
+            }
 
             $rootScope.IsBusy = false;
         };

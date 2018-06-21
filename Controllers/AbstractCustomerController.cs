@@ -102,33 +102,7 @@ namespace YsrisCoreLibrary.Controllers
         [HttpPost("recover")]
         public virtual async Task<IActionResult> Recover([FromBody]RecoverViewModel model)
         {
-            if (model.email == null)
-                throw new Exception("incorrect parameters specified");
-
-            var entity = _context.Set<T>().Single(a => a.email == model.email);
-
-            entity.activationCode = Guid.NewGuid().ToString();
-            entity.recoverAskDate = DateTime.Now;
-            entity.accountStatus = CustomerStatus.PendingActivationWithPasswordChange;
-
-            _context.Set<T>().Update(entity);
-            await _context.SaveChangesAsync();
-
-            _mail.SendMail(
-                entity.email,
-                subject: "Password recover",
-                templateUri: _env.ContentRootPath + "/Views/Emails/UserPasswordReset.cshtml",
-                mailViewBag:
-                new Dictionary<string, string>
-                {
-                    { "FirstName", entity.prettyName },
-                    { "RecoverUrl", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/passwordrecover2/{entity.email}/{entity.activationCode}" },
-                    { "AppName", _config.GetValue<string>("Data:AppName")},
-                    { "LogoDefault", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png"},
-                    { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
-                }
-            );
-
+            await _recover(model);
             return Ok(new { });
         }
 
@@ -625,13 +599,14 @@ namespace YsrisCoreLibrary.Controllers
                 foreach (var cur in customer.rolesString.Split(',').Select(a => a.Trim()))
                     claims.Add(new Claim(ClaimTypes.Role, cur));
 
-            await 
+            await
                 HttpContext.SignInAsync(
                     CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(new ClaimsIdentity(claims, "Basic")),
-                    new AuthenticationProperties {
-                         IsPersistent = true,
-                         ExpiresUtc = DateTime.UtcNow.AddHours(1)
+                    new AuthenticationProperties
+                    {
+                        IsPersistent = true,
+                        ExpiresUtc = DateTime.UtcNow.AddHours(1)
                     }
                 );
             HttpContext.Session.SetString("UserEntity", (string)JsonConvert.SerializeObject(customer));
@@ -735,6 +710,42 @@ namespace YsrisCoreLibrary.Controllers
             }
             _log.LogInformation($"AbstractCustomerController -_invite");
             return model.entity;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="emailTitle"></param>
+        /// <returns></returns>
+        protected async virtual Task _recover(RecoverViewModel model, string emailTitle = "Password recover")
+        {
+            if (model.email == null)
+                throw new Exception("incorrect parameters specified");
+
+            var entity = _context.Set<T>().Single(a => a.email == model.email);
+
+            entity.activationCode = Guid.NewGuid().ToString();
+            entity.recoverAskDate = DateTime.Now;
+            entity.accountStatus = CustomerStatus.PendingActivationWithPasswordChange;
+
+            _context.Set<T>().Update(entity);
+            await _context.SaveChangesAsync();
+
+            _mail.SendMail(
+                entity.email,
+                subject: emailTitle,
+                templateUri: _env.ContentRootPath + "/Views/Emails/UserPasswordReset.cshtml",
+                mailViewBag:
+                new Dictionary<string, string>
+                {
+                    { "FirstName", entity.prettyName },
+                    { "RecoverUrl", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/passwordrecover2/{entity.email}/{entity.activationCode}" },
+                    { "AppName", _config.GetValue<string>("Data:AppName")},
+                    { "LogoDefault", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png"},
+                    { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
+                }
+            );
         }
         #endregion
 
