@@ -4,6 +4,7 @@
         $scope.password = "";
 
         $scope.refresh = function () {
+            $rootScope.killSessionLoca();
             $rootScope.SetPageTitle("", "");
             if ($stateParams.suppl == "activationsucceeded")
                 new PNotify({ title: "Account activation succeeded", text: "You can now signin", type: "success", styling: "bootstrap3", delay: 2000 });
