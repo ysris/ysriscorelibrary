@@ -75,7 +75,7 @@ namespace YsrisCoreLibrary.Controllers
         [HttpPost]
         public virtual async Task<IActionResult> Post([FromBody] T model)
         {
-            _log.LogDebug($"CustomerController +Post");
+            _log.LogInformation($"CustomerController +Post");
             var entity = await _createAccount(model);
             _sendActivationEmail(entity);
             return Ok(entity);
@@ -195,7 +195,7 @@ namespace YsrisCoreLibrary.Controllers
                         _context.Set<T>().Update(entity);
                         await _context.SaveChangesAsync();
 
-                        _log.LogDebug(
+                        _log.LogInformation(
                             $"++ Updatied entity AccountStatus from {CustomerStatus.PendingActivationWithoutPasswordChange} to {entity.accountStatus}");
                         return Redirect("/#!/signin/activationsucceeded");
                     }
@@ -652,7 +652,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="entity"></param>
         protected virtual void _sendActivationEmail(T entity)
         {
-            _log.LogDebug($"+++User notification (mail)");
+            _log.LogInformation($"+++User notification (mail)");
             _mail.SendMail(
                 entity.email,
                 subject: "Confirm account creation",
@@ -692,7 +692,7 @@ namespace YsrisCoreLibrary.Controllers
             // 4. User notification
             if (model.boolSendEmail)
             {
-                _log.LogDebug($"++User notification (mail)");
+                _log.LogInformation($"++User notification (mail)");
                 _mail.SendMail(
                     model.entity.email,
                     subject: $"You have been invited to join {HttpContext.Request.Host}",
