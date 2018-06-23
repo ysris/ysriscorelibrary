@@ -415,8 +415,12 @@ namespace YsrisCoreLibrary.Controllers
         #endregion
 
         #region Administrator Actions API Methods
+
+        [HttpGet("invite")]
+
+
         [HttpPost("invite")]
-        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")] //todo : the default policy is probably incorrect
+        [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
         public virtual T Invite([FromBody] InviteCustomerViewModel model)
         {
             return _invite(model);
