@@ -29,7 +29,7 @@ namespace YsrisCoreLibrary.Services
         {
             _storageService = storageService;
             _configuration = configuration;
-        }
+        } 
 
         /// <summary>
         /// Upload a document to Yooz service

@@ -14,7 +14,7 @@
             , recover2: function (email, activationcode, password) { return $http.post("/api/customer/recover2", { email: email, activationCode: activationcode, password: password }, { 'Content-Type': 'application/json' }); }
             , get: function (id) {
                 if (id == null)
-                    return $http.get("/api/customer/me");
+                    return $http.get("/api/customer/me"); 
                 return $http.get("/api/customer/" + id);
             }
             , update: function (entity) { return $http.post("/api/customer/update", entity); }
@@ -32,7 +32,7 @@
             , revokeAdminRole: function (entity) { return $http.post("/api/customer/revoke", { entity: entity, role: "Administrator" }); }
         };
     })
-
+     
     .controller("ActivateCustomerInvitationController", function ($scope, $state, $rootScope, $stateParams, customerService) {
         $scope.entity = { email: $state.params.email, activationcode: $state.params.activationcode };
 

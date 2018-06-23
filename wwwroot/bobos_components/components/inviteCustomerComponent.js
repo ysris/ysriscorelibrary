@@ -22,9 +22,11 @@
             };
 
             $ctrl.submit = function () {
-                customerService.inviteCustomer({ entity: $ctrl.entity, boolSendEmail: $ctrl.entity.boolSendEmail }).then(function (resp) {
+                $rootScope.IsBusy = true;
+                customerService.postInvite($ctrl.entity).then(function (resp) {
                     $rootScope.addNotification("Customer invited");
                     $ctrl.close({ $value: $ctrl.entity });
+                    $rootScope.IsBusy = false;
                 }, $rootScope.raiseErrorDelegate);
             };
         }
