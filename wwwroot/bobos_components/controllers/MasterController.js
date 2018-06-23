@@ -98,6 +98,8 @@
                 n.remove();
             });
 
+            if ($rootScope.ConnectedUserNotifications == null)
+                $rootScope.ConnectedUserNotifications = [];
             $rootScope.ConnectedUserNotifications.push(notificationMsg);
 
         };
@@ -116,7 +118,7 @@
         $rootScope.raiseErrorDelegate = function (e) {
             console.log("ERROR", e);
 
-            if (e.statusText == "Unauthorized" || e.data.statusCode == "401" || e.data.StatusCode == "401" || e.status == 401 || e.status == 400) {
+            if (e.statusText == "Unauthorized" || e.data.statusCode == "401" || e.status == 401) {
                 $rootScope.killSessionLoca();
             }
             else if (e.statusText != null && e.data.error != undefined && e.data.error != "") {
