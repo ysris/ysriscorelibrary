@@ -22,6 +22,7 @@
 
             $rootScope.IsBusy = true;
 
+            $rootScope.refreshFullNotificationCount();
             //TODO : Remove double imbricated ajax call
 
             conversationContactService.list().then(function (result) {
@@ -47,6 +48,7 @@
             conversationContactService.markasread(item.id).then(function (result) {
                 $scope.selectedContact = item;
                 $scope.refresh();
+                $rootScope.refreshFullNotificationCount();
                 $rootScope.IsBusy = false;
             });
 
