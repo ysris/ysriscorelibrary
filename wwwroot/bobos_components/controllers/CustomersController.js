@@ -26,12 +26,13 @@
                     return $http.delete("/api/customer");
                 return $http.delete("/api/customer/" + id);
             }
-            , inviteCustomer: function (entity) { return $http.post("/api/customer/invite", entity); }
+            , getInvite: function (entity) { return $http.get("/api/customer/invite"); }
+            , postInvite: function (entity) { return $http.post("/api/customer/invite", entity); }
             , grantAdminRole: function (entity) { return $http.post("/api/customer/grant", { entity: entity, role: "Administrator" }); }
             , revokeAdminRole: function (entity) { return $http.post("/api/customer/revoke", { entity: entity, role: "Administrator" }); }
         };
     })
-   
+
     .controller("ActivateCustomerInvitationController", function ($scope, $state, $rootScope, $stateParams, customerService) {
         $scope.entity = { email: $state.params.email, activationcode: $state.params.activationcode };
 

@@ -416,12 +416,9 @@ namespace YsrisCoreLibrary.Controllers
 
         #region Administrator Actions API Methods
 
-        [HttpGet("invite")]
-
-
         [HttpPost("invite")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public virtual T Invite([FromBody] InviteCustomerViewModel model)
+        public virtual T Invite([FromBody] T model)
         {
             return _invite(model);
         }
@@ -678,42 +675,40 @@ namespace YsrisCoreLibrary.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        protected virtual T _invite(InviteCustomerViewModel model)
+        protected virtual T _invite(T model)
         {
             _log.LogInformation($"AbstractCustomerController +_invite");
 
-            if (_context.Set<T>().Where(a => a.email == model.entity.email).Any())
+            if (_context.Set<T>().Where(a => a.email == model.email).Any())
                 throw new Exception("Already assigned email");
 
-            model.entity.activationCode = Guid.NewGuid().ToString();
-            model.entity.createdAt = DateTime.Now;
-            model.entity.accountStatus = CustomerStatus.PendingActivationWithPasswordChange;
-            model.entity.rolesString = string.Join(",", new List<string>() { Role.User });
+            model.activationCode = Guid.NewGuid().ToString();
+            model.createdAt = DateTime.Now;
+            model.accountStatus = CustomerStatus.PendingActivationWithPasswordChange;
+            model.rolesString = string.Join(",", new List<string>() { Role.User });
 
-            _context.Set<T>().Add(model.entity);
+            _context.Set<T>().Add(model);
             _context.SaveChanges();
 
             // 4. User notification
-            if (model.boolSendEmail)
-            {
-                _log.LogInformation($"++User notification (mail)");
-                _mail.SendMail(
-                    model.entity.email,
-                    subject: $"You have been invited to join {HttpContext.Request.Host}",
-                    templateUri: _env.ContentRootPath + "/Views/Emails/CustomerInvitation.cshtml",
-                    mailViewBag:
-                    new Dictionary<string, string>
-                    {
-                        { "FirstName", model.entity.prettyName },
-                        { "ActivationUrl",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/activateinvitation/{model.entity.email}/{model.entity.activationCode}" },
-                        { "AppName", _config.GetValue<string>("Data:AppName") },
-                        { "LogoDefault",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png" },
-                        { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor") }
-                    }
-                );
-            }
+
+            _log.LogInformation($"++User notification (mail)");
+            _mail.SendMail(
+                model.email,
+                subject: $"You have been invited to join {HttpContext.Request.Host}",
+                templateUri: _env.ContentRootPath + "/Views/Emails/CustomerInvitation.cshtml",
+                mailViewBag:
+                new Dictionary<string, string>
+                {
+                    { "FirstName", model.prettyName },
+                    { "ActivationUrl",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/#!/activateinvitation/{model.email}/{model.activationCode}" },
+                    { "AppName", _config.GetValue<string>("Data:AppName") },
+                    { "LogoDefault",$"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png" },
+                    { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor") }
+                }
+            );
             _log.LogInformation($"AbstractCustomerController -_invite");
-            return model.entity;
+            return model;
         }
 
         /// <summary>
