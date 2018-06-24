@@ -35,6 +35,7 @@
     <None Remove="wwwroot\bobos_components\views\conversationContacts.html" />
     <None Remove="wwwroot\bobos_components\views\customers.html" />
     <None Remove="wwwroot\bobos_components\views\defaultComponent.html" />
+    <None Remove="wwwroot\bobos_components\views\defaultEditEntityPage.html" />
     <None Remove="wwwroot\bobos_components\views\defaultTablePage.html" />
     <None Remove="wwwroot\bobos_components\views\inscription.html" />
     <None Remove="wwwroot\bobos_components\views\inviteCustomerComponent.html" />
@@ -82,6 +83,7 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="wwwroot\bobos_components\views\customers.html" />
+    <Content Include="wwwroot\bobos_components\views\defaultEditEntityPage.html" />
     <Content Include="wwwroot\bobos_components\views\defaultComponent.html" />
     <Content Include="wwwroot\bobos_components\views\defaultTablePage.html" />
     <Content Include="wwwroot\bobos_components\views\inscription.html" />

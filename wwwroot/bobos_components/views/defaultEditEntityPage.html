@@ -1,0 +1,26 @@
+<div class="content-wrapper">
+    <div class="panel panel-flat">
+        <div class="panel-heading">
+            <input type="button" class="pull-right btn btn-primary btn-rounded" value="Edit" ng-click="edit()" />
+            <h4>
+                <span class="text-semibold">{{PageHeaderTitle}}</span> <span class="pull-left;" ng-show="PageHeaderSubTitle != null && PageHeaderSubTitle != ''"
+                                                                             class="display-block">-{{PageHeaderSubTitle}}</span>
+            </h4>
+        </div>
+        <div class="panel-body">
+            <form action="index/html" name="myForm" class="form-horizontal">
+                <fieldset class="content-group">
+                    <!-- <legend class="text-bold">Basic inputs</legend> -->
+                    <div class="form-group" ng-repeat="(cur,v) in entity">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">{{cur}}</label>
+                        <div class="col-md-9 col-sm-9 col-xs-12">
+                            <input type="text" class="form-control" required="required" placeholder="{{cur}}" ng-model="entity[cur]">
+                        </div>
+                    </div>
+                </fieldset>
+                <button type="button" class="btn btn-link" ng-click="cancel()">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="submit()">Save changes</button>
+            </form>
+        </div>
+    </div>
+</div>
