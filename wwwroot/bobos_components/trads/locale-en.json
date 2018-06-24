@@ -5,5 +5,14 @@
   "SIGNIN": "Sign-in",
   "FORGOT_PASSWORD": "Forgot password ?",
   "NO_ACCOUNT": "No account ?",
-  "SUSCRIBE_NOW": "Suscribe now"
+  "SUSCRIBE_NOW": "Suscribe now",
+  "PASSWORD_RECOVERY": "Password recovery",
+  "TO_RESET": "To reset your password, please enter your address below.",
+  "RESET_PASSWORD": "Reset password",
+  "YOUR_EMAIL": "Your email",
+  "PASSWORD_RECOVERY_SENT": "Password recovery sent, please check your email",
+  "PASSWORD_RECOVERY_DONE": "Password recovery done",
+  "EMAIL_CONFIRMATION_DONE": "Please enter your new password below.",
+  "NEW_PASSWORD": "New password",
+  "NEW_PASSWORD_CONFIRM": "New password confirm"
 }

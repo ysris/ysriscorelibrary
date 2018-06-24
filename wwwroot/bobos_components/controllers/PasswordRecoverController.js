@@ -1,5 +1,5 @@
 ﻿angular.module("frontendAngularClientApp")
-    .controller("PasswordRecoverController", function ($scope, $state, $rootScope, customerService) {
+    .controller("PasswordRecoverController", function ($scope, $state, $rootScope, customerService, $translate) {
         $scope.email = null;
         //var init = function () {
         //};
@@ -8,16 +8,13 @@
         $scope.recover = function () {
             $rootScope.IsBusy = true;
             customerService.recover($scope.email).then(function (response) {
-                $rootScope.addNotification("Password recovery sent, please check your email");
+                $rootScope.addNotification($translate.instant('PASSWORD_RECOVERY_SENT'));
                 $state.go("signin2");
                 $rootScope.IsBusy = false;
-            }, function errorCallback(e) {
-                $rootScope.addNotification("Recover error");
-                $rootScope.IsBusy = false;
-            });
+            }, $rootScope.raiseErrorDelegate);
         };
     })
-    .controller("PasswordRecover2Controller", function ($scope, $state, $rootScope, customerService, $stateParams) {
+    .controller("PasswordRecover2Controller", function ($scope, $state, $rootScope, customerService, $stateParams, $translate) {
         $scope.email = $stateParams.email;
         $scope.activationCode = $stateParams.activationcode;
         $scope.password = null;
@@ -26,13 +23,10 @@
         $scope.recover = function () {
             $rootScope.IsBusy = true;
             customerService.recover2($scope.email, $scope.activationCode, $scope.password).then(function (response) {
-                $rootScope.addNotification("Password recovery done");
+                $rootScope.addNotification($translate.instant('PASSWORD_RECOVERY_DONE'));
                 $state.go("signin2");
                 $rootScope.IsBusy = false;
-            }, function errorCallback(e) {
-                $rootScope.addNotification("Recover error");
-                $rootScope.IsBusy = false;
-            });
+            }, $rootScope.raiseErrorDelegate);
         };
     })
     ;
