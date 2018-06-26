@@ -11,10 +11,15 @@
             <form action="index/html" name="myForm" class="form-horizontal">
                 <fieldset class="content-group">
                     <!-- <legend class="text-bold">Basic inputs</legend> -->
-                    <div class="form-group" ng-repeat="(cur,v) in entity">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">{{cur}}</label>
-                        <div class="col-md-9 col-sm-9 col-xs-12">
-                            <input type="text" class="form-control" required="required" placeholder="{{cur}}" ng-model="entity[cur]">
+                    <div class="form-group" ng-repeat="(cur,v) in entity" ng-switch="cur">
+                        <div ng-switch-when="id">
+
+                        </div>
+                        <div ng-switch-default>
+                            <label class="control-label col-md-3 col-sm-3 col-xs-12">{{cur}}</label>
+                            <div class="col-md-9 col-sm-9 col-xs-12">
+                                <input type="text" class="form-control" required="required" placeholder="{{cur}}" ng-model="entity[cur]">
+                            </div>
                         </div>
                     </div>
                 </fieldset>
