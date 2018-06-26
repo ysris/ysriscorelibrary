@@ -61,10 +61,10 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns></returns>
         [HttpGet("empty")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual T GetEmpty()
+        public virtual IActionResult GetEmpty()
         {
             var entity = new T { };
-            return entity;
+            return Ok(entity);
         }
 
         /// <summary>
