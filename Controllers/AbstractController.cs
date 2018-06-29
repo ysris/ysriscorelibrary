@@ -61,10 +61,9 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns></returns>
         [HttpGet("empty")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual IActionResult GetEmpty()
+        public async virtual Task<IActionResult> GetEmpty()
         {
-            var entity = new T { };
-            return Ok(entity);
+            return Ok(await _getEmpty());
         }
 
         /// <summary>
@@ -201,6 +200,12 @@ namespace YsrisCoreLibrary.Controllers
             var set = await fullset.Skip(start).Take(number).ToListAsync();
             var numberOfPages = Convert.ToInt32(Math.Ceiling(fullset.Count() / number * 1f));
             return new Tuple<IEnumerable<T>, int>(set, numberOfPages);
+        }
+
+        protected virtual async Task<T> _getEmpty()
+        {
+            var entity = new T { };
+            return entity;
         }
 
 

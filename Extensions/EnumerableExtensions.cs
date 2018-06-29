@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace YsrisCoreLibrary.Extensions
 {
-    public static class FluentExtensions
+    public static class EnumerableExtensions
     {
         /// <summary>
         /// Divide a set in x subsets of partitionSize
@@ -29,27 +29,6 @@ namespace YsrisCoreLibrary.Extensions
             }
 
             return outList;
-        }
-
-        /// <summary>
-        /// Convert to observable
-        /// </summary>
-        /// <typeparam name="T">data type</typeparam>
-        /// <param name="me">enumerable to convert</param>
-        /// <returns></returns>
-
-
-        public static string Nl2Br(this string obj) => obj.Replace("\r\n", "<br />");
-
-        public static string TrimEnd(this string input, string suffixToRemove, StringComparison comparisonType)
-        {
-
-            if (input != null && suffixToRemove != null
-              && input.EndsWith(suffixToRemove, comparisonType))
-            {
-                return input.Substring(0, input.Length - suffixToRemove.Length);
-            }
-            else return input;
         }
     }
 }

@@ -30,7 +30,6 @@ namespace YsrisCoreLibrary.Services
             _env = env;
         }
 
-
         public void SavePictureTo(IFormFile postedFile, string fullPath, int? width = null)
         {
             var outputStream = new MemoryStream();
@@ -113,18 +112,15 @@ namespace YsrisCoreLibrary.Services
                 file.CopyTo(ms);
                 return ms;
             }
-
         }
 
         public IEnumerable<string> ListFiles(string directory, bool recursive = true, string searchPattern = "*.*")
         {
-            directory = basePath + directory.TrimStart('/');
-            var set =
-                Directory.Exists(directory)
-                    ? Directory.GetFiles(directory, searchPattern, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim())
-                    //.Concat(Directory.GetDirectories(directory, "*.*").Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim()))
-                    : new List<string>();
-            return set;
+            directory =
+                 basePath
+                + directory.TrimStart('/');
+
+            return Directory.GetFiles(directory, searchPattern, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim());
         }
 
         public void MoveFile(string from, string to)
