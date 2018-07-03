@@ -14,5 +14,16 @@
   "PASSWORD_RECOVERY_DONE": "Changement de mot de passe effectué",
   "EMAIL_CONFIRMATION_DONE": "Merci d'entrer votre nouveau mot de passe ci-dessous.",
   "NEW_PASSWORD": "Nouveau mot de passe",
-  "NEW_PASSWORD_CONFIRM": "Confirmation mot de passe"
+  "NEW_PASSWORD_CONFIRM": "Confirmation mot de passe",
+  "ACCOUNT_ACTIVATED": "Compte activé",
+  "PROFILE_UPDATED": "Profil mis à jour",
+  "PROFILE_PIC_UPDATED": "Image de profil mise à jour",
+  "ACCOUNT_DELETED": "Compte supprimé",
+  "ACCOUNT_ACTIVATION_SUCCESS": "",
+  "YOU_CAN_NOW_SIGNIN": "Vous pouvez désormais vous authentifier",
+  "LOGIN_ERROR": "Erreur d'authentification",
+  "ACCOUNT_CREATED_PLEASE_CHECK_YOUR_EMAIL": "Compte créé, merci de consulter votre email",
+  "ACCOUNT_DISABLED": "Compte désactivé",
+  "ACCOUNT_GRANTED_AS_ADMIN": "Compte défini comme administrateur",
+  "ACCOUNT_REVOKED_FROM_ADMIN": "Compte révoqué du role d'administrateur"
 }

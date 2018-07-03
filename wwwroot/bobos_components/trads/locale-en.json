@@ -14,5 +14,16 @@
   "PASSWORD_RECOVERY_DONE": "Password recovery done",
   "EMAIL_CONFIRMATION_DONE": "Please enter your new password below.",
   "NEW_PASSWORD": "New password",
-  "NEW_PASSWORD_CONFIRM": "New password confirm"
+  "NEW_PASSWORD_CONFIRM": "New password confirm",
+  "ACCOUNT_ACTIVATED": "Compte activé",
+  "PROFILE_UPDATED": "Profile updated",
+  "PROFILE_PIC_UPDATED": "Profile pic uploaded",
+  "ACCOUNT_DELETED": "Account deleted",
+  "ACCOUNT_ACTIVATION_SUCCESS": "",
+  "YOU_CAN_NOW_SIGNIN": "",
+  "LOGIN_ERROR": "",
+  "ACCOUNT_CREATED_PLEASE_CHECK_YOUR_EMAIL": "Account created. Please check your email.",
+  "ACCOUNT_DISABLED": "Account disabled",
+  "ACCOUNT_GRANTED_AS_ADMIN": "Account granted as admin",
+  "ACCOUNT_REVOKED_FROM_ADMIN": "Account revoked from admin"
 }
