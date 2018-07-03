@@ -32,7 +32,6 @@
 
                 if ($scope.entitylist.length == 1) {
                     conversationContactService.markasread().then(function (result) {
-                        console.log("Marked all as read");
                         $rootScope.refreshFullNotificationCount();
                         $rootScope.IsBusy = false;
                     }, $rootScope.raiseErrorDelegate);
