@@ -16,7 +16,7 @@
         customerService.createAccount($scope.Entity).then(
             function (resp) {
                 $rootScope.IsBusy = false;
-                $rootScope.addNotification("Account created, please check your email");
+                $rootScope.addNotification($translate.instant("ACCOUNT_CREATED_PLEASE_CHECK_YOUR_EMAIL"));
                 $state.go("signin2");
             },
             $rootScope.raiseErrorDelegate

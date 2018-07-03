@@ -1,5 +1,5 @@
 ﻿angular.module("frontendAngularClientApp")
-    .controller("ProfileEditController", function ($scope, $state, $rootScope, customerService) {
+    .controller("ProfileEditController", function ($scope, $state, $rootScope, customerService, $translate) {
         $scope.Entity = null;
         $scope.ProfilePicPreview = "/api/customer/avatar";
         $rootScope.ProgressPct = null;
@@ -21,13 +21,10 @@
                 $scope.Entity = resp.data;
                 $rootScope.setConnectedUser($scope.Entity);
 
-                $rootScope.addNotification("Profile updated");
+                $rootScope.addNotification($translate.instant('PROFILE_UPDATED'));
                 $rootScope.IsBusy = false;
-
-
             }, $rootScope.raiseErrorDelegate);
         };
-
 
         $scope.setImg = function () {
             if ($scope.newFile != null) {
@@ -43,7 +40,7 @@
                             $rootScope.avatarUri = newUrl.createObjectURL($scope.newFile);
                         }
 
-                        $rootScope.addNotification("Profile pic uploaded");
+                        $rootScope.addNotification($translate.instant("PROFILE_PIC_UPDATED");
                         $rootScope.IsBusy = false;
                     },
                     $rootScope.raiseErrorDelegate,
@@ -59,7 +56,7 @@
                         customerService.delete().then(
                             function (resp) {
                                 $rootScope.logout();
-                                $rootScope.addNotification("Account deleted");
+                                $rootScope.addNotification($translate.instant("ACCOUNT_DELETED"));
                             },
                             $rootScope.raiseErrorDelegate);
                     }

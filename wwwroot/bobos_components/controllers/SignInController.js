@@ -1,5 +1,5 @@
 ﻿angular.module("frontendAngularClientApp")
-    .controller("SignInController", function ($scope, $state, $rootScope, $stateParams, customerService) {
+    .controller("SignInController", function ($scope, $state, $rootScope, $stateParams, customerService, $translate) {
         $scope.login = "";
         $scope.password = "";
 
@@ -7,7 +7,13 @@
             $rootScope.killSessionLoca();
             $rootScope.SetPageTitle("", "");
             if ($stateParams.suppl == "activationsucceeded")
-                new PNotify({ title: "Account activation succeeded", text: "You can now signin", type: "success", styling: "bootstrap3", delay: 2000 });
+                new PNotify({
+                    title: $translate.instant('ACCOUNT_ACTIVATION_SUCCESS'),
+                    text: $translate.instant('YOU_CAN_NOW_SIGNIN'),
+                    type: "success",
+                    styling: "bootstrap3",
+                    delay: 2000
+                });
         };
 
         /**
@@ -38,7 +44,7 @@
 
                 $rootScope.IsBusy = false;
             }, function errorCallback(e) {
-                new PNotify({ title: "Login error", text: e.data.error, type: "error", styling: "bootstrap3", delay: 2000 });
+                new PNotify({ title: $translate.instant('LOGIN_ERROR'), text: e.data.error, type: "error", styling: "bootstrap3", delay: 2000 });
                 $rootScope.IsBusy = false;
             });
         };

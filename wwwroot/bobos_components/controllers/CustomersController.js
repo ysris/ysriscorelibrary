@@ -43,7 +43,7 @@
             });
         }
     })
-    .controller("CustomersController", function ($scope, $state, $rootScope, customerService, $uibModal) {
+    .controller("CustomersController", function ($scope, $state, $rootScope, customerService, $uibModal, $translate) {
         $scope.entitylist = null;
 
         /**
@@ -70,7 +70,7 @@
                     if (isConfirm) {
                         customerService.activate(entity).then(function (resp) {
                             $scope.refresh();
-                            $rootScope.addNotification("Account activated");
+                            $rootScope.addNotification($translate.instant('ACCOUNT_ACTIVATED'));
                         }, $rootScope.raiseErrorDelegate);
                     }
                 }
@@ -88,7 +88,7 @@
                     if (isConfirm) {
                         customerService.disable(entity).then(function (resp) {
                             $scope.refresh();
-                            $rootScope.addNotification("Account disabled");
+                            $rootScope.addNotification($translate.instant('ACCOUNT_DISABLED'));
                         }, $rootScope.raiseErrorDelegate);
                     }
                 }
@@ -106,7 +106,7 @@
                     if (isConfirm) {
                         customerService.delete(entity.id).then(function (resp) {
                             $scope.refresh();
-                            $rootScope.addNotification("Account deleted");
+                            $rootScope.addNotification($translate.instant('ACCOUNT_DELETED'));
                         }, $rootScope.raiseErrorDelegate);
                     }
                 }
@@ -173,7 +173,7 @@
             if (window.confirm("Put this account as admin ?")) {
                 customerService.grantAdminRole(entity).then(function (resp) {
                     $scope.refresh();
-                    $rootScope.addNotification("Account granted as admin");
+                    $rootScope.addNotification($translate.instant('ACCOUNT_GRANTED_AS_ADMIN'));
                 }, $rootScope.raiseErrorDelegate);
             }
         };
@@ -187,7 +187,7 @@
             if (window.confirm("Revoke this account as admin ?")) {
                 customerService.revokeAdminRole(entity).then(function (resp) {
                     $scope.refresh();
-                    $rootScope.addNotification("Account revoked from admin");
+                    $rootScope.addNotification($translate.instant('ACCOUNT_REVOKED_FROM_ADMIN'));
                 }, $rootScope.raiseErrorDelegate);
             }
         };
