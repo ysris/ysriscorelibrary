@@ -43,5 +43,8 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         [NotMapped]
         public bool existtsRemotely { get; set; }
+
+        [DataMember]
+        public DateTime? deletionDate { get; set; }
     }
 }

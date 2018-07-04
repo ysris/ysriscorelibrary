@@ -26,6 +26,10 @@ namespace YsrisCoreLibrary.Model
         [NotMapped]
         public List<object> entityModel { get; set; }
 
+        [DataMember]
+        public DateTime? deletionDate { get; set; }
+
+
         public void SetFromValues(IAbstractEntity values)
         {
             throw new NotImplementedException();

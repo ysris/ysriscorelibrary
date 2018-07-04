@@ -150,7 +150,7 @@ namespace YsrisCoreLibrary.Models
 
         [DataMember]
         public string freetext { get; set; }
-
+        
         /// <summary>
         /// 
         /// </summary>

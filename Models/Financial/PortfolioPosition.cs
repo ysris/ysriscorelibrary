@@ -66,5 +66,8 @@ namespace YsrisCoreLibrary.Models.Financial
         //[DataMember]
         //public string simulationName { get; set; }
 
+        [DataMember]
+        public DateTime? deletionDate { get; set; }
+
     }
 }

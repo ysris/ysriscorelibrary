@@ -67,7 +67,7 @@ namespace YsrisCoreLibrary.Models.Financial
         public DateTime creationDate { get; set; }
 
         [DataMember]
-        public DateTime deletionDate { get; set; }
+        public DateTime? deletionDate { get; set; }
 
         [DataMember]
         public DateTime valuationDate { get; set; }

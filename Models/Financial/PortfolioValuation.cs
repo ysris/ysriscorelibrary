@@ -34,5 +34,8 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         [NotMapped]
         public List<object> entityModel { get; set; }
+
+        [DataMember]
+        public DateTime? deletionDate { get; set; }
     }
 }

@@ -121,7 +121,8 @@ namespace YsrisCoreLibrary.Models.Financial
         [DataMember]
         public string currency { get; set; }
 
-
+        [DataMember]
+        public DateTime? deletionDate { get; set; }
 
         // OHLC, date and period type needed for valuation fo current instrument
 

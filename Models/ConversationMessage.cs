@@ -74,5 +74,8 @@ namespace YsrisCoreLibrary.Models
         [DataMember]
         [NotMapped]
         public bool isConnectedUserAuthor { get; set; }
+
+        [DataMember]
+        public DateTime? deletionDate { get; set; }
     }
 }
