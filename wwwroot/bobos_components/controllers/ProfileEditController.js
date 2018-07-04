@@ -40,7 +40,7 @@
                             $rootScope.avatarUri = newUrl.createObjectURL($scope.newFile);
                         }
 
-                        $rootScope.addNotification($translate.instant("PROFILE_PIC_UPDATED");
+                        $rootScope.addNotification($translate.instant("PROFILE_PIC_UPDATED"));
                         $rootScope.IsBusy = false;
                     },
                     $rootScope.raiseErrorDelegate,
