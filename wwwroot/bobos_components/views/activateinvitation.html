@@ -4,22 +4,22 @@
             <div class="panel panel-body">
                 <div class="text-center">
                     <div class="icon-object border-warning text-warning"><i class="icon-spinner11"></i></div>
-                    <h5 class="content-group">One last step <small class="display-block">Please define your password</small></h5>
+                    <h5 class="content-group">{{ 'ONE_LAST_STEP' | translate }}<small class="display-block">{{ 'PLEASE_DEFINE_YOUR_PASSWORD' | translate }}</small></h5>
                 </div>
                 <div class="form-group has-feedback">
                     <input type="password" class="form-control" placeholder="Password" name="password" ng-model="entity.password" required>
-                    <span class="help-block text-danger" ng-show="myForm.password.$touched && myForm.password.$valid == false"><i class="icon-cancel-circle2 position-left"></i>This field is required</span>
+                    <span class="help-block text-danger" ng-show="myForm.password.$touched && myForm.password.$valid == false"><i class="icon-cancel-circle2 position-left"></i>{{ 'THIS_FIELD_IS_REQUIRED' | translate }}</span>
                 </div>
                 <div class="form-group has-feedback">
                     <input type="password" class="form-control" placeholder="Password confirm" name="passwordConfirm" ng-model="entity.passwordConfirm" required>
-                    <span class="help-block text-danger" ng-show="myForm.passwordConfirm.$touched && myForm.passwordConfirm.$valid == false"><i class="icon-cancel-circle2 position-left"></i>This field is required</span>
+                    <span class="help-block text-danger" ng-show="myForm.passwordConfirm.$touched && myForm.passwordConfirm.$valid == false"><i class="icon-cancel-circle2 position-left"></i>{{ 'THIS_FIELD_IS_REQUIRED' | translate }}</span>
                 </div>
                 <div class="form-group has-feedback">
                     <span class="help-block text-danger" ng-show="myForm.password.$touched && myForm.passwordConfirm.$touched && entity.password != entity.passwordConfirm">
-                        <i class="icon-cancel-circle2 position-left"></i>Passwords mismatch
+                        <i class="icon-cancel-circle2 position-left"></i>{{ 'PASSWORDS_MISMATCH' | translate }}
                     </span>
                 </div>
-                <button type="submit" class="btn bg-teal-400 btn-block" ng-disabled="!(myForm.$valid)">Submit<i class="icon-arrow-right14 position-right"></i></button>
+                <button type="submit" class="btn bg-customer-primary btn-block" ng-disabled="!(myForm.$valid)">Submit<i class="icon-arrow-right14 position-right"></i></button>
             </div>
         </form>
     </div>
