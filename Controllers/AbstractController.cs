@@ -167,7 +167,8 @@ namespace YsrisCoreLibrary.Controllers
             if (entity == null)
                 return NotFound();
 
-            _context.Set<T>().Remove(entity);
+            entity.deletionDate = DateTime.Now;
+            _context.Set<T>().Update(entity);
             await _context.SaveChangesAsync();
 
             return Ok(entity);
@@ -191,6 +192,8 @@ namespace YsrisCoreLibrary.Controllers
         protected virtual async Task<T> _getEntity(int id)
         {
             var entity = await _context.Set<T>().FindAsync(id);
+            if (entity.deletionDate == null)
+                throw new Exception("Entity has been deleted");
             return entity;
         }
 
