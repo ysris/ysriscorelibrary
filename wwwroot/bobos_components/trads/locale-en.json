@@ -25,5 +25,9 @@
   "ACCOUNT_CREATED_PLEASE_CHECK_YOUR_EMAIL": "Account created. Please check your email.",
   "ACCOUNT_DISABLED": "Account disabled",
   "ACCOUNT_GRANTED_AS_ADMIN": "Account granted as admin",
-  "ACCOUNT_REVOKED_FROM_ADMIN": "Account revoked from admin"
+  "ACCOUNT_REVOKED_FROM_ADMIN": "Account revoked from admin",
+  "PLEASE_DEFINE_YOUR_PASSWORD": "Please define your password",
+  "THIS_FIELD_IS_REQUIRED": "This field is required",
+  "PASSWORDS_MISMATCH": "Password mismatch",
+  "ONE_LAST_STEP": "One last step"
 }

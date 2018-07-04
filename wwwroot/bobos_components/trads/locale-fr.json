@@ -16,8 +16,8 @@
   "NEW_PASSWORD": "Nouveau mot de passe",
   "NEW_PASSWORD_CONFIRM": "Confirmation mot de passe",
   "ACCOUNT_ACTIVATED": "Compte activé",
-  "PROFILE_UPDATED": "Profil mis à jour",
-  "PROFILE_PIC_UPDATED": "Image de profil mise à jour",
+  "PROFILE_UPDATED": "Votre profil a été mis à jour.",
+  "PROFILE_PIC_UPDATED": "Votre photo de profil a été changée.",
   "ACCOUNT_DELETED": "Compte supprimé",
   "ACCOUNT_ACTIVATION_SUCCESS": "",
   "YOU_CAN_NOW_SIGNIN": "Vous pouvez désormais vous authentifier",
@@ -25,5 +25,9 @@
   "ACCOUNT_CREATED_PLEASE_CHECK_YOUR_EMAIL": "Compte créé, merci de consulter votre email",
   "ACCOUNT_DISABLED": "Compte désactivé",
   "ACCOUNT_GRANTED_AS_ADMIN": "Compte défini comme administrateur",
-  "ACCOUNT_REVOKED_FROM_ADMIN": "Compte révoqué du role d'administrateur"
+  "ACCOUNT_REVOKED_FROM_ADMIN": "Compte révoqué du role d'administrateur",
+  "PLEASE_DEFINE_YOUR_PASSWORD": "Définissez votre mot de passe",
+  "THIS_FIELD_IS_REQUIRED": "Ce champ est requis",
+  "PASSWORDS_MISMATCH": "Les mots de passe sont différents",
+  "ONE_LAST_STEP": "Vous y êtes presque"
 }
