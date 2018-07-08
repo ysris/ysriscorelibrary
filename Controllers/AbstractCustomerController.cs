@@ -88,11 +88,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns></returns>
         [AllowAnonymous]
         [HttpPost("login")]
-        public virtual async Task<IActionResult> Login([FromBody] LoginViewModel model, IEnumerable<string> accountStatuses = null)
-        {
-            var entity = await _signin(model, accountStatuses);
-            return Ok(entity);
-        }
+        public virtual async Task<IActionResult> Login([FromBody] LoginViewModel model, IEnumerable<string> accountStatuses = null) => Ok(await _signin(model, accountStatuses));
 
         /// <summary>
         /// Password recover
@@ -100,11 +96,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="obj"></param>
         [AllowAnonymous]
         [HttpPost("recover")]
-        public virtual async Task<IActionResult> Recover([FromBody]RecoverViewModel model)
-        {
-            await _recover(model);
-            return Ok(new { });
-        }
+        public virtual async Task<IActionResult> Recover([FromBody]RecoverViewModel model) { await _recover(model); return Ok(); }
 
         /// <summary>
         /// Password recover callback 
@@ -112,37 +104,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <param name="obj"></param>
         [AllowAnonymous]
         [HttpPost("recover2")]
-        public virtual async Task<IActionResult> Recover2([FromBody]RecoverViewModel model)
-        {
-            var entity = _context.Set<T>().Single(a => a.email == model.email);
-            if (entity == null || entity.activationCode == null || entity.recoverAskDate == null)
-                throw new Exception("BadRequest");
-
-            if (model.activationCode == entity.activationCode && (DateTime.Now - (DateTime)entity.recoverAskDate).Minutes <= 10)
-            {
-                entity.activationCode = null;
-                entity.recoverAskDate = null;
-                entity.password = _encryption.GetHash(model.password);
-                entity.accountStatus = CustomerStatus.Activated;
-
-                _context.Set<T>().Update(entity);
-                await _context.SaveChangesAsync();
-
-                _mail.SendMail(
-                    entity.email,
-                    subject: "Password recover successful",
-                    templateUri: _env.ContentRootPath + "/Views/Emails/UserPasswordResetConfirmation.cshtml",
-                    mailViewBag: new Dictionary<string, string> {
-                        { "FirstName", entity.prettyName },
-                        { "AppName", _config.GetValue<string>("Data:AppName")},
-                        { "LogoDefault", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png"},
-                        { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
-                    }
-                );
-            }
-
-            return Ok(new { });
-        }
+        public virtual async Task<IActionResult> Recover2([FromBody]RecoverViewModel model) { await _recover2(model); return Ok(); }
 
         /// <summary>
         /// Activation invitation email validation processing
@@ -247,22 +209,24 @@ namespace YsrisCoreLibrary.Controllers
 
             return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
         }
-        #endregion
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("pinganonymous")]
         [AllowAnonymous]
-        public virtual async Task<IActionResult> PingAnonymous()
-        {
-            return Ok(new { Msg = "Ping Anonymous Ok" });
-        }
+        public virtual async Task<IActionResult> PingAnonymous() => Ok(new { Msg = "Ping Anonymous Ok" });
+        #endregion
 
         #region Connected standard Customer Actions API Methods
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("ping")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual async Task<IActionResult> Ping()
-        {
-            return Ok(new { Msg = "Ping Authentified Ok" });
-        }
+        public virtual async Task<IActionResult> Ping() => Ok(new { Msg = "Ping Authentified Ok" });
 
         /// <summary>
         /// Standard cookie logout
@@ -409,19 +373,17 @@ namespace YsrisCoreLibrary.Controllers
         public virtual async void Delete()
         {
             var entity = _context.Set<T>().Find(_session.User.id);
-            _context.Set<T>().Remove(entity);
+            entity.deletionDate = DateTime.Now;
+            _context.Set<T>().Update(entity);
             await _context.SaveChangesAsync();
         }
         #endregion
 
         #region Administrator Actions API Methods
-
+        
         [HttpPost("invite")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
-        public virtual T Invite([FromBody] T model)
-        {
-            return _invite(model);
-        }
+        public virtual T Invite([FromBody] T model) => _invite(model);
 
         /// <summary>
         /// account update action
@@ -449,10 +411,9 @@ namespace YsrisCoreLibrary.Controllers
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
         public void DeleteAsAdmin(int id)
         {
-            var entity = _context.Set<T>().Find(_session.User.id);
-
-            _context.Set<T>().Remove(entity);
-
+            var entity = _context.Set<T>().Find(id);
+            entity.deletionDate = DateTime.Now;
+            _context.Set<T>().Update(entity);
             _context.SaveChanges();
         }
 
@@ -675,7 +636,7 @@ namespace YsrisCoreLibrary.Controllers
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        protected virtual T _invite(T model)
+        protected virtual T _invite(T model, string title = "You have been invited to join")
         {
             _log.LogInformation($"AbstractCustomerController +_invite");
 
@@ -695,7 +656,7 @@ namespace YsrisCoreLibrary.Controllers
             _log.LogInformation($"++User notification (mail)");
             _mail.SendMail(
                 model.email,
-                subject: $"You have been invited to join {HttpContext.Request.Host}",
+                subject: $"{title} {HttpContext.Request.Host}",
                 templateUri: _env.ContentRootPath + "/Views/Emails/CustomerInvitation.cshtml",
                 mailViewBag:
                 new Dictionary<string, string>
@@ -746,6 +707,42 @@ namespace YsrisCoreLibrary.Controllers
                 }
             );
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        protected async virtual Task _recover2(RecoverViewModel model, string title = "Password recover successful")
+        {
+            var entity = _context.Set<T>().Single(a => a.email == model.email);
+            if (entity == null || entity.activationCode == null || entity.recoverAskDate == null)
+                throw new Exception("BadRequest");
+
+            if (model.activationCode == entity.activationCode && (DateTime.Now - (DateTime)entity.recoverAskDate).Minutes <= 10)
+            {
+                entity.activationCode = null;
+                entity.recoverAskDate = null;
+                entity.password = _encryption.GetHash(model.password);
+                entity.accountStatus = CustomerStatus.Activated;
+
+                _context.Set<T>().Update(entity);
+                await _context.SaveChangesAsync();
+
+                _mail.SendMail(
+                    entity.email,
+                    subject: title,
+                    templateUri: _env.ContentRootPath + "/Views/Emails/UserPasswordResetConfirmation.cshtml",
+                    mailViewBag: new Dictionary<string, string> {
+                        { "FirstName", entity.prettyName },
+                        { "AppName", _config.GetValue<string>("Data:AppName")},
+                        { "LogoDefault", $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/assets/images/logo-default.png"},
+                        { "PrimaryColor", _config.GetValue<string>("Data:PrimaryColor")}
+                    }
+                );
+            }
+        }
+
         #endregion
 
         // TODO : THIS IS BAD AND YOU SHOULD FEEL BAD ABOUT IT //
@@ -780,7 +777,6 @@ namespace YsrisCoreLibrary.Controllers
             public T entity { get; set; }
             public bool boolSendEmail { get; set; }
         }
-
         public class UserRoleAttributionViewModel
         {
             public T entity { get; set; }

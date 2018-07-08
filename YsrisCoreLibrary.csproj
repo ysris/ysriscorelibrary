@@ -37,6 +37,7 @@
     <None Remove="wwwroot\bobos_components\views\defaultComponent.html" />
     <None Remove="wwwroot\bobos_components\views\defaultEditEntityPage.html" />
     <None Remove="wwwroot\bobos_components\views\defaultTablePage.html" />
+    <None Remove="wwwroot\bobos_components\views\defaultTablePage2.html" />
     <None Remove="wwwroot\bobos_components\views\inscription.html" />
     <None Remove="wwwroot\bobos_components\views\inviteCustomerComponent.html" />
     <None Remove="wwwroot\bobos_components\views\palette.html" />
@@ -85,6 +86,7 @@
     <Content Include="wwwroot\bobos_components\views\customers.html" />
     <Content Include="wwwroot\bobos_components\views\defaultEditEntityPage.html" />
     <Content Include="wwwroot\bobos_components\views\defaultComponent.html" />
+    <Content Include="wwwroot\bobos_components\views\defaultTablePage2.html" />
     <Content Include="wwwroot\bobos_components\views\defaultTablePage.html" />
     <Content Include="wwwroot\bobos_components\views\inscription.html" />
     <Content Include="wwwroot\bobos_components\views\inviteCustomerComponent.html" />
