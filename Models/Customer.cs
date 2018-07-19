@@ -22,14 +22,14 @@ namespace YsrisCoreLibrary.Models
             SetFromValues((IAbstractEntity)values);
         }
 
-        public void SetFromValues(ICustomer values)
+        public virtual void SetFromValues(ICustomer values)
         {
             SetFromValues((IAbstractEntity)values);
         }
 
         public virtual void SetFromValues(IAbstractEntity values)
         {
-            
+
             //if (values.id != null) id = values.id;
             if (((ICustomer)values).picture != null) picture = ((ICustomer)values).picture;
             if (((ICustomer)values).firstName != null) firstName = ((ICustomer)values).firstName;
@@ -42,13 +42,13 @@ namespace YsrisCoreLibrary.Models
             if (((ICustomer)values).adrPostalCode != null) adrPostalCode = ((ICustomer)values).adrPostalCode;
             if (((ICustomer)values).adrCity != null) adrCity = ((ICustomer)values).adrCity;
             if (((ICustomer)values).adrCountry != null) adrCountry = ((ICustomer)values).adrCountry;
-            if (((ICustomer)values).isMailingSuscribed != null) isMailingSuscribed = (bool)((ICustomer)values).isMailingSuscribed;
+            isMailingSuscribed = ((ICustomer)values).isMailingSuscribed;
             if (((ICustomer)values).companyName != null) companyName = ((ICustomer)values).companyName;
             if (((ICustomer)values).phoneNumber != null) phoneNumber = ((ICustomer)values).phoneNumber;
             if (((ICustomer)values).freetext != null) freetext = ((ICustomer)values).freetext;
         }
 
-        
+
         #endregion
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace YsrisCoreLibrary.Models
         /// </summary>
         [DataMember]
         [JsonIgnore]
-        public string password { get; set; }        
+        public string password { get; set; }
 
         [DataMember]
         public string activationCode { get; set; }
@@ -150,7 +150,7 @@ namespace YsrisCoreLibrary.Models
 
         [DataMember]
         public string freetext { get; set; }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -181,6 +181,6 @@ namespace YsrisCoreLibrary.Models
             !(string.IsNullOrEmpty(lastName) && string.IsNullOrEmpty(firstName))
                 ? $"{(firstName ?? string.Empty).FirstOrDefault()} {(lastName ?? string.Empty).FirstOrDefault()}"
                 : email;
-        
+
     }
 }
