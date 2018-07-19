@@ -61,9 +61,9 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns></returns>
         [HttpGet("empty")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public async virtual Task<IActionResult> GetEmpty()
+        public virtual IActionResult GetEmpty()
         {
-            return Ok(await _getEmpty());
+            return Ok(_getEmpty());
         }
 
         /// <summary>
@@ -207,11 +207,11 @@ namespace YsrisCoreLibrary.Controllers
 
         protected virtual async Task<T> _getEmpty()
         {
-            var entity = new T { };
-            return entity;
+            return await Task.Run(() =>
+            {
+                var entity = new T { };
+                return entity;
+            });
         }
-
-
-
     }
 }

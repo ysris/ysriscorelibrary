@@ -216,7 +216,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns></returns>
         [HttpGet("pinganonymous")]
         [AllowAnonymous]
-        public virtual async Task<IActionResult> PingAnonymous() => Ok(new { Msg = "Ping Anonymous Ok" });
+        public virtual async Task<IActionResult> PingAnonymous() => await Task.Run(() => Ok(new { Msg = "Ping Anonymous Ok" }));
         #endregion
 
         #region Connected standard Customer Actions API Methods
@@ -226,7 +226,7 @@ namespace YsrisCoreLibrary.Controllers
         /// <returns></returns>
         [HttpGet("ping")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies")]
-        public virtual async Task<IActionResult> Ping() => Ok(new { Msg = "Ping Authentified Ok" });
+        public virtual async Task<IActionResult> Ping() => await Task.Run(() => Ok(new { Msg = "Ping Authentified Ok" }));
 
         /// <summary>
         /// Standard cookie logout
@@ -380,7 +380,7 @@ namespace YsrisCoreLibrary.Controllers
         #endregion
 
         #region Administrator Actions API Methods
-        
+
         [HttpPost("invite")]
         [Authorize(AuthenticationSchemes = "Bearer, Cookies", Policy = "Administrator")]
         public virtual T Invite([FromBody] T model) => _invite(model);
