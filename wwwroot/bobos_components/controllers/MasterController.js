@@ -7,20 +7,6 @@
                 });
         })();
 
-        /**
-         * Set the local connected user
-         * @param {} id userId
-         */
-        $rootScope.setConnectedUser =
-            function (userEntity) {
-                window.localStorage.id = userEntity.id;
-                window.localStorage.customerType = userEntity.customerType;
-                window.localStorage.customer = JSON.stringify(userEntity);
-
-                $rootScope.ConnectedUserId = userEntity.id;
-                $rootScope.customerType = userEntity.customerType;
-                $rootScope.customer = userEntity;
-            };
 
         $rootScope.updateConnectedUser =
             function () {
@@ -28,6 +14,15 @@
                     $rootScope.setConnectedUser(resp.data);
                     $rootScope.updateLocalSession();
                 }, $rootScope.raiseErrorDelegate);
+            };
+
+
+        $rootScope.hasRole =
+            function (role) {
+                for (var i = 0; i < $rootScope.customer.roles.length; i++)
+                    if ($rootScope.customer.roles[i] === role)
+                        return true;
+                return false;
             };
 
         /**

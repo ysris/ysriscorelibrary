@@ -40,7 +40,7 @@ namespace YsrisCoreLibrary.Dal.Financial
 
                 return set;
             }
-            catch (JsonSerializationException e)
+            catch (JsonSerializationException)
             {
                 return Enumerable.Empty<TimeSerieItem>();
             }

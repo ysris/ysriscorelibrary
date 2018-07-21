@@ -19,7 +19,7 @@
             $rootScope.IsBusy = true;
             customerService.update($scope.Entity).then(function (resp) {
                 $scope.Entity = resp.data;
-                $rootScope.setConnectedUser($scope.Entity);
+                customerService.setConnectedUser($scope.Entity);
 
                 $rootScope.addNotification($translate.instant('PROFILE_UPDATED'));
                 $rootScope.IsBusy = false;
@@ -32,7 +32,6 @@
                 customerService.uploadAvatar($scope.newFile).then(
                     function (resp) {
                         //$scope.Entity = resp.data;
-                        //$rootScope.setConnectedUser($scope.Entity);
 
                         var newUrl = window.URL || window.webkitURL;
                         if (newUrl) {

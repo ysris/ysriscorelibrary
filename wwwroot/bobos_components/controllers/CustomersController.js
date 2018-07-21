@@ -1,5 +1,5 @@
 ﻿angular.module("frontendAngularClientApp")
-    .factory("customerService", function ($http, Upload) {
+    .factory("customerService", function ($http, Upload, $rootScope) {
         return {
             activateinvitation: function (entity) { return $http.post("/api/customer/activateinvitation", entity); }
             , activate: function (entity) { return $http.post("/api/customer/activateasadmin", entity); }
@@ -30,15 +30,23 @@
             , postInvite: function (entity) { return $http.post("/api/customer/invite", entity); }
             , grantAdminRole: function (entity) { return $http.post("/api/customer/grant", { entity: entity, role: "Administrator" }); }
             , revokeAdminRole: function (entity) { return $http.post("/api/customer/revoke", { entity: entity, role: "Administrator" }); }
+            , setConnectedUser:
+                function (userEntity) {
+                    window.localStorage.id = userEntity.id;
+                    window.localStorage.customerType = userEntity.customerType;
+                    window.localStorage.customer = JSON.stringify(userEntity);
+
+                    $rootScope.ConnectedUserId = userEntity.id;
+                    $rootScope.customer = userEntity;
+                }
         };
     })
-
-    .controller("ActivateCustomerInvitationController", function ($scope, $state, $rootScope, $stateParams, customerService) {
+    .controller("ActivateCustomerInvitationController", function ($scope, $state, $rootScope, $stateParams, customerService, $translate) {
         $scope.entity = { email: $state.params.email, activationcode: $state.params.activationcode };
 
         $scope.submit = function () {
             customerService.activateinvitation($scope.entity).then(function (resp) {
-                $rootScope.addNotification('Activated');
+                $rootScope.addNotification($translate.instant('ACCOUNT_ACTIVATED'));
                 $state.go("signin2");
             });
         }

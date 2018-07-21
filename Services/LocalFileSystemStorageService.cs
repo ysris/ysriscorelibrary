@@ -97,23 +97,39 @@ namespace YsrisCoreLibrary.Services
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fullPath"></param>
+        /// <returns></returns>
         public async Task<MemoryStream> GetFileContent(string fullPath)
         {
-            if (fullPath == null)
-                return null;
-
-
-            fullPath = basePath + fullPath.TrimStart('/');
-
-            using (MemoryStream ms = new MemoryStream())
-            using (FileStream file = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
+            return await Task.Run(() =>
             {
+                if (fullPath == null)
+                    return null;
 
-                file.CopyTo(ms);
-                return ms;
-            }
+
+                fullPath = basePath + fullPath.TrimStart('/');
+
+                using (MemoryStream ms = new MemoryStream())
+                using (FileStream file = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
+                {
+
+                    file.CopyTo(ms);
+                    return ms;
+                }
+            });
+
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="directory"></param>
+        /// <param name="recursive"></param>
+        /// <param name="searchPattern"></param>
+        /// <returns></returns>
         public IEnumerable<string> ListFiles(string directory, bool recursive = true, string searchPattern = "*.*")
         {
             directory =

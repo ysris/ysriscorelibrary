@@ -37,7 +37,8 @@
                     return;
                 }
 
-                $rootScope.setConnectedUser(response.data);
+                customerService.setConnectedUser(response.data);
+
                 $rootScope.avatarUri = "/api/customer/avatar";
 
                 $scope.redirectBackDelegate(response);
@@ -50,4 +51,8 @@
         };
 
         $scope.refresh();
+
+
+
+
     });
