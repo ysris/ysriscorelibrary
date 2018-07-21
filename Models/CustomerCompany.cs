@@ -28,8 +28,7 @@ namespace YsrisCoreLibrary.Models
         {
             var cast = ((CustomerCompany)values);
 
-
-            if (cast.id != null) id = cast.id;
+            cast.id = values.id;
             if (cast.name != null) name = cast.name;
             if (cast.phoneNumber != null) phoneNumber = cast.phoneNumber;
             if (cast.corporateEmail != null) corporateEmail = cast.corporateEmail;
@@ -43,10 +42,10 @@ namespace YsrisCoreLibrary.Models
             if (cast.adrCountry != null) adrCountry = cast.adrCountry;
             if (cast.picture != null) picture = cast.picture;
             if (cast.pictureClientAccessor != null) pictureClientAccessor = cast.pictureClientAccessor;
-            if (cast.subscribedcustomersCount != null) subscribedcustomersCount = cast.subscribedcustomersCount;
+            subscribedcustomersCount = cast.subscribedcustomersCount;
             if (cast.billedAmount != null) billedAmount = cast.billedAmount;
-            if (cast.availableLicenceCount != null) availableLicenceCount = cast.availableLicenceCount;
-            if (cast.totalLicenceCount != null) totalLicenceCount = cast.totalLicenceCount;
+            availableLicenceCount = cast.availableLicenceCount;
+            totalLicenceCount = cast.totalLicenceCount;
         }
 
 
