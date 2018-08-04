@@ -3,26 +3,31 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using ysriscorelibrary.Interfaces;
 using YsrisCoreLibrary.Models.WinBiz;
 
 namespace YsrisCoreLibrary.Services
 {
     public class WinBizService
     {
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
+        private readonly IStorageService _storage;
 
         /// <summary>
         /// Default constructor
         /// </summary>
         /// <param name="configuration"></param>
-        public WinBizService(IConfiguration configuration)
+        public WinBizService(IConfiguration configuration, IStorageService storage)
         {
             _configuration = configuration;
+            _storage = storage;
         }
 
         /// <summary>
@@ -109,7 +114,7 @@ namespace YsrisCoreLibrary.Services
         /// <param name="companyId"></param>
         /// <param name="year"></param>
         /// <returns></returns>
-        private HttpClient getHttpClient(string companyId, int? year = null)
+        public HttpClient getHttpClient(string companyId, int? year = null)
         {
             if (year == null)
                 year = DateTime.Now.Year;
@@ -138,6 +143,23 @@ namespace YsrisCoreLibrary.Services
             var encryptedBytes = rsaProvider.Encrypt(plainBytes, false);
             var encryptedString = Convert.ToBase64String(encryptedBytes);
             return encryptedString;
+        }
+
+        public void UploadCsv(string item, string companyId)
+        {
+            var url = "https://api.winbizcloud.ch/Bizinfo";
+            var filePath = _storage.GetFullPath(item);
+            var content = new ByteArrayContent(File.ReadAllBytes(filePath));
+            content.Headers.ContentType = MediaTypeHeaderValue.Parse("text/csv");
+
+            var form = new MultipartFormDataContent();
+            form.Add(new StringContent("ENTRIESIMPORT"), "winbiz-method");
+            form.Add(content, "winbiz-file", Path.GetFileName(filePath));
+
+            var httpClient = getHttpClient(companyId);
+            var response = httpClient.PostAsync(url, form).Result;
+
+            
         }
     }
 
