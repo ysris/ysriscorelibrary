@@ -97,6 +97,16 @@ namespace YsrisCoreLibrary.Services
             }
         }
 
+
+        public void SaveContentTo(string fullPath, string content)
+        {
+            fullPath = basePath + fullPath.TrimStart('/');
+            MyLogger.LogInformation($"fullPath=" + fullPath);
+            Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
+            File.WriteAllText(fullPath, content);
+        }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -154,7 +164,6 @@ namespace YsrisCoreLibrary.Services
             File.Copy(from, to, true);
             File.Delete(from);
         }
-
 
         public string GetFullPath(string cur)
         {
