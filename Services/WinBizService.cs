@@ -15,6 +15,7 @@ using YsrisCoreLibrary.Models.WinBiz;
 
 namespace YsrisCoreLibrary.Services
 {
+    // ReSharper disable once ClassNeverInstantiated.Global (service are not instanciated directly but through IOC)
     public class WinBizService
     {
         private readonly IConfiguration _configuration;
@@ -41,8 +42,7 @@ namespace YsrisCoreLibrary.Services
                     new { Method = "Folders", Parameters = new List<string>() },
                     _configuration.GetValue<string>("Data:winbiz-rootcompanyid")
                 ).Value
-                .Select(a => new WinBizCustomer(a))
-                ;
+                .Select(a => new WinBizCustomer(a));
         }
 
         /// <summary>
@@ -53,6 +53,9 @@ namespace YsrisCoreLibrary.Services
         public IEnumerable<WinBizHistoricalAccount> ListCustomerAccounts(string winbizCustomerId)
         {
             var set = apiCall<WinBizResponse<List<WinBizHistoricalAccount>>>(new { Method = "ChartOfAccounts", Parameters = new List<string> { } }, winbizCustomerId).Value.ToList();
+
+            if (set == null)
+                throw new Exception($"chartOfAccounts returned NULL : the Winbiz id {winbizCustomerId} is probably incorrect");
 
             foreach (var item in set)
             {
