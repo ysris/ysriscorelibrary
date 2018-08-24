@@ -106,6 +106,11 @@ namespace YsrisCoreLibrary.Services
             File.WriteAllText(fullPath, content);
         }
 
+        public FileInfo GetFileInfo(string filePath)
+        {
+            return new FileInfo(GetFullPath(filePath));
+        }
+
 
         /// <summary>
         /// 

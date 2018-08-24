@@ -19,5 +19,6 @@ namespace ysriscorelibrary.Interfaces
         void MoveFileAbsolutePath(string filename, string v);
         string GetContentType(string filename);
         void SaveContentTo(string fullPath, string content);
+        FileInfo GetFileInfo(string xFilePath);
     }
 }
