@@ -68,8 +68,8 @@
         };
 
         /**
-         * Activate an account
-         * @param {any} entity
+         * Activate account
+         * @param {any} entity entity to activate
          */
         $scope.activateAcccount = function (entity) {
             $rootScope.askConfirm({
@@ -87,7 +87,7 @@
 
         /**
          * Disable an account
-         * @param {any} obj
+         * @param {any} entity entity to disable
          */
         $scope.disableAccount = function (entity) {
             $rootScope.askConfirm({
@@ -105,10 +105,9 @@
 
         /**
          * Delete an account
-         * @param {any} obj
+         * @param {any} entity to delete
          */
         $scope.deleteAccount = function (entity) {
-            alert(entity.id); return;
             if (window.confirm("Delete this account ?")) {
                 customerService.delete(entity.id).then(function (resp) {
                     $scope.refresh();
