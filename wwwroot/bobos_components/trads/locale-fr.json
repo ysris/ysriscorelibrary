@@ -10,7 +10,7 @@
   "TO_RESET": "Pour changer votre mot de passe, merci de rentrer votre email dans le champ ci-dessous.",
   "RESET_PASSWORD": "Changer mon mot de passe",
   "YOUR_EMAIL": "Votre email",
-  "PASSWORD_RECOVERY_SENT": "Les instructions pour changer votre mot de passe vous ont été communiqués par email",
+  "PASSWORD_RECOVERY_SENT": "Les instructions pour changer votre mot de passe vous ont été communiquées par email",
   "PASSWORD_RECOVERY_DONE": "Changement de mot de passe effectué",
   "EMAIL_CONFIRMATION_DONE": "Merci d'entrer votre nouveau mot de passe ci-dessous.",
   "NEW_PASSWORD": "Nouveau mot de passe",
