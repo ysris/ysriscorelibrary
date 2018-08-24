@@ -20,5 +20,6 @@ namespace ysriscorelibrary.Interfaces
         string GetContentType(string filename);
         void SaveContentTo(string fullPath, string content);
         FileInfo GetFileInfo(string xFilePath);
+        bool FileExists(string xFilePath);
     }
 }

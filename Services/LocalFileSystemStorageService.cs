@@ -1,18 +1,14 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
+﻿using ImageSharp;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
-using YsrisCoreLibrary.Extensions;
-using YsrisCoreLibrary.Helpers;
-using ImageSharp;
 using Microsoft.AspNetCore.Http;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
-using ysriscorelibrary.Interfaces;
-using System;
-using System.Linq;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using ysriscorelibrary.Interfaces;
 using YsrisCoreLibrary.Models;
 
 namespace YsrisCoreLibrary.Services
@@ -48,13 +44,13 @@ namespace YsrisCoreLibrary.Services
                     {
                         var cropX = Convert.ToInt32((image.Width - image.Height) / 2);
                         var cropY = 0;
-                        cropRectangle = new Rectangle(cropX, cropY, (int)image.Height, (int)image.Height);
+                        cropRectangle = new Rectangle(cropX, cropY, image.Height, image.Height);
                     }
                     else
                     {
                         var cropX = 0;
                         var cropY = Convert.ToInt32((image.Height - image.Width) / 2);
-                        cropRectangle = new Rectangle(cropX, cropY, (int)image.Width, (int)image.Width);
+                        cropRectangle = new Rectangle(cropX, cropY, image.Width, image.Width);
                     }
 
                     image
@@ -106,11 +102,9 @@ namespace YsrisCoreLibrary.Services
             File.WriteAllText(fullPath, content);
         }
 
-        public FileInfo GetFileInfo(string filePath)
-        {
-            return new FileInfo(GetFullPath(filePath));
-        }
+        public FileInfo GetFileInfo(string filePath) => new FileInfo(GetFullPath(filePath));
 
+        public bool FileExists(string xFilePath) => File.Exists(GetFullPath(xFilePath));
 
         /// <summary>
         /// 
