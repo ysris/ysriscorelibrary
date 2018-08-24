@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using ysriscorelibrary.Interfaces;
+using YsrisCoreLibrary.Exceptions;
 using YsrisCoreLibrary.Models.WinBiz;
 
 namespace YsrisCoreLibrary.Services
@@ -52,10 +53,10 @@ namespace YsrisCoreLibrary.Services
         /// <returns></returns>
         public IEnumerable<WinBizHistoricalAccount> ListCustomerAccounts(string winbizCustomerId)
         {
-            var set = apiCall<WinBizResponse<List<WinBizHistoricalAccount>>>(new { Method = "ChartOfAccounts", Parameters = new List<string> { } }, winbizCustomerId).Value.ToList();
+            var set = apiCall<WinBizResponse<List<WinBizHistoricalAccount>>>(new { Method = "ChartOfAccounts", Parameters = new List<string> { } }, winbizCustomerId).Value?.ToList();
 
             if (set == null)
-                throw new Exception($"chartOfAccounts returned NULL : the Winbiz id {winbizCustomerId} is probably incorrect");
+                throw new WinBizException($"chartOfAccounts returned NULL : the Winbiz id {winbizCustomerId} is probably incorrect");
 
             foreach (var item in set)
             {
