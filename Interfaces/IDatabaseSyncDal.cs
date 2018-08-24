@@ -10,9 +10,5 @@ namespace YsrisCoreLibrary.Interfaces
     {
         Task SyncAllHourly();
         Task SyncAllDaily();
-        //void ImportYoozXml();
-        //void CallYoozUpdater();
-        //void SynchronizeWinBizCustomer();
-        //void SynchronizeYoozCustomer();
     }
 }

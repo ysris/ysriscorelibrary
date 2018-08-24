@@ -19,7 +19,7 @@ namespace YsrisCoreLibrary.Models
         int id { get; set; }
         string lastName { get; set; }
         string password { get; set; }
-        string picture { get; set; }
+        string picture { get; set; } //TO REMOVE
         string pictureClientAccessor { get; set; }
         string prettyName { get; }
         DateTime? recoverAskDate { get; set; }
