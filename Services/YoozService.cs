@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -19,17 +20,34 @@ namespace YsrisCoreLibrary.Services
     /// </summary>
     public class YoozService
     {
+        private ILogger<YoozService> _logger;
         private IStorageService _storageService;
         private IConfiguration _configuration;
 
         public YoozService(
+            ILogger<YoozService> logger,
             IStorageService storageService,
             IConfiguration configuration
         )
         {
+            _logger = logger;
             _storageService = storageService;
             _configuration = configuration;
-        } 
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void CallYoozUpdater()
+        {
+            _logger.LogInformation($"+_callYoozUpdater");
+            var updaterJarPath = _configuration.GetValue<string>("Data:YoozUpdaterFullPath");
+            var cmd = $"sudo java -jar {updaterJarPath}";
+            _logger.LogInformation($"+_callYoozUpdater cmd : {cmd}");
+            var result = YsrisCoreLibrary.Helpers.ShellHelper.Bash(cmd);
+            _logger.LogInformation(result);
+            _logger.LogInformation($"-_callYoozUpdater");
+        }
 
         /// <summary>
         /// Upload a document to Yooz service
