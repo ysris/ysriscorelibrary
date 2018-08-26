@@ -1,8 +1,11 @@
-﻿using ImageSharp;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,7 +37,7 @@ namespace YsrisCoreLibrary.Services
             inputstream.Seek(0, SeekOrigin.Begin);
 
             //using (var inputStream = fileInfo.CreateReadStream())
-            using (var image = Image.Load(inputstream, new DecoderOptions { IgnoreMetadata = true }))
+            using (var image = Image.Load(inputstream))
             {
                 if (width != null)
                 {
@@ -53,10 +56,11 @@ namespace YsrisCoreLibrary.Services
                         cropRectangle = new Rectangle(cropX, cropY, image.Width, image.Width);
                     }
 
-                    image
+                    image.Mutate(x => x
                         .Crop(cropRectangle)
-                        .Resize((int)width, (int)width)
-                        .SaveAsJpeg(outputStream);
+                        .Resize((int)width, (int)width));
+
+                    image.Save(outputStream, new JpegEncoder { IgnoreMetadata = true });
                 }
                 else
                 {
