@@ -119,7 +119,6 @@
     <PackageReference Include="Stripe.net" Version="12.1.0" />
     <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
-    <PackageReference Include="ta-lib" Version="0.5.0.3" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="1.1.0" />
   </ItemGroup>
