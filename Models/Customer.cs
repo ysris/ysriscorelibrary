@@ -117,6 +117,9 @@ namespace YsrisCoreLibrary.Models
         [JsonIgnore]
         public string password { get; set; }
 
+
+        public string passwordHash { get; set; } //bug related doublon
+
         [DataMember]
         public string activationCode { get; set; }
 
