@@ -19,6 +19,8 @@
 
         $rootScope.hasRole =
             function (role) {
+                if ($rootScope.customer == null)
+                    return false;
                 for (var i = 0; i < $rootScope.customer.roles.length; i++)
                     if ($rootScope.customer.roles[i] === role)
                         return true;
