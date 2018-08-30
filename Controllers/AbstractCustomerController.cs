@@ -121,10 +121,13 @@ namespace YsrisCoreLibrary.Controllers
             var entity = await _context.Set<T>().SingleOrDefaultAsync(a => a.email == model.email);
             if (entity == null || entity.activationCode == null || model.activationCode != entity.activationCode)
                 return StatusCode(StatusCodes.Status400BadRequest);
+            if (model.password == null)
+                throw new Exception("Null password provided");
 
             entity.activationCode = null;
             entity.recoverAskDate = null;
             entity.password = _encryption.GetHash(model.password);
+            entity.passwordHash = entity.password;
             entity.accountStatus = sucessActivationStatus;
 
             _context.Set<T>().Update(entity);
@@ -271,12 +274,10 @@ namespace YsrisCoreLibrary.Controllers
 
             var entity = await _context.Set<T>().FindAsync(_session.User.id);
 
-            if (entity.picture == null)
-                return File(placeholderContent, "image/png");
-            if (!System.IO.File.Exists(_storage.GetFullPath(entity.picture)))
+            if (!System.IO.File.Exists(_storage.GetFullPath($"/avatars/large/{entity.id}.jpg")))
                 return File(placeholderContent, "image/png");
 
-            var result = _storage.GetFileContent(entity.picture)?.Result?.ToArray();
+            var result = _storage.GetFileContent($"/avatars/large/{entity.id}.jpg")?.Result?.ToArray();
             if (result == null)
                 return File(placeholderContent, "image/png");
             return File(result, "image/jpeg");
@@ -294,12 +295,9 @@ namespace YsrisCoreLibrary.Controllers
             var path = Path.Combine(_env.WebRootPath, "bobos_components/assets/images/profile-placeholder.png");
             var entity = await _context.Set<T>().FindAsync(id);
 
-            if (entity?.picture == null)
-                return File(System.IO.File.ReadAllBytes(path), "image/png");
-
             try
             {
-                var result = _storage.GetFileContent(entity.picture)?.Result?.ToArray();
+                var result = _storage.GetFileContent($"/avatars/large/{entity.id}.jpg")?.Result?.ToArray();
                 if (result == null)
                     return File(System.IO.File.ReadAllBytes(path), "image/png");
                 return File(result, "image/jpeg");
@@ -332,6 +330,7 @@ namespace YsrisCoreLibrary.Controllers
                     if (model.rawPasswordConfirm.ToString() != model.passwordForTyping.ToString())
                         throw new Exception("Password confirmation mismatch");
                     entity.password = _encryption.GetHash(model.passwordForTyping.ToString());
+                    entity.passwordHash = entity.password;
                 }
 
             _context.Set<T>().Update(entity);
@@ -544,11 +543,13 @@ namespace YsrisCoreLibrary.Controllers
             if (accountStatuses == null || !accountStatuses.Any())
                 accountStatuses = new List<string> { CustomerStatus.Activated };
 
+            var passwordHash = _encryption.GetHash(model.password);
+
             var customer =
                 _context.Set<T>()
                 .SingleOrDefault(a =>
                     a.email.ToLower().Trim() == model.username.ToLower().Trim()
-                    && a.password == _encryption.GetHash(model.password)
+                    && (a.password == passwordHash || a.passwordHash == passwordHash)
                     && accountStatuses.Contains(a.accountStatus)
                     && a.deletionDate == null
                 );
@@ -598,7 +599,7 @@ namespace YsrisCoreLibrary.Controllers
             if (model.passwordForTyping == null)
                 throw new Exception("Password is null");
 
-            entity.password = _encryption.GetHash(model.passwordForTyping.ToString()); //keep here for avoiding the model binding
+            //entity.password = _encryption.GetHash(model.passwordForTyping.ToString()); //keep here for avoiding the model binding
             entity.activationCode = Guid.NewGuid().ToString();
             entity.accountStatus = CustomerStatus.PendingActivationWithoutPasswordChange;
 
@@ -724,6 +725,7 @@ namespace YsrisCoreLibrary.Controllers
                 entity.activationCode = null;
                 entity.recoverAskDate = null;
                 entity.password = _encryption.GetHash(model.password);
+                entity.passwordHash = entity.password;
                 entity.accountStatus = CustomerStatus.Activated;
 
                 _context.Set<T>().Update(entity);
