@@ -78,7 +78,7 @@ namespace YsrisCoreLibrary.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var entity = await _getEntity(id);
+            var entity = await _context.Set<T>().FindAsync(id);
 
             if (entity == null)
                 return NotFound();
@@ -182,19 +182,6 @@ namespace YsrisCoreLibrary.Controllers
         protected virtual bool EntityExists(int id)
         {
             return _context.Set<T>().Find(id) != null;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        protected virtual async Task<T> _getEntity(int id)
-        {
-            var entity = await _context.Set<T>().FindAsync(id);
-            if (entity.deletionDate == null)
-                throw new Exception("Entity has been deleted");
-            return entity;
         }
 
         protected virtual async Task<Tuple<IEnumerable<T>, int>> _get(int start, int number)
