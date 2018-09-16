@@ -149,10 +149,9 @@ namespace YsrisCoreLibrary.Services
             return encryptedString;
         }
 
-        public void UploadCsv(string item, string companyId)
+        public void UploadCsv(string filePath, string companyId)
         {
             var url = "https://api.winbizcloud.ch/Bizinfo";
-            var filePath = _storage.GetFullPath(item);
             var content = new ByteArrayContent(File.ReadAllBytes(filePath));
             content.Headers.ContentType = MediaTypeHeaderValue.Parse("text/csv");
 
