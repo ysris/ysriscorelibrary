@@ -143,11 +143,19 @@ namespace YsrisCoreLibrary.Services
         /// <param name="recursive"></param>
         /// <param name="searchPattern"></param>
         /// <returns></returns>
+        public IEnumerable<string> ListFiles(IEnumerable<string> directory, bool recursive = true, string searchPattern = "*.*")
+        {
+            return directory.SelectMany(a => ListFiles(a, recursive, searchPattern) ?? Enumerable.Empty<string>());
+        }
+
         public IEnumerable<string> ListFiles(string directory, bool recursive = true, string searchPattern = "*.*")
         {
             directory =
                  basePath
                 + directory.TrimStart('/');
+
+            if (!Directory.Exists(directory))
+                return Enumerable.Empty<string>();
 
             return Directory.GetFiles(directory, searchPattern, recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly).Select(a => a.Replace(basePath, string.Empty).PadLeft('/').Trim());
         }

@@ -14,6 +14,7 @@ namespace ysriscorelibrary.Interfaces
         void SaveFileTo(MemoryStream postedFile2, string fullPath);
         Task<MemoryStream> GetFileContent(string fullPath);
         IEnumerable<string> ListFiles(string baseDirectory, bool recursive = true, string searchPattern = "*.*");
+        IEnumerable<string> ListFiles(IEnumerable<string> baseDirectory, bool recursive = true, string searchPattern = "*.*");
         void MoveFile(string from, string to);
         string GetFullPath(string cur);
         void MoveFileAbsolutePath(string filename, string v);
