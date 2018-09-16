@@ -19,6 +19,7 @@ namespace YsrisCoreLibrary.Models.WinBiz
             dos_numero = Convert.ToInt32(raw["dos_numero"]);
             dos_name = raw["dos_name"].ToString();
         }
+
         [Key]
         [DataMember]
         public int dos_numero { get; set; }

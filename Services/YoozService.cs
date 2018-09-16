@@ -42,6 +42,10 @@ namespace YsrisCoreLibrary.Services
         {
             _logger.LogInformation($"+_callYoozUpdater");
             var updaterJarPath = _configuration.GetValue<string>("Data:YoozUpdaterFullPath");
+
+            if (!File.Exists(updaterJarPath))
+                throw new Exception("YoozClientPathIncorrect");            
+
             var cmd = $"sudo java -jar {updaterJarPath}";
             _logger.LogInformation($"+_callYoozUpdater cmd : {cmd}");
             var result = YsrisCoreLibrary.Helpers.ShellHelper.Bash(cmd);
