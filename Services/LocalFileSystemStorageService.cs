@@ -125,6 +125,9 @@ namespace YsrisCoreLibrary.Services
 
                 fullPath = basePath + fullPath.TrimStart('/');
 
+                if (!File.Exists(fullPath))
+                    throw new Exception("FileNotFound");
+
                 using (MemoryStream ms = new MemoryStream())
                 using (FileStream file = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
                 {

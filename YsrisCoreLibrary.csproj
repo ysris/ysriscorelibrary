@@ -16,7 +16,6 @@
     <None Remove="wwwroot\bobos_components\assets\images\robot.png" />
     <None Remove="wwwroot\bobos_components\components\customerComponent.js" />
     <None Remove="wwwroot\bobos_components\components\echartsComponent.js" />
-    <None Remove="wwwroot\bobos_components\controllers\conversationContactController.js" />
     <None Remove="wwwroot\bobos_components\controllers\conversationMessageController.js" />
     <None Remove="wwwroot\bobos_components\controllers\CustomersController.js" />
     <None Remove="wwwroot\bobos_components\controllers\InscriptionController.js" />
@@ -26,7 +25,6 @@
     <None Remove="wwwroot\bobos_components\controllers\ProfileController.js" />
     <None Remove="wwwroot\bobos_components\controllers\ProfileEditController.js" />
     <None Remove="wwwroot\bobos_components\controllers\SignInController.js" />
-    <None Remove="wwwroot\bobos_components\directives\busyIndicator.js" />
     <None Remove="wwwroot\bobos_components\directives\compareToDirective.js" />
     <None Remove="wwwroot\bobos_components\directives\master-footer.js" />
     <None Remove="wwwroot\bobos_components\directives\master-header.js" />
@@ -49,7 +47,6 @@
     <None Remove="wwwroot\bobos_components\views\profile.html" />
     <None Remove="wwwroot\bobos_components\views\profileedit.html" />
     <None Remove="wwwroot\bobos_components\views\signin.html" />
-    <None Remove="wwwroot\bobos_components\views\templates\busy-indicator.html" />
     <None Remove="wwwroot\bobos_components\views\templates\master-footer.html" />
   </ItemGroup>
   <ItemGroup>
@@ -62,9 +59,6 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
     <Content Include="wwwroot\bobos_components\components\echartsComponent.js" />
-    <Content Include="wwwroot\bobos_components\controllers\conversationContactController.js">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="wwwroot\bobos_components\controllers\CustomersController.js" />
     <Content Include="wwwroot\bobos_components\controllers\InscriptionController.js" />
     <Content Include="wwwroot\bobos_components\controllers\MasterController.js" />
@@ -73,7 +67,6 @@
     <Content Include="wwwroot\bobos_components\controllers\ProfileController.js" />
     <Content Include="wwwroot\bobos_components\controllers\ProfileEditController.js" />
     <Content Include="wwwroot\bobos_components\controllers\SignInController.js" />
-    <Content Include="wwwroot\bobos_components\directives\busyIndicator.js" />
     <Content Include="wwwroot\bobos_components\directives\compareToDirective.js" />
     <Content Include="wwwroot\bobos_components\directives\master-footer.js" />
     <Content Include="wwwroot\bobos_components\directives\master-header.js" />
@@ -99,7 +92,6 @@
     <Content Include="wwwroot\bobos_components\views\profile.html" />
     <Content Include="wwwroot\bobos_components\views\profileedit.html" />
     <Content Include="wwwroot\bobos_components\views\signin.html" />
-    <Content Include="wwwroot\bobos_components\views\templates\busy-indicator.html" />
     <Content Include="wwwroot\bobos_components\views\templates\master-footer.html" />
   </ItemGroup>
   <ItemGroup>

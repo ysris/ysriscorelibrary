@@ -43,6 +43,12 @@
                                             Edit
                                         </a>
                                     </li>
+                                    <li ng-show="isAdmin">
+                                        <a ng-click="delete(cur)">
+                                            <i class="fa fa-trash"></i>
+                                            Delete
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </td>
